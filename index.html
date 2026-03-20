@@ -2356,7 +2356,8 @@ function renderHistDay(){
   if(g('histDateSub'))g('histDateSub').textContent='วันที่ '+(ageD+1)+' ของชีวิต · '+(ageD<7?ageD+' วัน':Math.floor(ageD/7)+' สัปดาห์ '+ageD%7+' วัน');
   if(g('histNext'))g('histNext').disabled=histOffset>=0;
   const sum=getDaySummary(dateStr);
-  const noData=sum.feeds.length===0&&sum.sleeps.length===0&&sum.diapers.length===0;
+  var pumpDayCheck=(state.pumpLogs||[]).filter(function(p){return p.d===dateStr;});
+  const noData=sum.feeds.length===0&&sum.sleeps.length===0&&sum.diapers.length===0&&pumpDayCheck.length===0;
   if(noData){g('histContent').innerHTML='<div class="no-data-day"><svg width="48" height="48" style="color:var(--border)"><use href="#i-chart"></use></svg><p>ยังไม่มีข้อมูลในวันนี้</p></div>';return;}
   const fA=assessFeeding(sum,ageD),sA=assessSleep(sum),dA=assessDiaper(sum,ageD);
   const fP=Math.min(1,sum.feeds.length/10),sP=Math.min(1,sum.sleepMin/(18*60)),dP=Math.min(1,sum.diapers.length/8);
