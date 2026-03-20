@@ -1227,6 +1227,8 @@ async function syncFromCloud(){
       if(data.doneVax)state.doneVax=data.doneVax;
       if(data.sleepState){state.isSleeping=data.sleepState.on;state.sleepStart=data.sleepState.start;}
       if(data.momNut){state.momLogs=Array.isArray(data.momNut.logs)?data.momNut.logs:[];state.momDate=data.momNut.d||'';}
+      if(data.pumpLogs)state.pumpLogs=Array.isArray(data.pumpLogs)?data.pumpLogs:[];
+      if(data.vaxAppt)state.vaxAppt=data.vaxAppt;
       // Load photo separately
       try{const pd=await fbGet('photo');if(pd&&pd.data&&pd.data!==state.photo){state.photo=pd.data;renderPhoto();}}catch(e){}
       lsSet('state',state);
@@ -1238,7 +1240,7 @@ async function syncFromCloud(){
 async function pushCloud(){
   if(cfg.offline||!cfg.dbUrl)return;
   setSS('syncing','กำลัง sync...');
-  const ok=await fbSet('data',{feedings:state.feedings,sleeps:state.sleeps,diapers:state.diapers,weights:state.weights,doneVax:state.doneVax,sleepState:{on:state.isSleeping,start:state.sleepStart},momNut:{logs:state.momLogs,d:state.momDate},lastUpdate:{time:new Date().toISOString(),who:cfg.who}});
+  const ok=await fbSet('data',{feedings:state.feedings,sleeps:state.sleeps,diapers:state.diapers,weights:state.weights,doneVax:state.doneVax,sleepState:{on:state.isSleeping,start:state.sleepStart},momNut:{logs:state.momLogs,d:state.momDate},pumpLogs:state.pumpLogs||[],vaxAppt:state.vaxAppt||{},lastUpdate:{time:new Date().toISOString(),who:cfg.who}});
   setSS(ok?'on':'off',ok?'sync แล้ว '+fmtT(new Date()):'บันทึกในเครื่องแล้ว');
   lsSet('state',state);
 }
