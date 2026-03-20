@@ -877,6 +877,31 @@ input:focus,button:focus{outline:none;}
           <div style="text-align:center;flex:1;"><div id="pumpStatAvg" style="font-size:20px;font-weight:800;color:var(--sage);">—</div><div style="font-size:10px;color:var(--tx3);">oz เฉลี่ย</div></div>
           <div style="text-align:center;flex:1;"><div id="pumpStatMl" style="font-size:20px;font-weight:800;color:var(--tx3);">0</div><div style="font-size:10px;color:var(--tx3);">ml รวม</div></div>
         </div>
+        <div id="pumpAllSummary" style="display:none;background:var(--bg);border-radius:10px;padding:10px 14px;margin-bottom:10px;border:1px solid var(--border);">
+          <div style="font-size:10px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">สรุปรวมทั้งหมด</div>
+          <div style="display:flex;gap:0;flex-wrap:wrap;">
+            <div style="flex:1;min-width:70px;text-align:center;padding:4px 0;">
+              <div id="pumpAllOz" style="font-size:18px;font-weight:900;color:var(--sage);">0</div>
+              <div style="font-size:9px;color:var(--tx3);">oz รวม</div>
+            </div>
+            <div style="flex:1;min-width:70px;text-align:center;padding:4px 0;">
+              <div id="pumpAllMl" style="font-size:18px;font-weight:900;color:var(--tx3);">0</div>
+              <div style="font-size:9px;color:var(--tx3);">ml รวม</div>
+            </div>
+            <div style="flex:1;min-width:70px;text-align:center;padding:4px 0;">
+              <div id="pumpAllSessions" style="font-size:18px;font-weight:900;color:var(--blue);">0</div>
+              <div style="font-size:9px;color:var(--tx3);">ครั้งทั้งหมด</div>
+            </div>
+            <div style="flex:1;min-width:70px;text-align:center;padding:4px 0;">
+              <div id="pumpAllDays" style="font-size:18px;font-weight:900;color:var(--amber);">0</div>
+              <div style="font-size:9px;color:var(--tx3);">วันที่บันทึก</div>
+            </div>
+          </div>
+          <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:11px;color:var(--tx3);">
+            <span>เฉลี่ย/วัน: <strong id="pumpAvgPerDay" style="color:var(--sage);">—</strong></span>
+            <span>เฉลี่ย/ครั้ง: <strong id="pumpAvgPerSession" style="color:var(--sage);">—</strong></span>
+          </div>
+        </div>
         <div id="pumpLogList"></div>
       </div>
       <div class="card" style="border-left:3px solid var(--amber);">
@@ -1754,6 +1779,38 @@ function exportMedicalPDF(){
   const allW = state.weights.slice().sort((a,b)=>new Date(b.d)-new Date(a.d));
   const latestW = allW.length>0?allW[0].w+'  กก.':'ไม่มีข้อมูล';
 
+  // Build pump summary for PDF
+  var pumpAllLogs = state.pumpLogs||[];
+  var pumpPdfSection = '';
+  if(pumpAllLogs.length>0){
+    var pumpAllOz = pumpAllLogs.reduce(function(s,p){return s+p.oz;},0);
+    var pumpAllMl = Math.round(pumpAllOz*29.5735);
+    var pumpUniqueDays = [...new Set(pumpAllLogs.map(function(p){return p.d;}))];
+    var pumpAvgDay = (pumpAllOz/pumpUniqueDays.length).toFixed(1);
+    var pumpAvgSess = (pumpAllOz/pumpAllLogs.length).toFixed(1);
+    // Build daily rows (last 7 days)
+    var pumpDates = pumpUniqueDays.sort(function(a,b){return new Date(b)-new Date(a);}).slice(0,7);
+    var pumpTableRows = pumpDates.map(function(d){
+      var dl = pumpAllLogs.filter(function(p){return p.d===d;}).sort(function(a,b){return new Date(a.t)-new Date(b.t);});
+      var dOz = dl.reduce(function(s,p){return s+p.oz;},0);
+      var dMl = Math.round(dOz*29.5735);
+      var dateDisp = new Date(dl[0].t).toLocaleDateString('th-TH',{day:'numeric',month:'short'});
+      var sessions = dl.map(function(p){return fmtT(p.t)+' = '+p.oz+' oz';}).join('<br>');
+      return '<tr><td>'+dateDisp+'</td><td style="font-size:11px;">'+sessions+'</td><td><strong>'+dOz.toFixed(1)+' oz</strong><br><small>'+dMl+' ml</small></td></tr>';
+    }).join('');
+    pumpPdfSection = '<div style="margin-bottom:8px;display:flex;gap:20px;flex-wrap:wrap;">'
+      +'<div><span style="color:#666;">รวมทั้งหมด:</span> <strong>'+pumpAllOz.toFixed(1)+' oz ('+pumpAllMl.toLocaleString()+' ml)</strong></div>'
+      +'<div><span style="color:#666;">จำนวนครั้ง:</span> <strong>'+pumpAllLogs.length+' ครั้ง</strong></div>'
+      +'<div><span style="color:#666;">วันที่บันทึก:</span> <strong>'+pumpUniqueDays.length+' วัน</strong></div>'
+      +'<div><span style="color:#666;">เฉลี่ย/วัน:</span> <strong>'+pumpAvgDay+' oz</strong></div>'
+      +'<div><span style="color:#666;">เฉลี่ย/ครั้ง:</span> <strong>'+pumpAvgSess+' oz</strong></div>'
+      +'</div>'
+      +'<table><thead><tr><th>วันที่</th><th>รายละเอียด</th><th>รวม</th></tr></thead><tbody>'+pumpTableRows+'</tbody></table>'
+      +'<p style="font-size:10px;color:#888;margin-top:6px;">* แสดง 7 วันล่าสุด</p>';
+  } else {
+    pumpPdfSection = '<p style="color:#888;font-size:12px;">ยังไม่มีข้อมูลการปั๊มนม</p>';
+  }
+
   // Build vaccine rows
   const vaxRows = VACCINES.map(v=>{
     const done = state.doneVax[v.id];
@@ -1893,6 +1950,11 @@ function exportMedicalPDF(){
   </table>
 </div>
 
+<div class="section">
+  <div class="sec-title">สรุปการปั๊มนม (คุณแม่)</div>
+  ${pumpPdfSection}
+</div>
+
 <div class="notice">
   ⚠️ เอกสารนี้จัดทำโดยแอปพลิเคชันบันทึกการดูแลทารก ข้อมูลทั้งหมดบันทึกโดยผู้ดูแล เป็นข้อมูลเสริมสำหรับแพทย์ ไม่ใช่เอกสารทางการแพทย์อย่างเป็นทางการ
 </div>
@@ -1985,6 +2047,29 @@ function renderPumpLog(){
 
   var allDates=[...new Set(state.pumpLogs.map(function(p){return p.d;}))];
   allDates.sort(function(a,b){return new Date(b)-new Date(a);});
+
+  // Overall summary
+  var allSumEl=document.getElementById('pumpAllSummary');
+  var allOzEl=document.getElementById('pumpAllOz');
+  var allMlEl=document.getElementById('pumpAllMl');
+  var allSessEl=document.getElementById('pumpAllSessions');
+  var allDaysEl=document.getElementById('pumpAllDays');
+  var avgDayEl=document.getElementById('pumpAvgPerDay');
+  var avgSessEl=document.getElementById('pumpAvgPerSession');
+  if(state.pumpLogs.length>0 && allSumEl){
+    var allOz=state.pumpLogs.reduce(function(s,p){return s+p.oz;},0);
+    var allMl=Math.round(allOz*29.5735);
+    var uniqueDays=[...new Set(state.pumpLogs.map(function(p){return p.d;}))].length;
+    allSumEl.style.display='block';
+    if(allOzEl)allOzEl.textContent=allOz.toFixed(1);
+    if(allMlEl)allMlEl.textContent=allMl.toLocaleString();
+    if(allSessEl)allSessEl.textContent=state.pumpLogs.length;
+    if(allDaysEl)allDaysEl.textContent=uniqueDays;
+    if(avgDayEl)avgDayEl.textContent=(allOz/uniqueDays).toFixed(1)+' oz';
+    if(avgSessEl)avgSessEl.textContent=(allOz/state.pumpLogs.length).toFixed(1)+' oz';
+  } else if(allSumEl){
+    allSumEl.style.display='none';
+  }
 
   if(!allDates.length){
     listEl.innerHTML='<div class="empty">ยังไม่มีการบันทึก</div>';
@@ -2275,6 +2360,32 @@ function renderHistDay(){
   if(noData){g('histContent').innerHTML='<div class="no-data-day"><svg width="48" height="48" style="color:var(--border)"><use href="#i-chart"></use></svg><p>ยังไม่มีข้อมูลในวันนี้</p></div>';return;}
   const fA=assessFeeding(sum,ageD),sA=assessSleep(sum),dA=assessDiaper(sum,ageD);
   const fP=Math.min(1,sum.feeds.length/10),sP=Math.min(1,sum.sleepMin/(18*60)),dP=Math.min(1,sum.diapers.length/8);
+  // Pump log for this day
+  var pumpDayLogs=(state.pumpLogs||[]).filter(function(p){return p.d===dateStr;});
+  pumpDayLogs.sort(function(a,b){return new Date(a.t)-new Date(b.t);});
+  var pumpDayOz=pumpDayLogs.reduce(function(s,p){return s+p.oz;},0);
+  var pumpDayMl=Math.round(pumpDayOz*29.5735);
+  var pumpSection='';
+  if(pumpDayLogs.length>0){
+    var pumpRows=pumpDayLogs.map(function(p){
+      return '<div class="hlog-row"><span class="hlog-t">'+fmtT(p.t)+'</span>'
+        +'<span class="hlog-d">'+p.oz+' oz ('+Math.round(p.oz*29.5735)+' ml)</span></div>';
+    }).join('');
+    pumpSection='<div class="hsec">'
+      +'<div class="hsec-hd">'
+      +'<div class="hsec-ico" style="background:var(--sageL)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="2"><path d="M12 2C8 2 6 6 6 10c0 5 4 10 6 12 2-2 6-7 6-12 0-4-2-8-6-8z"/><circle cx="12" cy="10" r="2"/></svg></div>'
+      +'<div class="hsec-title">ปั๊มนม (คุณแม่)</div>'
+      +'<span class="hsec-badge badge-ok">'+pumpDayOz.toFixed(1)+' oz</span>'
+      +'</div>'
+      +'<div class="hstat-grid">'
+      +'<div class="hstat"><div class="hstat-v">'+pumpDayLogs.length+'</div><div class="hstat-l">ครั้ง</div></div>'
+      +'<div class="hstat"><div class="hstat-v">'+pumpDayOz.toFixed(1)+'</div><div class="hstat-l">oz รวม</div></div>'
+      +'<div class="hstat"><div class="hstat-v">'+pumpDayMl+'</div><div class="hstat-l">ml รวม</div></div>'
+      +'</div>'
+      +'<div style="margin-top:8px;">'+pumpRows+'</div>'
+      +'</div>';
+  }
+
   const boxKey='ai3-'+dateStr.replace(/ /g,'_');
   let html=`
   <div class="hsec">
@@ -2326,7 +2437,7 @@ function renderHistDay(){
     </div>
     <div id="${boxKey}-body" class="ai-body"><div class="ai-loading"><span>กำลังวิเคราะห์</span><div class="ai-dots"><span></span><span></span><span></span></div></div></div>
   </div>`;
-  g('histContent').innerHTML=html;
+  g('histContent').innerHTML=pumpSection+html;
   requestAIComment(sum,ageD,boxKey);
 }
 
