@@ -543,10 +543,18 @@ input:focus,button:focus{outline:none;}
       </div>
 
       <!-- 2. มื้อล่าสุด -->
-      <div id="feedAlert" style="display:none;" class="feed-alert fa-ok">
-        <div style="font-size:10px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">มื้อล่าสุด</div>
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div id="faL"></div><div id="faR" style="text-align:right;"></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <div id="feedAlert" style="display:none;flex:1;" class="feed-alert fa-ok">
+          <div style="font-size:10px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">มื้อล่าสุด</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div id="faL"></div><div id="faR" style="text-align:right;"></div>
+          </div>
+        </div>
+        <div id="pumpSummaryCard" style="display:none;flex-shrink:0;background:var(--sageL);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--sage);min-width:100px;text-align:center;">
+          <div style="font-size:10px;font-weight:800;color:var(--sage);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">🧡 ปั๊มนม</div>
+          <div id="pumpSummaryOz" style="font-size:22px;font-weight:900;color:var(--sage);letter-spacing:-1px;line-height:1.1;">0</div>
+          <div style="font-size:10px;color:var(--sage);font-weight:600;">oz วันนี้</div>
+          <div id="pumpSummaryCount" style="font-size:10px;color:var(--tx3);margin-top:2px;">0 ครั้ง</div>
         </div>
       </div>
 
@@ -836,6 +844,35 @@ input:focus,button:focus{outline:none;}
 
     <!-- NUTRITION -->
     <div id="tab-nutrition" class="tab-c">
+      <div class="card" style="margin-bottom:12px;border-left:3px solid var(--sage);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div>
+            <div class="clbl" style="margin-bottom:2px;">🧡 ปั๊มนม</div>
+            <div style="font-size:11px;color:var(--tx3);">บันทึกปริมาณนมแม่ที่ปั๊มได้</div>
+          </div>
+          <div style="text-align:right;">
+            <div id="pumpTotalToday" style="font-size:26px;font-weight:900;color:var(--sage);letter-spacing:-1px;line-height:1;">0<span style="font-size:13px;font-weight:600;margin-left:1px;">oz</span></div>
+            <div id="pumpTotalMlToday" style="font-size:10px;color:var(--tx3);">0 ml · รวมวันนี้</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;align-items:flex-end;">
+          <div style="flex:1;">
+            <div style="font-size:10px;color:var(--tx3);margin-bottom:4px;font-weight:600;">เวลา</div>
+            <input type="time" id="pumpTimeIn" style="width:100%;padding:9px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx);outline:none;box-sizing:border-box;">
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:10px;color:var(--tx3);margin-bottom:4px;font-weight:600;">ปริมาณ (oz)</div>
+            <input type="number" id="pumpAmtIn" placeholder="0.0" min="0" max="50" step="0.5" style="width:100%;padding:9px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx);outline:none;box-sizing:border-box;">
+          </div>
+          <button onclick="addPumpLog()" style="background:var(--sage);color:white;border:none;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;white-space:nowrap;flex-shrink:0;">+ บันทึก</button>
+        </div>
+        <div id="pumpStatsBar" style="display:none;background:var(--sageL);border-radius:10px;padding:10px 14px;margin-bottom:10px;gap:16px;flex-wrap:wrap;">
+          <div style="text-align:center;flex:1;"><div id="pumpStatCount" style="font-size:20px;font-weight:800;color:var(--sage);">0</div><div style="font-size:10px;color:var(--tx3);">ครั้ง</div></div>
+          <div style="text-align:center;flex:1;"><div id="pumpStatAvg" style="font-size:20px;font-weight:800;color:var(--sage);">—</div><div style="font-size:10px;color:var(--tx3);">oz เฉลี่ย</div></div>
+          <div style="text-align:center;flex:1;"><div id="pumpStatMl" style="font-size:20px;font-weight:800;color:var(--tx3);">0</div><div style="font-size:10px;color:var(--tx3);">ml รวม</div></div>
+        </div>
+        <div id="pumpLogList"></div>
+      </div>
       <div class="card" style="border-left:3px solid var(--amber);">
         <div class="clbl">โภชนาการลูก</div>
         <div class="litem"><div class="litem-l"><div class="litem-dot" style="background:var(--amber);"></div><span style="font-weight:700;color:var(--amber);">8–12 ครั้ง/วัน</span></div><span style="color:var(--tx3);font-size:12px;">ความถี่ให้นม</span></div>
@@ -881,7 +918,11 @@ input:focus,button:focus{outline:none;}
         <div class="clbl">ตารางวัคซีนแนะนำ</div>
         <div style="font-size:12px;color:var(--tx3);">ตามแผนกระทรวงสาธารณสุขไทย</div>
       </div>
-      <div id="vaccineList"></div>
+      <button id="calShareBtn" onclick="shareCalendarSetup()" style="display:block;width:100%;margin-bottom:12px;background:rgba(66,133,244,0.1);border:1.5px solid rgba(66,133,244,0.25);border-radius:12px;padding:12px 16px;font-size:13px;font-weight:700;color:#4285f4;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+  แชร์ Calendar ให้ครอบครัว
+</button>
+<div id="vaccineList"></div>
       <div class="card" style="margin-top:8px;">
         <div class="clbl">การตั้งค่า</div>
         <button onclick="openSettings()" class="settings-btn">
@@ -1041,7 +1082,7 @@ const MOM_FOODS=[
 ];
 
 let cfg={dbUrl:'',pin:'',who:'',offline:false,aiKey:'',geminiKey:''};
-let state={feedings:[],sleeps:[],diapers:[],weights:[],doneVax:{},vaxAppt:{},isSleeping:false,sleepStart:null,momLogs:[],momDate:''};
+let state={feedings:[],sleeps:[],diapers:[],weights:[],doneVax:{},vaxAppt:{},isSleeping:false,sleepStart:null,momLogs:[],momDate:'',pumpLogs:[]};
 let fType='breast',fSide='L',dType='wet',dupCallback=null;
 
 // Timer state
@@ -1475,6 +1516,82 @@ function qDiaper(t){
 function addWeight(){const w=parseFloat(document.getElementById('wIn').value);const h=parseFloat(document.getElementById('hIn').value)||null;if(!w){showToast('กรอกน้ำหนักด้วย');return;}state.weights.push({id:Date.now(),d:new Date().toISOString(),w,h,who:cfg.who});pushCloud();showToast('✓ บันทึกแล้ว');document.getElementById('wIn').value='';document.getElementById('hIn').value='';renderAll();}
 // removed toggleMom - replaced by logMomFood above
 function toggleVax(id){state.doneVax[id]=!state.doneVax[id];pushCloud();renderAll();}
+// ===== GOOGLE CALENDAR INTEGRATION =====
+function addToCalendar(vaxId, apptDateStr){
+  const v = VACCINES.find(x=>x.id===vaxId);
+  if(!v) return;
+  const useDate = apptDateStr ? new Date(apptDateStr) : v.dueDate;
+  const pad2 = n=>String(n).padStart(2,'0');
+  const ymd = d=>d.getFullYear()+''+pad2(d.getMonth()+1)+''+pad2(d.getDate());
+  const start = ymd(useDate)+'T090000';
+  const end = ymd(useDate)+'T110000';
+  const title = encodeURIComponent('💉 วัคซีน: '+v.name+' — น้องต้าเหนิง');
+  const detail = encodeURIComponent(
+    'วัคซีน: '+v.name+'\n'+
+    'รายละเอียด: '+v.detail+'\n'+
+    'อายุที่ฉีด: '+(v.days===0?'แรกเกิด':v.days<30?v.days+' วัน':Math.floor(v.days/30)+' เดือน')+'\n\n'+
+    'บันทึกจากแอพ Da\'Neng Care'
+  );
+  const url = 'https://calendar.google.com/calendar/event?action=TEMPLATE&text='+title+'&dates='+start+'/'+end+'&details='+detail;
+  window.open(url,'_blank');
+}
+
+function addApptToCalendar(vaxId){
+  const appt = state.vaxAppt && state.vaxAppt[vaxId];
+  if(!appt){ alert('กรุณาเลือกวันนัดก่อนครับ'); return; }
+  addToCalendar(vaxId, appt);
+}
+
+function addCustomEventToCalendar(title, dateStr, detail, location){
+  const pad2 = n=>String(n).padStart(2,'0');
+  const d = new Date(dateStr);
+  const ymd = d.getFullYear()+''+pad2(d.getMonth()+1)+''+pad2(d.getDate());
+  const t = encodeURIComponent(title);
+  const dt = encodeURIComponent(detail||'');
+  const loc = encodeURIComponent(location||'โรงพยาบาลสระบุรี');
+  const url = 'https://calendar.google.com/calendar/event?action=TEMPLATE&text='+t+'&dates='+ymd+'T090000/'+ymd+'T110000&details='+dt+'&location='+loc;
+  window.open(url,'_blank');
+}
+
+function shareCalendarSetup(){
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:flex-end;justify-content:center;';
+  modal.innerHTML = `
+    <div style="background:var(--card);border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;">
+      <div style="font-size:17px;font-weight:800;color:var(--tx);margin-bottom:6px;">📅 แชร์ Calendar ให้ครอบครัว</div>
+      <div style="font-size:12px;color:var(--tx3);margin-bottom:20px;line-height:1.7;">เมื่อแชร์แล้ว คุณแม่หรือสมาชิกครอบครัวจะเห็นนัดหมายทุกอย่างพร้อมกันแบบ real-time</div>
+      
+      <div style="background:var(--blueL);border-radius:12px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:10px;">วิธีแชร์ Google Calendar (ง่ายที่สุด)</div>
+        <div style="font-size:12px;color:var(--tx);line-height:2;">
+          1. เปิด <b>Google Calendar</b> ในมือถือ<br>
+          2. กดเมนู ☰ → เลือก Calendar ที่ต้องการแชร์<br>
+          3. กด ⚙️ → <b>Settings and sharing</b><br>
+          4. เลื่อนหา <b>Share with specific people</b><br>
+          5. ใส่ Email คุณแม่ → กด Send<br>
+          6. คุณแม่กด Accept ในอีเมล → เห็นนัดทันที ✅
+        </div>
+      </div>
+
+      <div style="background:var(--sageL);border-radius:12px;padding:16px;margin-bottom:20px;">
+        <div style="font-size:12px;font-weight:700;color:var(--sage);margin-bottom:10px;">💡 สิ่งที่ครอบครัวจะเห็นพร้อมกัน</div>
+        <div style="font-size:12px;color:var(--tx);line-height:2;">
+          ✅ นัดวัคซีนทุกเข็ม<br>
+          ✅ นัดหมอ / ผลตรวจ<br>
+          ✅ แจ้งเตือนล่วงหน้า 1 วัน + 2 ชั่วโมง<br>
+          ✅ รายละเอียดครบทุก event
+        </div>
+      </div>
+
+      <button onclick="this.closest('div[style*=fixed]').remove()" 
+        style="width:100%;background:var(--blue);color:white;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;">
+        เข้าใจแล้ว
+      </button>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e=>{ if(e.target===modal) modal.remove(); });
+}
+
 function saveVaxAppt(id,val){
   if(!state.vaxAppt)state.vaxAppt={};
   if(val)state.vaxAppt[id]=val;
@@ -1794,6 +1911,102 @@ function exportMedicalPDF(){
   win.document.close();
 }
 
+
+// ===== PUMP LOG =====
+function initPumpTime(){
+  var el=document.getElementById('pumpTimeIn');
+  if(el&&!el.value){var n=new Date();el.value=pad(n.getHours())+':'+pad(n.getMinutes());}
+}
+
+function addPumpLog(){
+  var tEl=document.getElementById('pumpTimeIn');
+  var aEl=document.getElementById('pumpAmtIn');
+  if(!tEl||!aEl)return;
+  var t=tEl.value;
+  var a=parseFloat(aEl.value);
+  if(!t||isNaN(a)||a<=0){alert('กรุณาใส่เวลาและปริมาณครับ');return;}
+  var td=today();
+  var parts=t.split(':');
+  var dt=new Date();
+  dt.setHours(parseInt(parts[0]),parseInt(parts[1]),0,0);
+  if(!state.pumpLogs)state.pumpLogs=[];
+  state.pumpLogs.push({id:Date.now(),d:td,t:dt.toISOString(),oz:a,who:cfg.who||'แม่'});
+  aEl.value='';
+  pushCloud();
+  renderPumpLog();
+}
+
+function deletePumpLog(id){
+  if(!state.pumpLogs)return;
+  state.pumpLogs=state.pumpLogs.filter(function(p){return p.id!==id;});
+  pushCloud();
+  renderPumpLog();
+}
+
+function renderPumpLog(){
+  var td=today();
+  var listEl=document.getElementById('pumpLogList');
+  var totalEl=document.getElementById('pumpTotalToday');
+  var mlEl=document.getElementById('pumpTotalMlToday');
+  var statsBar=document.getElementById('pumpStatsBar');
+  var statCount=document.getElementById('pumpStatCount');
+  var statAvg=document.getElementById('pumpStatAvg');
+  var statMl=document.getElementById('pumpStatMl');
+  if(!listEl)return;
+  if(!state.pumpLogs)state.pumpLogs=[];
+
+  var todayLogs=state.pumpLogs.filter(function(p){return p.d===td;});
+  todayLogs.sort(function(a,b){return new Date(a.t)-new Date(b.t);});
+  var totalOz=todayLogs.reduce(function(s,p){return s+p.oz;},0);
+  var totalMl=Math.round(totalOz*29.5735);
+  var avgOz=todayLogs.length?+(totalOz/todayLogs.length).toFixed(1):0;
+
+  if(totalEl)totalEl.innerHTML=totalOz.toFixed(1)+'<span style="font-size:13px;font-weight:600;margin-left:1px;">oz</span>';
+  if(mlEl)mlEl.textContent=totalMl+' ml · รวมวันนี้';
+  if(statsBar)statsBar.style.display=todayLogs.length?'flex':'none';
+  if(statCount)statCount.textContent=todayLogs.length;
+  if(statAvg)statAvg.textContent=avgOz;
+  if(statMl)statMl.textContent=totalMl;
+
+  var allDates=[...new Set(state.pumpLogs.map(function(p){return p.d;}))];
+  allDates.sort(function(a,b){return new Date(b)-new Date(a);});
+
+  if(!allDates.length){
+    listEl.innerHTML='<div class="empty">ยังไม่มีการบันทึก</div>';
+    return;
+  }
+
+  var html='';
+  for(var di=0;di<allDates.length;di++){
+    var d=allDates[di];
+    var logs=state.pumpLogs.filter(function(p){return p.d===d;});
+    logs.sort(function(a,b){return new Date(a.t)-new Date(b.t);});
+    var dayOz=logs.reduce(function(s,p){return s+p.oz;},0);
+    var dayMl=Math.round(dayOz*29.5735);
+    var isToday=d===td;
+    var dateObj=new Date(logs[0].t);
+    var dayLabel=isToday?'วันนี้':dateObj.toLocaleDateString('th-TH',{weekday:'short',day:'numeric',month:'short'});
+    html+='<div style="margin-bottom:14px;">';
+    html+='<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:6px;border-bottom:1.5px solid var(--border);margin-bottom:6px;">';
+    html+='<div style="font-size:12px;font-weight:700;color:var(--tx);">'+dayLabel+'</div>';
+    html+='<div style="font-size:13px;font-weight:800;color:var(--sage);">'+dayOz.toFixed(1)+' oz <span style="color:var(--tx3);font-size:10px;font-weight:500;">('+dayMl+' ml)</span></div>';
+    html+='</div>';
+    for(var li=0;li<logs.length;li++){
+      var p=logs[li];
+      html+='<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);">';
+      html+='<div style="display:flex;align-items:center;gap:10px;">';
+      html+='<span style="font-size:13px;font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums;">'+fmtT(p.t)+'</span>';
+      html+='<span style="background:var(--sageL);color:var(--sage);border-radius:20px;padding:2px 10px;font-size:13px;font-weight:700;">'+p.oz+' oz</span>';
+      html+='<span style="font-size:11px;color:var(--tx3);">'+Math.round(p.oz*29.5735)+' ml</span>';
+      html+='</div>';
+      html+='<button onclick="deletePumpLog('+p.id+')" style="background:none;border:none;cursor:pointer;color:var(--tx3);font-size:16px;padding:4px;">×</button>';
+      html+='</div>';
+    }
+    html+='</div>';
+  }
+  listEl.innerHTML=html;
+}
+
 function renderHeader(){
   const d=getDays(),now=new Date();
   const g=id=>document.getElementById(id);
@@ -1831,6 +2044,23 @@ function renderHome(){
     g('faL').innerHTML=`<span style="font-size:16px;font-weight:800;">${fmtT(lf.t)}</span> <span style="color:var(--tx3);font-size:13px;">${lf.type==='breast'?'นมแม่ '+(lf.side||'')+' '+(lf.dur?lf.dur+' น.':''):'นมสูตร '+(lf.amt||'?')+' มล.'}</span> ${whoTag(lf.who)}`;
     g('faR').innerHTML=(ov?`<div style="color:var(--red);font-weight:700;font-size:13px;">ถึงเวลาให้นม!</div>`:`<div style="color:var(--sage);font-weight:700;font-size:13px;">อีก ${Math.floor(ml/60)}ชม. ${ml%60}น.</div>`)+`<div style="font-size:10px;color:var(--tx3);">${since(lf.t)} ที่แล้ว</div>`;
   }else fa.style.display='none';
+
+  // Pump summary on home
+  var pumpCard=g('pumpSummaryCard');
+  var pumpOzEl=g('pumpSummaryOz');
+  var pumpCntEl=g('pumpSummaryCount');
+  if(pumpCard){
+    var td2=today();
+    var todayPumps=state.pumpLogs?state.pumpLogs.filter(function(p){return p.d===td2;}):[];
+    var pOz=todayPumps.reduce(function(s,p){return s+p.oz;},0);
+    if(todayPumps.length>0){
+      pumpCard.style.display='block';
+      if(pumpOzEl)pumpOzEl.textContent=pOz.toFixed(1);
+      if(pumpCntEl)pumpCntEl.textContent=todayPumps.length+' ครั้ง';
+    } else {
+      pumpCard.style.display='none';
+    }
+  }
   const sb=g('qSleepBtn');
   if(state.isSleeping){sb.querySelector('div').innerHTML='<svg width="22" height="22"><use href="#i-check"/></svg>';sb.childNodes[sb.childNodes.length-1].textContent='ตื่นแล้ว';sb.classList.add('sleeping');}
   else{sb.querySelector('div').innerHTML='<svg width="22" height="22"><use href="#i-moon"/></svg>';sb.childNodes[sb.childNodes.length-1].textContent='นอนแล้ว';sb.classList.remove('sleeping');}
@@ -1880,6 +2110,8 @@ function renderWeightLog(){
   el.innerHTML=[...state.weights].reverse().map(w=>`<div class="litem"><span style="color:var(--tx3);font-weight:400;">${fmtD(w.d)}</span><span style="font-weight:800;font-size:15px;">${w.w} กก.${w.h?' · '+w.h+' ซม.':''} ${whoTag(w.who)}</span><button onclick="deleteEntry('weights','${w.id}')" class="del-btn">✕</button></div>`).join('');
 }
 function renderNutrition(){
+  initPumpTime();
+  renderPumpLog();
   const tf=todayF();const td=today();
   const g=id=>document.getElementById(id);
   if(g('nutF'))g('nutF').textContent=tf.length+' มื้อ';
@@ -1921,6 +2153,8 @@ function renderVaccines(){
   // Show current config
   const cd=document.getElementById('cfgDisplay');
   if(cd)cd.innerHTML=cfg.offline?'ออฟไลน์ (ไม่ sync)':`URL: ${cfg.dbUrl||'-'}<br>รหัส: ${cfg.pin||'-'}<br>ชื่อ: ${cfg.who||'-'}`;
+  const shareBtn = document.getElementById('calShareBtn');
+  if(shareBtn) shareBtn.style.display='block';
   el.innerHTML=VACCINES.map(v=>{
     const dLeft=Math.ceil((v.dueDate-Date.now())/86400000);
     const done=state.doneVax[v.id],ov=!done&&dLeft<0,soon=!done&&dLeft>=0&&dLeft<=14;
@@ -1941,6 +2175,7 @@ function renderVaccines(){
             <input type="date" value="${appt}" onchange="saveVaxAppt(${v.id},this.value)"
               style="border:none;background:transparent;font-size:11px;color:var(--amber);font-family:'Noto Sans Thai',sans-serif;font-weight:600;cursor:pointer;outline:none;width:130px;">
             <span id="vappt-lbl-${v.id}" style="font-size:10px;color:var(--amber);">${apptLabel}</span>
+            ${appt?`<button onclick="addApptToCalendar(${v.id})" style="background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.3);color:#4285f4;border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;">+ Calendar</button>`:''}
           </div>`:''}
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;">
