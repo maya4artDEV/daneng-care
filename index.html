@@ -515,6 +515,7 @@ input:focus,button:focus{outline:none;}
     <div class="sdot" id="sdot"></div>
     <span class="slbl" id="slbl">กำลังเชื่อมต่อ...</span>
     <span class="swho" id="swho"></span>
+    <button onclick="forcePushAll()" title="กด sync ทันที" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:14px;padding:2px 6px;color:var(--tx3);border-radius:6px;" id="syncBtn">⟳</button>
   </div>
   <div class="sline"><div class="sline-fill" id="sfill"></div></div>
 
@@ -1214,6 +1215,16 @@ function deleteMomLog(id){
 async function fbGet(p){try{const r=await fetch(fbUrl(p));if(!r.ok)return null;return await r.json();}catch(e){return null;}}
 async function fbSet(p,data){if(cfg.offline)return false;try{const r=await fetch(fbUrl(p),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});return r.ok;}catch(e){return false;}}
 
+
+// Force push all local data to Firebase (fixes cross-device sync)
+async function forcePushAll(){
+  var btn = document.getElementById('syncBtn');
+  if(btn) btn.textContent = '...';
+  await pushCloud();
+  if(btn) btn.textContent = '⟳';
+  showToast('✓ Sync ทุกข้อมูลขึ้น Firebase แล้ว');
+}
+
 async function syncFromCloud(){
   if(cfg.offline||!cfg.dbUrl)return;
   setSS('syncing','กำลัง sync...');
@@ -1227,7 +1238,12 @@ async function syncFromCloud(){
       if(data.doneVax)state.doneVax=data.doneVax;
       if(data.sleepState){state.isSleeping=data.sleepState.on;state.sleepStart=data.sleepState.start;}
       if(data.momNut){state.momLogs=Array.isArray(data.momNut.logs)?data.momNut.logs:[];state.momDate=data.momNut.d||'';}
-      if(data.pumpLogs)state.pumpLogs=Array.isArray(data.pumpLogs)?data.pumpLogs:[];
+      if(data.pumpLogs && Array.isArray(data.pumpLogs) && data.pumpLogs.length>0){
+        state.pumpLogs=data.pumpLogs;
+      } else if(!data.pumpLogs && state.pumpLogs && state.pumpLogs.length>0){
+        // Local has data but Firebase doesn't — push up
+        pushCloud();
+      }
       if(data.vaxAppt)state.vaxAppt=data.vaxAppt;
       // Load photo separately
       try{const pd=await fbGet('photo');if(pd&&pd.data&&pd.data!==state.photo){state.photo=pd.data;renderPhoto();}}catch(e){}
