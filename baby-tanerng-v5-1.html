@@ -1,0 +1,3083 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>{BABY_NICK}</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+body{font-family:'Noto Sans Thai',sans-serif;background:#F0F2F5;color:#1A2233;min-height:100vh;overflow-x:hidden;}
+:root{
+  --bg:#F0F2F5;
+  --card:#FFFFFF;
+  --card2:#F7F9FC;
+  --el:0 2px 12px rgba(0,0,0,0.06),0 1px 3px rgba(0,0,0,0.04);
+  --el-md:0 4px 20px rgba(0,0,0,0.08),0 1px 4px rgba(0,0,0,0.04);
+  --el-lg:0 8px 32px rgba(0,0,0,0.10),0 2px 8px rgba(0,0,0,0.06);
+  --el-in:inset 0 1px 4px rgba(0,0,0,0.06),inset 0 0 0 1.5px #E4E8EE;
+  --blue:#1A6EFF;
+  --blueD:#0050D8;
+  --blueL:#EBF2FF;
+  --blueGlow:rgba(26,110,255,0.18);
+  --sage:#2BAB8E;
+  --sageL:#E4F7F2;
+  --amber:#E08A00;
+  --amberL:#FFF4E0;
+  --red:#E03E3E;
+  --redL:#FFECEC;
+  --tx:#1A2233;
+  --tx2:#4A5568;
+  --tx3:#9AA5B8;
+  --border:#E4E8EE;
+  --radius:18px;
+  --radius-sm:14px;
+  --radius-xs:10px;
+  --radius-pill:100px;
+}
+input,button,select{font-family:'Noto Sans Thai',sans-serif;}
+input:focus,button:focus{outline:none;}
+::-webkit-scrollbar{width:0;}
+
+/* ===== SETUP ===== */
+#setupScreen{position:fixed;inset:0;background:var(--bg);z-index:9999;overflow-y:auto;display:none;}
+#setupScreen.show{display:block;}
+.setup-wrap{max-width:430px;margin:0 auto;padding:32px 20px 60px;}
+.setup-hero{text-align:center;padding:20px 0 32px;}
+.setup-avatar{width:90px;height:90px;border-radius:26px;box-shadow:var(--el-md);background:var(--card);margin:0 auto 20px;display:flex;align-items:center;justify-content:center;}
+.setup-title{font-size:26px;font-weight:900;color:var(--tx);letter-spacing:-0.5px;}
+.setup-sub{font-size:13px;color:var(--tx3);margin-top:8px;line-height:1.8;font-weight:400;}
+.scard{box-shadow:var(--el);border-radius:var(--radius);background:var(--card);padding:22px;margin-bottom:14px;}
+.scard-t{font-size:10px;font-weight:800;color:var(--blue);margin-bottom:16px;text-transform:uppercase;letter-spacing:1px;}
+.sstep{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;}
+.sstep-n{width:26px;height:26px;border-radius:50%;background:var(--blue);color:white;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sstep-t{font-size:13px;line-height:1.8;color:var(--tx);font-weight:400;}
+.sstep-t a{color:var(--blue);font-weight:600;text-decoration:none;}
+.url-ex{background:var(--blueL);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--blue);font-family:monospace;margin:6px 0;word-break:break-all;}
+.sinput{width:100%;padding:13px 18px;border-radius:var(--radius-pill);border:1.5px solid var(--border);font-size:14px;background:var(--card);color:var(--tx);margin-bottom:10px;font-weight:400;transition:border-color 0.2s,box-shadow 0.2s;}
+.sinput:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blueGlow);}
+.sbtn{width:100%;padding:15px;border-radius:var(--radius-pill);border:none;background:var(--blue);color:white;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px var(--blueGlow);letter-spacing:0.2px;transition:all 0.15s;}
+.sbtn:active{transform:scale(0.98);opacity:0.9;}
+.sbtn-sec{width:100%;padding:13px;border-radius:var(--radius-pill);border:1.5px solid var(--border);background:var(--card);color:var(--tx3);font-size:14px;font-weight:500;cursor:pointer;margin-top:8px;transition:all 0.15s;}
+.sbtn-sec:active{background:var(--bg);}
+.snote{font-size:11px;color:var(--tx3);text-align:center;margin-top:10px;line-height:1.7;}
+.sor{text-align:center;color:var(--tx3);font-size:12px;margin:12px 0;letter-spacing:0.5px;}
+
+/* ===== TOAST ===== */
+#toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-12px);
+  background:#1A2233;color:white;padding:10px 22px;border-radius:var(--radius-pill);font-size:13px;
+  opacity:0;transition:all 0.25s;z-index:8000;white-space:nowrap;pointer-events:none;font-weight:500;
+  box-shadow:0 8px 24px rgba(26,34,51,0.2);}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ===== DUP MODAL ===== */
+#dupModal{position:fixed;inset:0;background:rgba(26,34,51,0.25);z-index:7000;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+#dupModal.show{display:flex;}
+.dup-sheet{background:var(--card);border-radius:28px 28px 0 0;padding:28px 24px 44px;width:100%;max-width:430px;box-shadow:0 -4px 32px rgba(26,34,51,0.10);}
+.dup-icon{text-align:center;margin-bottom:10px;}
+.dup-title{font-size:18px;font-weight:800;color:var(--amber);text-align:center;margin-bottom:6px;}
+.dup-msg{font-size:13px;color:var(--tx2);text-align:center;line-height:1.8;margin-bottom:24px;font-weight:400;}
+.dup-row{display:flex;gap:10px;}
+.dup-cancel{flex:1;padding:14px;border-radius:var(--radius-pill);border:1.5px solid var(--border);background:transparent;color:var(--tx3);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+.dup-cancel:active{background:var(--bg);}
+.dup-ok{flex:2;padding:14px;border-radius:var(--radius-pill);border:none;background:var(--blue);color:white;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px var(--blueGlow);transition:all 0.15s;}
+.dup-ok:active{opacity:0.9;transform:scale(0.98);}
+
+/* ===== MAIN ===== */
+#mainApp{display:none;}
+#mainApp.show{display:block;}
+#app{max-width:430px;margin:0 auto;min-height:100vh;background:var(--bg);padding-bottom:88px;}
+
+/* ===== HEADER ===== */
+.hdr{background:var(--card);padding:18px 20px 16px;position:sticky;top:0;z-index:100;position:relative;
+  box-shadow:0 1px 0 var(--border),0 2px 12px rgba(0,0,0,0.04);}
+.hdr-top{display:flex;align-items:flex-start;gap:0;justify-content:space-between;}
+.hdr-left{flex:1;}
+.hdr-avatar-wrap{flex-shrink:0;}
+.hdr-avatar-img{width:40px;height:40px;border-radius:13px;object-fit:cover;box-shadow:var(--el);}
+.hdr-avatar-ph{width:40px;height:40px;border-radius:13px;background:var(--blueL);display:flex;align-items:center;justify-content:center;}
+.hdr-info{flex:1;min-width:0;}
+.hdr-sub{font-size:10px;font-weight:600;color:var(--tx3);letter-spacing:0.6px;text-transform:uppercase;}
+.hdr-name{font-size:16px;font-weight:900;color:var(--tx);letter-spacing:-0.3px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hdr-age{font-size:11px;color:var(--blue);font-weight:600;margin-top:1px;}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.hdr-time-wrap{text-align:right;}
+.hdr-time{font-size:36px;font-weight:900;color:var(--tx);letter-spacing:3px;line-height:1;font-variant-numeric:tabular-nums;}
+.hdr-date{font-size:10px;color:var(--tx3);font-weight:400;}
+.hdr-gear{width:36px;height:36px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--tx3);transition:all 0.15s;flex-shrink:0;}
+.hdr-gear:active{background:var(--bg);border-color:var(--blue);color:var(--blue);}
+.hdr-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);margin-bottom:4px;}
+.hdr-name{font-size:17px;font-weight:800;color:var(--tx);letter-spacing:-0.3px;line-height:1.1;}
+.hdr-age{font-size:12px;color:var(--tx3);margin-top:3px;font-weight:500;}
+.hdr-right{text-align:right;flex-shrink:0;padding-left:12px;display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.hdr-date{font-size:11px;color:var(--tx3);font-weight:500;letter-spacing:0.2px;}
+.hdr-gear{background:none;border:none;padding:6px;cursor:pointer;color:var(--tx3);border-radius:50%;margin-top:2px;}
+.hdr-gear:hover{background:var(--bg);}
+
+/* AI Home Card */
+.ai-home-card{background:linear-gradient(135deg,#1a2744 0%,#1e3a5f 60%,#0d4a3a 100%);border-radius:var(--radius);padding:18px;margin-bottom:12px;position:relative;overflow:hidden;}
+.ai-home-card::before{content:'';position:absolute;top:-40px;right:-40px;width:120px;height:120px;background:radial-gradient(circle,rgba(255,255,255,0.05) 0%,transparent 70%);border-radius:50%;}
+.ai-home-hd{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.ai-home-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--sage),var(--blue));display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ai-home-name{font-size:13px;font-weight:700;color:rgba(255,255,255,0.95);letter-spacing:0.2px;}
+.ai-home-sub{font-size:11px;color:rgba(255,255,255,0.55);margin-top:1px;}
+.ai-home-badge{margin-left:auto;background:rgba(91,155,138,0.3);border:1px solid rgba(91,155,138,0.5);color:#7dd4c0;font-size:9px;font-weight:800;letter-spacing:1px;padding:3px 8px;border-radius:20px;text-transform:uppercase;}
+.ai-home-tip{font-size:13px;color:rgba(255,255,255,0.85);line-height:1.7;margin-bottom:14px;padding:12px;background:rgba(255,255,255,0.06);border-radius:10px;border-left:2px solid rgba(91,155,138,0.6);}
+.ai-home-news-label{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:8px;}
+.ai-home-news-list{display:flex;flex-direction:column;gap:6px;}
+.ai-news-item{font-size:12px;color:rgba(255,255,255,0.7);padding:10px 12px;background:rgba(255,255,255,0.05);border-radius:8px;line-height:1.5;display:flex;gap:8px;align-items:flex-start;cursor:pointer;transition:background 0.15s;}
+.ai-news-item:hover{background:rgba(255,255,255,0.09);}
+.ai-news-dot{width:5px;height:5px;border-radius:50%;background:var(--sage);flex-shrink:0;margin-top:5px;}
+.ai-news-loading{color:rgba(255,255,255,0.35);font-style:italic;}
+
+/* Tip card update */
+.tip-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.tip-lbl{font-size:11px;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;color:var(--blue);}
+.tip-update{font-size:10px;color:var(--tx3);font-weight:500;}
+.tip-source{font-size:10px;color:var(--tx3);margin-top:8px;font-style:italic;}
+.chip:active{border-color:var(--blue);}
+.chip-ico{margin-bottom:2px;}
+.chip-val{font-size:16px;font-weight:900;color:var(--tx);line-height:1;}
+.chip-lbl{font-size:9px;color:var(--tx3);font-weight:600;letter-spacing:0.3px;text-transform:uppercase;}
+
+/* ===== SYNC BAR ===== */
+.sync-bar{background:var(--card);padding:5px 20px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.sdot{width:6px;height:6px;border-radius:50%;background:#CCC;flex-shrink:0;transition:background 0.3s;}
+.sdot.on{background:var(--sage);}
+.sdot.syncing{background:var(--amber);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.slbl{font-size:10px;color:var(--tx3);font-weight:500;}
+.swho{margin-left:auto;font-size:10px;color:var(--tx2);font-weight:700;}
+.sline{height:2px;background:var(--border);}
+.sline-fill{height:100%;width:0%;background:var(--blue);border-radius:1px;transition:width 0.4s ease;}
+.sline-fill.go{animation:sweep 1.2s ease-in-out infinite;}
+@keyframes sweep{0%{width:0%;margin-left:0%;}60%{width:60%;margin-left:20%;}100%{width:0%;margin-left:100%;}}
+
+/* ===== CONTENT ===== */
+.content{padding:14px 16px;}
+.tab-c{display:none;}.tab-c.act{display:block;}
+
+/* ===== CARDS ===== */
+.card{background:var(--card);box-shadow:var(--el);border-radius:var(--radius);padding:18px 20px;margin-bottom:12px;}
+.card-inset{background:var(--bg);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:12px;border:1.5px solid var(--border);}
+.clbl{font-size:10px;font-weight:800;color:var(--tx3);margin-bottom:14px;text-transform:uppercase;letter-spacing:0.8px;}
+
+/* ===== HERO ===== */
+.hero-card{background:var(--card);box-shadow:var(--el-md);border-radius:var(--radius);padding:20px;margin-bottom:12px;position:relative;overflow:hidden;}
+.hero-card::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;
+  background:radial-gradient(circle,rgba(26,110,255,0.08) 0%,transparent 70%);border-radius:50%;pointer-events:none;}
+.hero-top{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.hero-avatar-wrap{position:relative;cursor:pointer;flex-shrink:0;}
+.hero-avatar-wrap input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.hero-avatar-box{width:64px;height:64px;border-radius:20px;background:var(--blueL);box-shadow:var(--el);display:flex;align-items:center;justify-content:center;overflow:hidden;transition:opacity 0.15s;}
+.hero-avatar-box:active{opacity:0.8;}
+.hero-avatar-box img{width:100%;height:100%;object-fit:cover;}
+.avatar-edit-badge{position:absolute;bottom:-4px;right:-4px;width:22px;height:22px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px var(--blueGlow);pointer-events:none;border:2px solid var(--card);}
+.hero-info{flex:1;min-width:0;}
+.hero-nick{font-size:20px;font-weight:900;color:var(--tx);letter-spacing:-0.3px;line-height:1.2;word-break:break-word;}
+.hero-full{font-size:11px;color:var(--tx3);margin-top:2px;font-weight:400;}
+.hero-age{font-size:12px;color:var(--blue);font-weight:700;margin-top:5px;}
+.hero-day-badge{background:var(--blueL);border-radius:var(--radius-sm);padding:10px 14px;text-align:center;flex-shrink:0;}
+.hero-day-n{font-size:28px;font-weight:900;color:var(--blue);line-height:1;letter-spacing:-1px;}
+.hero-day-l{font-size:9px;color:var(--blue);opacity:0.7;font-weight:700;letter-spacing:0.3px;margin-top:2px;text-transform:uppercase;}
+
+/* ===== STAT CHIPS ===== */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.stat-chip{background:var(--bg);border-radius:var(--radius-sm);padding:12px 8px;text-align:center;border:1.5px solid var(--border);}
+.stat-ico{width:32px;height:32px;border-radius:10px;background:var(--card);box-shadow:var(--el);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;}
+.stat-val{font-size:20px;font-weight:900;color:var(--tx);line-height:1;}
+.stat-lbl{font-size:10px;color:var(--tx3);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;}
+.stat-tgt{font-size:9px;color:var(--tx3);margin-top:1px;opacity:0.6;}
+
+/* ===== FEED ALERT ===== */
+.feed-alert{border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:12px;transition:all 0.3s;}
+.fa-ok{background:var(--card);box-shadow:var(--el);}
+.fa-warn{background:var(--amberL);border:1.5px solid rgba(224,138,0,0.2);}
+
+/* ===== QUICK BTNS ===== */
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.qbtn{border:none;border-radius:var(--radius-sm);padding:16px 10px;cursor:pointer;font-weight:700;font-size:14px;display:flex;flex-direction:column;align-items:center;gap:8px;font-family:'Noto Sans Thai',sans-serif;transition:all 0.15s;}
+.qbtn:active{transform:scale(0.95);}
+.qbtn-ico{width:32px;height:32px;display:flex;align-items:center;justify-content:center;}
+.qbtn-feed{background:var(--blue);color:white;box-shadow:0 4px 16px var(--blueGlow);}
+.qbtn-sleep{background:var(--card);color:var(--tx2);box-shadow:var(--el);border:1.5px solid var(--border);}
+.qbtn-sleep.sleeping{background:var(--sage);color:white;box-shadow:0 4px 16px rgba(43,171,142,0.25);border-color:transparent;}
+.qbtn-wet{background:var(--card);color:var(--blue);box-shadow:var(--el);border:1.5px solid var(--blueL);}
+.qbtn-poop{background:var(--card);color:var(--amber);box-shadow:var(--el);border:1.5px solid var(--amberL);}
+
+/* ===== TIP ===== */
+.tip-card{background:var(--blueL);border-radius:var(--radius-sm);padding:16px;margin-bottom:12px;border-left:3px solid var(--blue);}
+.tip-txt{font-size:13.5px;color:var(--tx);line-height:1.8;}
+.tip-lbl{font-size:10px;font-weight:800;color:var(--blue);margin-bottom:6px;letter-spacing:0.8px;text-transform:uppercase;}
+.tip-txt{font-size:13px;color:var(--blueD);line-height:1.8;font-weight:400;}
+
+/* ===== DAILY ===== */
+.daily-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.daily-item:last-child{border:none;}
+.daily-dot{width:5px;height:5px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:6px;opacity:0.4;}
+.daily-txt{font-size:13px;color:var(--tx2);line-height:1.6;font-weight:400;}
+
+/* ===== NAV ===== */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+  background:var(--card);display:flex;padding:10px 8px 22px;
+  box-shadow:0 -1px 0 var(--border),0 -4px 20px rgba(0,0,0,0.05);z-index:100;}
+.nbtn{flex:1;display:flex;flex-direction:column;align-items:center;background:transparent;border:none;cursor:pointer;padding:4px 1px;gap:3px;transition:all 0.15s;min-width:0;}
+.nbtn-ico{width:38px;height:33px;border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.nbtn.act .nbtn-ico{background:var(--blueL);}
+.nlbl{font-size:9px;color:var(--tx3);font-weight:500;white-space:nowrap;}
+.nbtn.act .nlbl{color:var(--blue);font-weight:700;}
+
+/* ===== LOG TABS ===== */
+.ltabs{display:flex;gap:4px;margin-bottom:14px;background:var(--bg);border-radius:var(--radius-sm);padding:4px;border:1.5px solid var(--border);}
+.ltab{flex:1;padding:9px 4px;border-radius:var(--radius-xs);cursor:pointer;font-size:12px;font-weight:600;border:none;background:transparent;color:var(--tx3);transition:all 0.18s;}
+.ltab.act{background:var(--card);color:var(--blue);box-shadow:var(--el);}
+
+/* ===== FORM ===== */
+.fi{width:100%;padding:13px 18px;border-radius:var(--radius-pill);border:1.5px solid var(--border);font-size:14px;background:var(--card);color:var(--tx);margin-bottom:10px;font-weight:400;transition:border-color 0.2s,box-shadow 0.2s;}
+.fi:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blueGlow);}
+.frow{display:flex;gap:8px;margin-bottom:10px;}
+.frow .fi{margin-bottom:0;}
+.fbtn{width:100%;padding:14px;border-radius:var(--radius-pill);border:none;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.15s;}
+.fbtn:active{transform:scale(0.97);opacity:0.9;}
+.fbtn-blue{background:var(--blue);color:white;box-shadow:0 4px 14px var(--blueGlow);}
+.fbtn-sage{background:var(--sage);color:white;box-shadow:0 4px 14px rgba(43,171,142,0.25);}
+.fbtn-amber{background:var(--amber);color:white;box-shadow:0 4px 14px rgba(224,138,0,0.2);}
+.fbtn-neu{background:var(--card);color:var(--tx2);border:1.5px solid var(--border);}
+.fbtn-neu:active{background:var(--bg);}
+
+/* ===== TYPE PILLS ===== */
+.tpills{display:flex;gap:6px;margin-bottom:12px;}
+.tpill{flex:1;padding:10px 6px;border-radius:var(--radius-pill);cursor:pointer;font-size:13px;font-weight:600;border:1.5px solid var(--border);background:var(--card);color:var(--tx3);transition:all 0.15s;text-align:center;}
+.tpill:active{opacity:0.75;}
+.tpill.act{border-color:var(--blue);background:var(--blueL);color:var(--blue);}
+.tpill.act-sage.act{border-color:var(--sage);background:var(--sageL);color:var(--sage);}
+.tpill.act-amber.act{border-color:var(--amber);background:var(--amberL);color:var(--amber);}
+
+/* ===== TIME INPUT ROW ===== */
+.time-row{display:flex;align-items:flex-end;gap:8px;margin-bottom:10px;}
+.time-label{font-size:10px;font-weight:700;color:var(--tx3);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:5px;}
+.time-now-btn{flex-shrink:0;padding:13px 16px;border-radius:var(--radius-pill);border:1.5px solid var(--blue);background:var(--blueL);color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.15s;}
+.time-now-btn:active{background:var(--blue);color:white;}
+
+/* ===== LOG LIST ===== */
+.litem{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.litem:last-child{border:none;}
+.litem-l{display:flex;align-items:center;gap:8px;}
+.litem-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);opacity:0.3;flex-shrink:0;}
+.litem-main{font-size:13px;font-weight:600;color:var(--tx);}
+.litem-sub{font-size:11px;color:var(--tx3);font-weight:400;}
+.ltime{color:var(--tx3);font-size:11px;}
+.empty{text-align:center;color:var(--tx3);padding:24px;font-size:13px;}
+.who-tag{display:inline-block;padding:2px 7px;border-radius:6px;font-size:10px;font-weight:700;margin-left:4px;}
+.who-me{background:var(--blueL);color:var(--blue);}
+.who-partner{background:var(--amberL);color:var(--amber);}
+
+/* ===== SLEEP ===== */
+.sleep-hero{text-align:center;padding:16px 0 20px;}
+.sleep-orb{width:88px;height:88px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;background:var(--bg);border:2px solid var(--border);}
+.sleep-orb.asleep{background:var(--blueL);border-color:var(--blue);animation:breathe 3s ease-in-out infinite;}
+@keyframes breathe{0%,100%{box-shadow:0 0 0 0 var(--blueGlow);}50%{box-shadow:0 0 0 14px transparent;}}
+.sleep-status-txt{font-size:16px;font-weight:700;color:var(--tx);}
+.sleep-dur-box{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:16px;text-align:center;margin-bottom:12px;}
+.sleep-total{font-size:28px;font-weight:900;color:var(--sage);letter-spacing:-0.5px;}
+.sleep-sub{font-size:11px;color:var(--tx3);margin-top:2px;}
+
+/* ===== PROGRESS ===== */
+.prog-wrap{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin:8px 0;}
+.prog-fill{height:100%;border-radius:2px;transition:width 0.5s ease;}
+
+/* ===== DIAPER ===== */
+.d-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.d-chip{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px 8px;text-align:center;}
+.d-chip-ico{width:34px;height:34px;border-radius:10px;background:var(--card);box-shadow:var(--el);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;}
+.d-chip-val{font-size:24px;font-weight:900;line-height:1;}
+.d-chip-lbl{font-size:9px;color:var(--tx3);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;}
+
+/* ===== NUT ===== */
+.mom-row{display:flex;align-items:center;gap:10px;padding:10px 8px;border-radius:var(--radius-xs);cursor:pointer;transition:background 0.15s;}
+.mom-row:active{background:var(--bg);}
+.mom-plus{width:28px;height:28px;border-radius:50%;background:var(--card);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;}
+.mom-plus.hit{background:var(--sage);border-color:var(--sage);}
+.mom-cnt{background:var(--sageL);color:var(--sage);border-radius:20px;padding:2px 8px;font-size:11px;font-weight:700;border:1px solid rgba(43,171,142,0.2);}
+.food-tag{display:inline-block;background:var(--sageL);color:var(--sage);border:1px solid rgba(43,171,142,0.2);padding:5px 12px;border-radius:var(--radius-pill);font-size:12px;font-weight:600;margin:3px;transition:all 0.15s;}
+.food-tag:active{background:var(--sage);color:white;}
+
+/* ===== VACCINE ===== */
+.vcard{background:var(--card);box-shadow:var(--el);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:10px;border-left:3px solid var(--border);transition:all 0.2s;}
+.vcard.done{border-left-color:var(--sage);}
+.vcard.overdue{border-left-color:var(--red);}
+.vbadge{display:inline-block;padding:3px 9px;border-radius:var(--radius-pill);font-size:11px;font-weight:700;}
+.vtoggle{font-size:11px;padding:6px 14px;border-radius:var(--radius-pill);cursor:pointer;border:1.5px solid var(--border);font-family:'Noto Sans Thai',sans-serif;font-weight:600;background:var(--card);color:var(--tx2);transition:all 0.15s;}
+.vtoggle:active{background:var(--bg);}
+
+/* ===== WARN ===== */
+.wsec{background:var(--card);box-shadow:var(--el);border-radius:var(--radius-sm);padding:16px 18px;margin-bottom:10px;border-left:3px solid;}
+.wtitle{font-size:15px;font-weight:800;margin-bottom:10px;}
+.witem{display:flex;gap:9px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.6;font-weight:400;}
+.witem:last-child{border:none;}
+.wdot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+
+/* ===== TIMER ===== */
+.timer-side{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:16px 10px;text-align:center;}
+.timer-display{font-size:34px;font-weight:900;letter-spacing:-1px;line-height:1;color:var(--tx);}
+.sw-ring{transition:stroke-dashoffset 0.1s linear;}
+
+/* ===== SETTINGS ===== */
+.settings-btn{width:100%;padding:15px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--card);color:var(--tx2);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.15s;}
+.settings-btn:active{background:var(--bg);}
+.cfg-display{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-xs);padding:10px 14px;margin-top:8px;font-size:11px;color:var(--tx2);font-family:monospace;word-break:break-all;line-height:1.9;}
+
+/* ===== HISTORY TAB ===== */
+.hist-date-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.hist-date-btn{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--tx2);font-size:18px;transition:all .15s;}
+.hist-date-btn:active{background:var(--bg);}
+.hist-date-btn:disabled{opacity:.3;cursor:default;}
+.hist-date-lbl{text-align:center;}
+.hist-date-main{font-size:16px;font-weight:800;color:var(--tx);letter-spacing:-.3px;}
+.hist-date-sub{font-size:11px;color:var(--tx3);margin-top:1px;}
+.hsec{background:var(--card);box-shadow:var(--el);border-radius:var(--radius);padding:18px 20px;margin-bottom:12px;}
+.hsec-hd{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.hsec-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.hsec-title{font-size:14px;font-weight:800;color:var(--tx);}
+.hsec-badge{margin-left:auto;font-size:12px;font-weight:700;padding:4px 10px;border-radius:var(--radius-pill);}
+.badge-ok{background:var(--sageL);color:var(--sage);}
+.badge-warn{background:var(--amberL);color:var(--amber);}
+.badge-bad{background:var(--redL);color:var(--red);}
+.hbar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.hbar-lbl{font-size:11px;color:var(--tx3);width:60px;flex-shrink:0;}
+.hbar-track{flex:1;height:7px;background:var(--bg);border-radius:4px;border:1px solid var(--border);overflow:hidden;}
+.hbar-fill{height:100%;border-radius:4px;transition:width .6s ease;}
+.hbar-val{font-size:12px;font-weight:700;color:var(--tx2);width:44px;text-align:right;flex-shrink:0;}
+.hstat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.hstat{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px 8px;text-align:center;}
+.hstat-v{font-size:22px;font-weight:900;color:var(--tx);line-height:1;}
+.hstat-l{font-size:10px;color:var(--tx3);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
+.hstat-t{font-size:9px;color:var(--tx3);margin-top:1px;opacity:.6;}
+.hlog-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.hlog-row:last-child{border:none;}
+.hlog-t{color:var(--tx3);font-size:11px;font-weight:500;flex-shrink:0;margin-right:8px;}
+.hlog-d{color:var(--tx);font-weight:500;flex:1;}
+.hlog-w{font-size:11px;font-weight:700;}
+.ai-box{background:var(--blueL);border:1.5px solid rgba(26,110,255,.15);border-radius:var(--radius);padding:18px 20px;margin-bottom:20px;}
+.ai-hd{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.ai-avatar{width:30px;height:30px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ai-name{font-size:12px;font-weight:800;color:var(--blue);}
+.ai-sub{font-size:10px;color:var(--tx3);margin-top:1px;}
+.ai-body{font-size:13.5px;color:var(--blueD);line-height:1.9;font-weight:400;}
+.ai-loading{display:flex;align-items:center;gap:8px;color:var(--blue);font-size:13px;}
+.ai-dots span{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--blue);animation:dotpulse 1.2s ease-in-out infinite;margin:0 2px;}
+.ai-dots span:nth-child(2){animation-delay:.2s;}
+.ai-dots span:nth-child(3){animation-delay:.4s;}
+@keyframes dotpulse{0%,80%,100%{transform:scale(0);opacity:.4;}40%{transform:scale(1);opacity:1;}}
+.no-data-day{text-align:center;padding:40px 20px;color:var(--tx3);}
+.no-data-day p{font-size:14px;margin-top:10px;}
+.range-select{display:flex;gap:6px;margin-bottom:16px;}
+.rtab{flex:1;padding:9px 4px;border-radius:var(--radius-pill);cursor:pointer;font-size:12px;font-weight:700;border:1.5px solid var(--border);background:var(--card);color:var(--tx3);transition:all .15s;text-align:center;}
+.rtab.act{border-color:var(--blue);background:var(--blueL);color:var(--blue);}
+
+
+.del-btn{flex-shrink:0;width:28px;height:28px;border-radius:50%;border:none;background:transparent;color:var(--tx3);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-left:6px;}
+.del-btn:active{background:var(--redL);color:var(--red);}
+</style>
+</head>
+<body>
+
+<!-- SVG ICON DEFS -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <symbol id="i-bottle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 3h6M8 3c0 0-1 1.5-1 3v12a2 2 0 002 2h6a2 2 0 002-2V6c0-1.5-1-3-1-3"/>
+      <path d="M8 10h8"/><circle cx="12" cy="14.5" r="1.5" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+    </symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="5" r="2"/><path d="M12 7v10"/><path d="M9 17c0 1.66 1.34 3 3 3s3-1.34 3-3"/><path d="M8 12h8"/>
+    </symbol>
+    <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+    </symbol>
+    <symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+    </symbol>
+    <symbol id="i-timer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="13" r="8"/><polyline points="12 9 12 13 14.5 15.5"/>
+      <path d="M9 3h6M12 3v2M16.5 4.5l1.5 1.5"/>
+    </symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 22s4-8 10-10c4-1.5 8-1 10 2-2 4-6 7-10 7-2 0-4-1-5-3"/><path d="M6 18c1-4 5-7 9-8"/>
+    </symbol>
+    <symbol id="i-syringe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 2l4 4-4 4"/><path d="M6 12l6-6"/><path d="M8 8l8 8"/><path d="M2 22l6-6"/>
+      <circle cx="15" cy="9" r="1" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+    </symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+    </symbol>
+    <symbol id="i-baby" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01"/><path d="M9.5 15a3.5 3.5 0 005 0"/>
+      <path d="M12 3c0 0-1 2-3 2s-2-2-2-2"/>
+    </symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/>
+    </symbol>
+    <symbol id="i-poop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2c1 0 2 1 2 2 0 .5-.2 1-.5 1.4C15.2 6 17 7.8 17 10c0 .7-.2 1.4-.5 2H18a3 3 0 010 6H6a3 3 0 010-6h1.5C7.2 11.4 7 10.7 7 10c0-2.2 1.8-4 4-4-.3-.4-.5-.9-.5-1.4C10.5 3 11 2 12 2z"/>
+    </symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+      <circle cx="12" cy="13" r="4"/>
+    </symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></symbol>
+  </defs>
+</svg>
+
+<div id="toast"></div>
+<div id="dupModal">
+  <div class="dup-sheet">
+    <div class="dup-icon"><svg width="36" height="36" style="color:var(--amber)"><use href="#i-shield"/></svg></div>
+    <div class="dup-title">อาจจะบันทึกซ้ำ</div>
+    <div class="dup-msg" id="dupMsg"></div>
+    <div class="dup-row">
+      <button class="dup-cancel" onclick="dupCancel()">ยกเลิก</button>
+      <button class="dup-ok" onclick="dupConfirm()">บันทึกได้เลย</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP -->
+<div <div id="authScreen" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);padding:32px 20px;">
+  <div style="width:100%;max-width:400px;">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="font-size:48px;margin-bottom:12px;">🌙</div>
+      <div style="font-family:'Noto Sans Thai',sans-serif;font-size:24px;font-weight:800;color:var(--tx);margin-bottom:6px;">Da'Neng Care</div>
+      <div style="font-size:13px;color:var(--tx3);">A magical journal for your baby's first year</div>
+    </div>
+    <!-- STEP 1: Baby Info -->
+    <div id="step1" style="background:var(--card);border-radius:20px;padding:24px;box-shadow:0 4px 24px rgba(0,0,0,0.08);margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">Step 1 — About Your Baby</div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Baby Nickname *</div>
+        <input id="setupNick" type="text" placeholder="e.g. Ta-Neng" style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Full Name (optional)</div>
+        <input id="setupFullname" type="text" placeholder="Legal name" style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:12px;">
+        <div style="flex:1.2;">
+          <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Date of Birth *</div>
+          <input id="setupDOB" type="date" style="width:100%;padding:11px 10px;border:1.5px solid var(--border);border-radius:11px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Time of Birth</div>
+          <input id="setupTOB" type="time" style="width:100%;padding:11px 10px;border:1.5px solid var(--border);border-radius:11px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:12px;">
+        <div style="flex:1;">
+          <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Gender</div>
+          <select id="setupGender" style="width:100%;padding:11px 10px;border:1.5px solid var(--border);border-radius:11px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+            <option value="male">👦 Boy</option>
+            <option value="female">👧 Girl</option>
+          </select>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Birth Weight (kg)</div>
+          <input id="setupBW" type="number" placeholder="3.20" step="0.01" style="width:100%;padding:11px 10px;border:1.5px solid var(--border);border-radius:11px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+        </div>
+      </div>
+      <div style="margin-bottom:0;">
+        <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Your name (parent/caregiver)</div>
+        <input id="setupWho" type="text" placeholder="e.g. Dad, Ton, Mom" style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+      </div>
+    </div>
+    <!-- STEP 2: Sync -->
+    <div id="step2" style="background:var(--card);border-radius:20px;padding:24px;box-shadow:0 4px 24px rgba(0,0,0,0.08);margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">Step 2 — Family Sync (Optional)</div>
+      <div style="background:var(--blueL);border-radius:12px;padding:12px;font-size:12px;color:var(--blueD);line-height:1.6;margin-bottom:14px;">
+        📱 <b>Skip this step</b> to use offline on one device only.<br>
+        🔄 Fill in Firebase URL to sync between Dad & Mom's phones.
+      </div>
+      <label style="display:flex;align-items:center;gap:10px;margin-bottom:14px;cursor:pointer;">
+        <input id="setupOffline" type="checkbox" onchange="toggleSyncFields()" style="width:18px;height:18px;accent-color:var(--sage);">
+        <span style="font-size:13px;font-weight:600;color:var(--tx);">Use offline (single device, no sync)</span>
+      </label>
+      <div id="syncFields">
+        <div style="margin-bottom:10px;">
+          <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Firebase Database URL</div>
+          <input id="setupUrl" type="url" placeholder="https://your-project.firebaseio.com" style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;font-size:12px;font-family:monospace;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Family PIN (4–8 digits, share with family)</div>
+          <input id="setupPin" type="text" placeholder="e.g. 1234" maxlength="8" style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;font-size:14px;font-family:monospace;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+        </div>
+      </div>
+    </div>
+    <!-- Privacy consent -->
+    <div style="background:var(--amberL);border-radius:12px;padding:12px;margin-bottom:16px;font-size:11px;color:var(--tx2);line-height:1.7;">
+      <b>Data & Privacy:</b> All baby data is stored only on YOUR Firebase database or this device. Da'Neng Care does not collect or access your personal data. By continuing you agree to our <span style="color:var(--blue);cursor:pointer;text-decoration:underline;" onclick="void(0)">Privacy Policy</span>.
+    </div>
+    <button onclick="doSetup()" style="width:100%;background:var(--sage);color:white;border:none;border-radius:14px;padding:15px;font-size:16px;font-weight:700;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;">Begin the Story 🌙</button>
+  </div>
+</div>
+</div>
+
+<!-- MAIN -->
+<div id="mainApp">
+<div id="app">
+
+  <div class="hdr">
+    <div class="hdr-top">
+      <div class="hdr-left">
+        <div class="hdr-label">Baby Care</div>
+        <div class="hdr-name">{BABY_NICK}</div>
+        <div class="hdr-age" id="hAge">อายุ ...</div>
+      </div>
+      <div class="hdr-right">
+        <div class="hdr-time" id="hTime">--:--</div>
+        <div class="hdr-date" id="hDate">...</div>
+        <button class="hdr-gear" onclick="openSettings()">
+          <svg width="16" height="16"><use href="#i-gear"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sync-bar">
+    <div class="sdot" id="sdot"></div>
+    <span class="slbl" id="slbl">กำลังเชื่อมต่อ...</span>
+    <span class="swho" id="swho"></span>
+    <button onclick="forcePushAll()" title="กด sync ทันที" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:14px;padding:2px 6px;color:var(--tx3);border-radius:6px;" id="syncBtn">⟳</button>
+  </div>
+  <div class="sline"><div class="sline-fill" id="sfill"></div></div>
+
+  <div class="content">
+
+    <!-- HOME -->
+    <div id="tab-home" class="tab-c act">
+
+      <!-- 1. บันทึกด่วน -->
+      <div class="card quick-card">
+        <div class="clbl">บันทึกด่วน</div>
+        <div class="quick-grid">
+          <button class="qbtn qbtn-feed" onclick="goTo('log','feed')">
+            <div class="qbtn-ico"><svg width="24" height="24"><use href="#i-bottle"/></svg></div>ให้นม
+          </button>
+          <button class="qbtn qbtn-sleep" id="qSleepBtn" onclick="quickSleep()">
+            <div class="qbtn-ico"><svg width="24" height="24"><use href="#i-moon"/></svg></div>นอนแล้ว
+          </button>
+          <button class="qbtn qbtn-wet" onclick="qDiaper('wet')">
+            <div class="qbtn-ico"><svg width="24" height="24"><use href="#i-drop"/></svg></div>เปียก
+          </button>
+          <button class="qbtn qbtn-poop" onclick="qDiaper('poop')">
+            <div class="qbtn-ico"><svg width="24" height="24"><use href="#i-poop"/></svg></div>ถ่าย
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. มื้อล่าสุด -->
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <div id="feedAlert" style="display:none;flex:1;" class="feed-alert fa-ok">
+          <div style="font-size:10px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">มื้อล่าสุด</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div id="faL"></div><div id="faR" style="text-align:right;"></div>
+          </div>
+        </div>
+        <div id="pumpSummaryCard" style="display:none;flex-shrink:0;background:var(--sageL);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--sage);min-width:100px;text-align:center;">
+          <div style="font-size:10px;font-weight:800;color:var(--sage);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">🧡 ปั๊มนม</div>
+          <div id="pumpSummaryOz" style="font-size:22px;font-weight:900;color:var(--sage);letter-spacing:-1px;line-height:1.1;">0</div>
+          <div style="font-size:10px;color:var(--sage);font-weight:600;">oz วันนี้</div>
+          <div id="pumpSummaryCount" style="font-size:10px;color:var(--tx3);margin-top:2px;">0 ครั้ง</div>
+        </div>
+      </div>
+
+      <!-- 3. โปรไฟล์ลูก -->
+      <div class="hero-card">
+        <div class="hero-top">
+          <label class="hero-avatar-wrap" title="กดเพื่อเปลี่ยนรูป">
+            <div class="hero-avatar-box" id="heroAvatarBox">
+              <svg width="30" height="30" style="color:var(--blue)"><use href="#i-baby"/></svg>
+            </div>
+            <div class="avatar-edit-badge">
+              <svg width="10" height="10" style="color:white"><use href="#i-camera"/></svg>
+            </div>
+            <input type="file" accept="image/*" onchange="uploadPhoto(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
+          </label>
+          <div class="hero-info">
+            <div class="hero-nick">{BABY_NICK}</div>
+            <div class="hero-full">ธราพิชญ์ สารีคำ</div>
+            <div class="hero-age" id="homeAge">อายุ ...</div>
+          </div>
+          <div class="hero-day-badge">
+            <div class="hero-day-n" id="homeDayN">1</div>
+            <div class="hero-day-l">วันที่ของชีวิต</div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-chip">
+            <div class="stat-ico"><svg width="18" height="18" style="color:var(--blue)"><use href="#i-bottle"/></svg></div>
+            <div class="stat-val" id="stF">0</div><div class="stat-lbl">มื้อนม</div><div class="stat-tgt">เป้า 8–12</div>
+          </div>
+          <div class="stat-chip">
+            <div class="stat-ico"><svg width="18" height="18" style="color:var(--sage)"><use href="#i-moon"/></svg></div>
+            <div class="stat-val" id="stS">0h</div><div class="stat-lbl">ชม.นอน</div><div class="stat-tgt">เป้า 16–18h</div>
+          </div>
+          <div class="stat-chip">
+            <div class="stat-ico"><svg width="18" height="18" style="color:var(--amber)"><use href="#i-pin"/></svg></div>
+            <div class="stat-val" id="stD">0</div><div class="stat-lbl">ผ้าอ้อม</div><div class="stat-tgt">เป้า 6+</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. ผู้ช่วยส่วนตัว (greeting + tip + ข่าววงการแพทย์เด็ก) -->
+      <div class="ai-home-card" id="aiHomeCard">
+        <div class="ai-home-hd">
+          <div class="ai-home-avatar">
+            <svg width="16" height="16" style="color:white"><use href="#i-spark"/></svg>
+          </div>
+          <div>
+            <div class="ai-home-name">ผู้ช่วยส่วนตัว</div>
+            <div class="ai-home-sub" id="aiHomeGreeting">สวัสดีครับ คุณพ่อ</div>
+          </div>
+          <div class="ai-home-badge" id="aiHomeBadge">Live</div>
+        </div>
+        <div class="ai-home-body" id="aiHomeBody">
+          <div class="ai-home-tip" id="aiHomeTip">กำลังโหลดข้อมูล...</div>
+          <div class="ai-home-news-label">ข่าวสารวงการแพทย์เด็ก</div>
+          <div id="aiHomeNews" class="ai-home-news-list">
+            <div class="ai-news-item ai-news-loading">กำลังค้นหาข่าวล่าสุด...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. เคล็ดลับวันนี้ -->
+      <div class="tip-card">
+        <div class="tip-header">
+          <div class="tip-lbl">เคล็ดลับวันนี้</div>
+          <div class="tip-update" id="tipUpdateLabel">อัปเดตทุก 4 ชั่วโมง</div>
+        </div>
+        <div class="tip-txt" id="dailyTip">...</div>
+        <div class="tip-source" id="tipSource"></div>
+      </div>
+
+      <!-- 6. การดูแลประจำวัน -->
+      <div class="card">
+        <div class="clbl">การดูแลประจำวัน</div>
+        <div class="daily-item"><div class="daily-dot"></div><div class="daily-txt">นอนหงาย บนที่นอนแข็ง ห้ามใช้หมอนนุ่ม</div></div>
+        <div class="daily-item"><div class="daily-dot"></div><div class="daily-txt">ล้างมือก่อนสัมผัสลูกทุกครั้ง</div></div>
+        <div class="daily-item"><div class="daily-dot"></div><div class="daily-txt">ห้องนอนอุณหภูมิ 24–26°C</div></div>
+        <div class="daily-item"><div class="daily-dot"></div><div class="daily-txt">เช็ดทำความสะอาดตาจากในออกนอก</div></div>
+        <div class="daily-item"><div class="daily-dot"></div><div class="daily-txt">ดูแลสะดือให้แห้งสะอาด ไม่ต้องปิดผ้ากอซ</div></div>
+        <div class="daily-item"><div class="daily-dot"></div><div class="daily-txt">อาบน้ำอุ่น 37–38°C ไม่เกิน 10 นาที</div></div>
+      </div>
+    </div>
+
+    <!-- LOG -->
+    <div id="tab-log" class="tab-c">
+      <div class="ltabs">
+        <button class="ltab act" id="lt-feed" onclick="setLT('feed')">นม</button>
+        <button class="ltab" id="lt-sleep" onclick="setLT('sleep')">นอน</button>
+        <button class="ltab" id="lt-diaper" onclick="setLT('diaper')">ผ้าอ้อม</button>
+        <button class="ltab" id="lt-weight" onclick="setLT('weight')">เติบโต</button>
+      </div>
+
+      <div id="ls-feed">
+        <div class="card">
+          <div class="clbl">บันทึกมื้อนม</div>
+          <div class="tpills">
+            <div class="tpill act" id="ft-breast" onclick="setFT('breast')">นมแม่</div>
+            <div class="tpill" id="ft-formula" onclick="setFT('formula')">นมสูตร</div>
+          </div>
+          <div id="brF">
+            <div class="tpills">
+              <div class="tpill act" id="fs-L" onclick="setFS('L')">ซ้าย</div>
+              <div class="tpill" id="fs-R" onclick="setFS('R')">ขวา</div>
+              <div class="tpill" id="fs-LR" onclick="setFS('LR')">ทั้งสอง</div>
+            </div>
+            <input class="fi" type="number" id="fDur" placeholder="ระยะเวลา (นาที)">
+          </div>
+          <div id="foF" style="display:none;">
+            <input class="fi" type="number" id="fAmt" placeholder="ปริมาณ (มล.)">
+          </div>
+          <input class="fi" type="text" id="fNote" placeholder="หมายเหตุ (ไม่บังคับ)">
+          <div class="time-row">
+            <div style="flex:1;">
+              <div class="time-label">เวลาที่ให้นม</div>
+              <input class="fi" type="time" id="fTime" style="margin-bottom:0;font-size:15px;font-weight:600;">
+            </div>
+            <button class="time-now-btn" onclick="setFTimeNow()">ตอนนี้</button>
+          </div>
+          <button class="fbtn fbtn-blue" onclick="addFeeding()">บันทึกมื้อนม</button>
+        </div>
+        <div class="card">
+          <div class="clbl" id="feedTodayLbl">วันนี้ — 0 มื้อ</div>
+          <div id="feedList"><div class="empty">ยังไม่มีการบันทึก</div></div>
+        </div>
+      </div>
+
+      <div id="ls-sleep" style="display:none;">
+        <div class="card">
+          <div class="sleep-hero">
+            <div class="sleep-orb awake" id="slpOrb">
+              <svg width="40" height="40" style="color:var(--tx3)" id="slpOrbIco"><use href="#i-moon"/></svg>
+            </div>
+            <div class="sleep-status-txt" id="slpTxt">ตื่นอยู่</div>
+          </div>
+
+          <!-- Mode toggle -->
+          <div class="tpills" style="margin-bottom:16px;">
+            <div class="tpill act" id="slpM-live" onclick="setSlpMode('live')">⏱ จับเวลาแบบ live</div>
+            <div class="tpill" id="slpM-range" onclick="setSlpMode('range')">📋 ระบุช่วงเวลา</div>
+          </div>
+
+          <!-- LIVE MODE -->
+          <div id="slpLivePanel">
+            <div class="time-row">
+              <div style="flex:1;">
+                <div class="time-label" id="slpTimeLabel">เวลาเริ่มนอน</div>
+                <input class="fi" type="time" id="slpTime" style="margin-bottom:0;font-size:15px;font-weight:600;">
+              </div>
+              <button class="time-now-btn" onclick="setSlpTimeNow()">ตอนนี้</button>
+            </div>
+            <button class="fbtn fbtn-blue" id="slpBtn" onclick="toggleSleep()" style="margin-top:4px;">บันทึกว่านอนแล้ว</button>
+          </div>
+
+          <!-- RANGE MODE -->
+          <div id="slpRangePanel" style="display:none;">
+            <div class="frow">
+              <div style="flex:1;">
+                <div class="time-label">เวลาเริ่มนอน</div>
+                <input class="fi" type="time" id="slpStart" style="margin-bottom:0;font-size:15px;font-weight:600;" oninput="updateRangeDur()">
+              </div>
+              <button class="time-now-btn" onclick="document.getElementById('slpStart').value=getNowStr()">ตอนนี้</button>
+            </div>
+            <div style="height:8px;"></div>
+            <div class="frow">
+              <div style="flex:1;">
+                <div class="time-label">เวลาตื่น</div>
+                <input class="fi" type="time" id="slpEnd" style="margin-bottom:0;font-size:15px;font-weight:600;" oninput="updateRangeDur()">
+              </div>
+              <button class="time-now-btn" onclick="document.getElementById('slpEnd').value=getNowStr()">ตอนนี้</button>
+            </div>
+            <div id="slpRangeDur" style="text-align:center;font-size:13px;color:var(--tx3);margin:8px 0 12px;min-height:20px;"></div>
+            <button class="fbtn fbtn-blue" onclick="addSleepRange()">บันทึกช่วงการนอน</button>
+          </div>
+          <div class="sleep-dur-box">
+            <div style="font-size:10px;color:var(--tx3);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:4px;">นอนวันนี้รวม</div>
+            <div class="sleep-total" id="slpTotal">0 ชม. 0 นาที</div>
+            <div class="sleep-sub">เป้าหมาย 16–18 ชม./วัน</div>
+            <div class="prog-wrap"><div class="prog-fill" id="slpProg" style="background:var(--sage);width:0%;"></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="clbl">บันทึกวันนี้</div>
+          <div id="sleepList"><div class="empty">ยังไม่มีการบันทึก</div></div>
+        </div>
+      </div>
+
+      <div id="ls-diaper" style="display:none;">
+        <div class="card">
+          <div class="clbl">บันทึกผ้าอ้อม</div>
+          <div class="tpills">
+            <div class="tpill act act-amber" id="dt-wet" onclick="setDT('wet')">เปียก</div>
+            <div class="tpill" id="dt-poop" onclick="setDT('poop')">ถ่าย</div>
+            <div class="tpill" id="dt-both" onclick="setDT('both')">ทั้งสอง</div>
+          </div>
+          <div class="time-row">
+            <div style="flex:1;">
+              <div class="time-label">เวลา</div>
+              <input class="fi" type="time" id="dTime" style="margin-bottom:0;font-size:15px;font-weight:600;">
+            </div>
+            <button class="time-now-btn" onclick="setDTimeNow()">ตอนนี้</button>
+          </div>
+          <button class="fbtn fbtn-amber" onclick="addDiaper()">บันทึกผ้าอ้อม</button>
+        </div>
+        <div class="d-chips">
+          <div class="d-chip">
+            <div class="d-chip-ico"><svg width="20" height="20" style="color:var(--blue)"><use href="#i-drop"/></svg></div>
+            <div class="d-chip-val" id="dW" style="color:var(--blue);">0</div>
+            <div class="d-chip-lbl">เปียก · ≥6</div>
+          </div>
+          <div class="d-chip">
+            <div class="d-chip-ico"><svg width="20" height="20" style="color:var(--amber)"><use href="#i-poop"/></svg></div>
+            <div class="d-chip-val" id="dP" style="color:var(--amber);">0</div>
+            <div class="d-chip-lbl">ถ่าย · 3–4</div>
+          </div>
+          <div class="d-chip">
+            <div class="d-chip-ico"><svg width="20" height="20" style="color:var(--tx3)"><use href="#i-pin"/></svg></div>
+            <div class="d-chip-val" id="dT" style="color:var(--tx2);">0</div>
+            <div class="d-chip-lbl">รวม · ≥8</div>
+          </div>
+        </div>
+        <div class="card"><div id="diaperList"><div class="empty">ยังไม่มีการบันทึก</div></div></div>
+      </div>
+
+      <div id="ls-weight" style="display:none;">
+        <div class="card">
+          <div class="clbl">น้ำหนัก / ส่วนสูง</div>
+          <div class="frow">
+            <input class="fi" type="number" step="0.01" id="wIn" placeholder="น้ำหนัก (กก.)">
+            <input class="fi" type="number" step="0.1" id="hIn" placeholder="ส่วนสูง (ซม.)">
+          </div>
+          <button class="fbtn fbtn-blue" onclick="addWeight()">บันทึก</button>
+        </div>
+        <div class="card">
+          <div class="clbl">ประวัติการเติบโต</div>
+          <div id="weightList"><div class="empty">ยังไม่มีการบันทึก</div></div>
+          <div style="background:var(--bg);box-shadow:var(--neu-in-sm);border-radius:var(--radius-xs);padding:10px 12px;font-size:12px;color:var(--blue);margin-top:10px;">ปกติ: เพิ่ม 150–200 กรัม/สัปดาห์ในเดือนแรก</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIMER -->
+    <div id="tab-timer" class="tab-c">
+      <div class="card">
+        <div class="clbl">จับเวลาให้นม</div>
+        <div style="font-size:11px;color:var(--tx3);margin-bottom:14px;font-weight:400;">กดเริ่ม → กดหยุด → บันทึกเป็นมื้อนม</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+          <div class="timer-side">
+            <div style="font-size:10px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">ซ้าย</div>
+            <div class="timer-display" id="timerL">00:00</div>
+            <button onclick="toggleTimer('L')" id="timerBtnL" class="fbtn fbtn-blue" style="margin-top:10px;padding:10px;font-size:13px;">เริ่ม</button>
+          </div>
+          <div class="timer-side">
+            <div style="font-size:10px;font-weight:800;color:var(--sage);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">ขวา</div>
+            <div class="timer-display" id="timerR">00:00</div>
+            <button onclick="toggleTimer('R')" id="timerBtnR" class="fbtn fbtn-sage" style="margin-top:10px;padding:10px;font-size:13px;">เริ่ม</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="resetTimers()" class="fbtn fbtn-neu" style="flex:1;font-size:13px;">รีเซ็ต</button>
+          <button onclick="saveTimerFeeding()" class="fbtn fbtn-blue" style="flex:2;">บันทึกเป็นมื้อนม</button>
+        </div>
+      </div>
+
+      <div class="card" style="text-align:center;">
+        <div class="clbl" style="text-align:left;">จับเวลาทั่วไป</div>
+        <div style="position:relative;width:180px;height:180px;margin:0 auto 20px;">
+          <svg viewBox="0 0 180 180" width="180" height="180" style="position:absolute;top:0;left:0;transform:rotate(-90deg);">
+            <circle cx="90" cy="90" r="76" fill="none" stroke="rgba(196,201,208,0.4)" stroke-width="8"/>
+            <circle cx="90" cy="90" r="76" fill="none" stroke="var(--blue)" stroke-width="8"
+              stroke-dasharray="477" id="swCircle" stroke-dashoffset="477"
+              stroke-linecap="round" class="sw-ring"/>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <div style="font-size:36px;font-weight:900;color:var(--tx);letter-spacing:-1.5px;line-height:1;" id="swDisplay">00:00</div>
+            <div style="font-size:13px;color:var(--tx3);margin-top:4px;font-weight:400;" id="swMs">.00</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:center;align-items:center;">
+          <button onclick="swLap()" style="background:var(--bg);box-shadow:var(--neu-out-sm);border:none;border-radius:50%;width:52px;height:52px;font-size:11px;font-weight:700;color:var(--tx3);cursor:pointer;transition:all 0.15s;">Lap</button>
+          <button onclick="toggleSW()" id="swBtn" style="background:var(--blue);border:none;border-radius:50%;width:72px;height:72px;font-size:13px;font-weight:700;color:white;cursor:pointer;box-shadow:4px 4px 14px var(--blueGlow),-3px -3px 8px rgba(255,255,255,0.5);transition:all 0.15s;font-family:'Noto Sans Thai',sans-serif;">เริ่ม</button>
+          <button onclick="resetSW()" style="background:var(--bg);box-shadow:var(--neu-out-sm);border:none;border-radius:50%;width:52px;height:52px;font-size:11px;font-weight:700;color:var(--tx3);cursor:pointer;transition:all 0.15s;">Reset</button>
+        </div>
+        <div id="lapList" style="margin-top:14px;text-align:left;max-height:120px;overflow-y:auto;"></div>
+      </div>
+    </div>
+
+    <!-- NUTRITION -->
+    <div id="tab-nutrition" class="tab-c">
+      <div class="card" style="margin-bottom:12px;border-left:3px solid var(--sage);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div>
+            <div class="clbl" style="margin-bottom:2px;">🧡 ปั๊มนม</div>
+            <div style="font-size:11px;color:var(--tx3);">บันทึกปริมาณนมแม่ที่ปั๊มได้</div>
+          </div>
+          <div style="text-align:right;">
+            <div id="pumpTotalToday" style="font-size:26px;font-weight:900;color:var(--sage);letter-spacing:-1px;line-height:1;">0<span style="font-size:13px;font-weight:600;margin-left:1px;">oz</span></div>
+            <div id="pumpTotalMlToday" style="font-size:10px;color:var(--tx3);">0 ml · รวมวันนี้</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <div style="flex:1.2;">
+            <div style="font-size:10px;color:var(--tx3);margin-bottom:4px;font-weight:600;">วันที่</div>
+            <input type="date" id="pumpDateIn" style="width:100%;padding:9px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx);outline:none;box-sizing:border-box;">
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:10px;color:var(--tx3);margin-bottom:4px;font-weight:600;">เวลา</div>
+            <input type="time" id="pumpTimeIn" style="width:100%;padding:9px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx);outline:none;box-sizing:border-box;">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;align-items:flex-end;">
+          <div style="flex:1;">
+            <div style="font-size:10px;color:var(--tx3);margin-bottom:4px;font-weight:600;">ปริมาณ (oz)</div>
+            <input type="number" id="pumpAmtIn" placeholder="0.0" min="0" max="50" step="0.5" style="width:100%;padding:9px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx);outline:none;box-sizing:border-box;">
+          </div>
+          <button onclick="addPumpLog()" style="background:var(--sage);color:white;border:none;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;white-space:nowrap;flex-shrink:0;align-self:flex-end;">+ บันทึก</button>
+        </div>
+        <div id="pumpStatsBar" style="display:none;background:var(--sageL);border-radius:10px;padding:10px 14px;margin-bottom:10px;gap:16px;flex-wrap:wrap;">
+          <div style="text-align:center;flex:1;"><div id="pumpStatCount" style="font-size:20px;font-weight:800;color:var(--sage);">0</div><div style="font-size:10px;color:var(--tx3);">ครั้ง</div></div>
+          <div style="text-align:center;flex:1;"><div id="pumpStatAvg" style="font-size:20px;font-weight:800;color:var(--sage);">—</div><div style="font-size:10px;color:var(--tx3);">oz เฉลี่ย</div></div>
+          <div style="text-align:center;flex:1;"><div id="pumpStatMl" style="font-size:20px;font-weight:800;color:var(--tx3);">0</div><div style="font-size:10px;color:var(--tx3);">ml รวม</div></div>
+        </div>
+        <div id="pumpAllSummary" style="display:none;background:var(--bg);border-radius:10px;padding:10px 14px;margin-bottom:10px;border:1px solid var(--border);">
+          <div style="font-size:10px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">สรุปรวมทั้งหมด</div>
+          <div style="display:flex;gap:0;flex-wrap:wrap;">
+            <div style="flex:1;min-width:70px;text-align:center;padding:4px 0;">
+              <div id="pumpAllOz" style="font-size:18px;font-weight:900;color:var(--sage);">0</div>
+              <div style="font-size:9px;color:var(--tx3);">oz รวม</div>
+            </div>
+            <div style="flex:1;min-width:70px;text-align:center;padding:4px 0;">
+              <div id="pumpAllMl" style="font-size:18px;font-weight:900;color:var(--tx3);">0</div>
+              <div style="font-size:9px;color:var(--tx3);">ml รวม</div>
+            </div>
+            <div style="flex:1;min-width:70px;text-align:center;padding:4px 0;">
+              <div id="pumpAllSessions" style="font-size:18px;font-weight:900;color:var(--blue);">0</div>
+              <div style="font-size:9px;color:var(--tx3);">ครั้งทั้งหมด</div>
+            </div>
+            <div style="flex:1;min-width:70px;text-align:center;padding:4px 0;">
+              <div id="pumpAllDays" style="font-size:18px;font-weight:900;color:var(--amber);">0</div>
+              <div style="font-size:9px;color:var(--tx3);">วันที่บันทึก</div>
+            </div>
+          </div>
+          <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:11px;color:var(--tx3);">
+            <span>เฉลี่ย/วัน: <strong id="pumpAvgPerDay" style="color:var(--sage);">—</strong></span>
+            <span>เฉลี่ย/ครั้ง: <strong id="pumpAvgPerSession" style="color:var(--sage);">—</strong></span>
+          </div>
+        </div>
+        <div id="pumpLogList"></div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--amber);">
+        <div class="clbl">โภชนาการลูก</div>
+        <div class="litem"><div class="litem-l"><div class="litem-dot" style="background:var(--amber);"></div><span style="font-weight:700;color:var(--amber);">8–12 ครั้ง/วัน</span></div><span style="color:var(--tx3);font-size:12px;">ความถี่ให้นม</span></div>
+        <div class="litem"><div class="litem-l"><div class="litem-dot" style="background:var(--amber);"></div><span style="font-weight:700;color:var(--amber);">10–20 น./ข้าง</span></div><span style="color:var(--tx3);font-size:12px;">นมแม่ต่อเต้า</span></div>
+        <div class="litem"><div class="litem-l"><div class="litem-dot" style="background:var(--amber);"></div><span style="font-weight:700;color:var(--amber);">60–90 มล./มื้อ</span></div><span style="color:var(--tx3);font-size:12px;">นมสูตรแรกเกิด</span></div>
+        <div class="litem" style="border:none;"><div class="litem-l"><div class="litem-dot" style="background:var(--amber);"></div><span style="font-weight:700;color:var(--amber);">ไม่ให้น้ำ</span></div><span style="color:var(--tx3);font-size:12px;">ทารก &lt;6 เดือน</span></div>
+        <div class="card-inset" style="margin-top:8px;margin-bottom:0;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:13px;">วันนี้ให้นม <strong id="nutF" style="color:var(--amber);">0 มื้อ</strong></span>
+          <span id="nutStatus" style="font-size:12px;font-weight:700;"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="clbl">บันทึกโภชนาการคุณแม่ (กดทุกครั้งที่ได้รับ)</div>
+        <div id="momCL"></div>
+        <div style="margin-top:12px;border-top:1px solid rgba(196,201,208,0.3);padding-top:12px;">
+          <div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">บันทึกวันนี้</div>
+          <div id="momLogList"><div class="empty" style="padding:10px;">ยังไม่มีการบันทึก</div></div>
+        </div>
+      </div>
+
+      <div class="card" style="border-left:3px solid var(--sage);">
+        <div class="clbl">อาหารเพิ่มน้ำนม</div>
+        <div>
+          <span class="food-tag">ขิง</span><span class="food-tag">ใบแมงลัก</span><span class="food-tag">ตำลึง</span>
+          <span class="food-tag">หัวปลี</span><span class="food-tag">ฟักทอง</span><span class="food-tag">ข้าวโอ๊ต</span>
+          <span class="food-tag">ปลาน้ำจืด</span><span class="food-tag">ไข่</span><span class="food-tag">นมอุ่น</span>
+        </div>
+      </div>
+
+      <div class="card" style="border-left:3px solid var(--red);">
+        <div class="clbl" style="color:var(--red);">หลีกเลี่ยงขณะให้นม</div>
+        <div class="witem"><div class="wdot" style="background:var(--red);"></div><span>แอลกอฮอล์ทุกชนิด</span></div>
+        <div class="witem"><div class="wdot" style="background:var(--red);"></div><span>คาเฟอีน &gt;200 มก./วัน</span></div>
+        <div class="witem"><div class="wdot" style="background:var(--red);"></div><span>ปลาสารปรอทสูง</span></div>
+        <div class="witem" style="border:none;"><div class="wdot" style="background:var(--red);"></div><span>น้ำอัดลม เครื่องดื่มชูกำลัง</span></div>
+      </div>
+    </div>
+
+    <!-- VACCINE -->
+    <div id="tab-vaccine" class="tab-c">
+      <div class="card" style="border-left:3px solid var(--blue);margin-bottom:14px;">
+        <div class="clbl">ตารางวัคซีนแนะนำ</div>
+        <div style="font-size:12px;color:var(--tx3);">ตามแผนกระทรวงสาธารณสุขไทย</div>
+      </div>
+      <button id="calShareBtn" onclick="shareCalendarSetup()" style="display:block;width:100%;margin-bottom:12px;background:rgba(66,133,244,0.1);border:1.5px solid rgba(66,133,244,0.25);border-radius:12px;padding:12px 16px;font-size:13px;font-weight:700;color:#4285f4;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+  แชร์ Calendar ให้ครอบครัว
+</button>
+<div id="vaccineList"></div>
+      <div class="card" style="margin-top:8px;">
+        <div class="clbl">การตั้งค่า</div>
+        <button onclick="openSettings()" class="settings-btn">
+          <svg width="18" height="18" style="color:var(--blue)"><use href="#i-gear"/></svg>
+          ตั้งค่า Firebase / เปลี่ยนชื่อผู้ใช้
+        </button>
+        <div style="margin-top:12px;">
+          <div class="time-label" style="margin-bottom:6px;">Google Gemini API Key (สำหรับ AI วิเคราะห์ ฟรี)</div>
+          <div style="display:flex;gap:8px;">
+            <input class="fi" type="password" id="geminiKeyInput" placeholder="AIza..." style="margin-bottom:0;flex:1;">
+            <button class="time-now-btn" onclick="saveGeminiKey()">บันทึก</button>
+          </div>
+          <div id="geminiKeyStatus" style="font-size:11px;color:var(--tx3);margin-top:4px;"></div>
+          <div style="font-size:10px;color:var(--tx3);margin-top:4px;">สร้างฟรีได้ที่ <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--blue)">aistudio.google.com</a> → Get API Key</div>
+        </div>
+        <div class="cfg-display" id="cfgDisplay"></div>
+      </div>
+    </div>
+
+    <!-- WARNING -->
+    <div id="tab-warning" class="tab-c">
+      <div class="wsec" style="border-color:var(--red);">
+        <div class="wtitle" style="color:var(--red);">ไปโรงพยาบาลทันที</div>
+        <div class="witem"><div class="wdot" style="background:var(--red);"></div><span>ไม่หายใจ หายใจลำบาก ซี่โครงบุ๋ม</span></div>
+        <div class="witem"><div class="wdot" style="background:var(--red);"></div><span>ตัวเขียว/ซีด ริมฝีปาก เล็บมือเท้า</span></div>
+        <div class="witem"><div class="wdot" style="background:var(--red);"></div><span>ไม่ตื่น ไม่ตอบสนองแม้ปลุก</span></div>
+        <div class="witem"><div class="wdot" style="background:var(--red);"></div><span>ชัก กระตุก ตาค้าง</span></div>
+        <div class="witem"><div class="wdot" style="background:var(--red);"></div><span>อาเจียนพุ่งรุนแรง ทุกมื้อ</span></div>
+        <div class="witem"><div class="wdot" style="background:var(--red);"></div><span>สะดืออักเสบ แดง บวม มีหนอง</span></div>
+        <div class="witem" style="border:none;"><div class="wdot" style="background:var(--red);"></div><span>ไม่ปัสสาวะ &gt;6–8 ชั่วโมง</span></div>
+      </div>
+      <div class="wsec" style="border-color:var(--amber);">
+        <div class="wtitle" style="color:var(--amber);">โทรปรึกษาหมอ</div>
+        <div class="witem"><div class="wdot" style="background:var(--amber);"></div><span>ไข้ &gt;38°C ในทารก &lt;3 เดือน</span></div>
+        <div class="witem"><div class="wdot" style="background:var(--amber);"></div><span>ดีซ่านลามถึงฝ่ามือ/ฝ่าเท้า</span></div>
+        <div class="witem"><div class="wdot" style="background:var(--amber);"></div><span>ให้นมน้อยกว่า 8 ครั้ง/วัน หลังวันที่ 3–4</span></div>
+        <div class="witem"><div class="wdot" style="background:var(--amber);"></div><span>น้ำหนักไม่กลับมาภายใน 2 สัปดาห์</span></div>
+        <div class="witem" style="border:none;"><div class="wdot" style="background:var(--amber);"></div><span>อุจจาระสีขาว/ดำ/มีเลือดปน</span></div>
+      </div>
+      <div class="wsec" style="border-color:var(--sage);">
+        <div class="wtitle" style="color:var(--sage);">สังเกต (ปกติ แต่ติดตาม)</div>
+        <div class="witem"><div class="wdot" style="background:var(--sage);"></div><span>ดีซ่านเล็กน้อยสัปดาห์แรก</span></div>
+        <div class="witem"><div class="wdot" style="background:var(--sage);"></div><span>สิวทารก ผดผื่นขาวๆ (มักหายเอง)</span></div>
+        <div class="witem" style="border:none;"><div class="wdot" style="background:var(--sage);"></div><span>มือเท้าเย็น แต่ตัวอุ่น</span></div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--blue);">
+        <div class="clbl">เบอร์ฉุกเฉิน</div>
+        <div class="litem"><span style="color:var(--tx2);">สายด่วนสุขภาพ</span><strong style="color:var(--blue);font-size:18px;font-weight:900;">1669</strong></div>
+        <div class="litem"><span style="color:var(--tx2);">โรงพยาบาลเด็ก</span><strong style="color:var(--blue);font-weight:700;">02-354-8333</strong></div>
+        <div class="litem" style="border:none;"><span style="color:var(--tx2);">กรมอนามัย</span><strong style="color:var(--blue);font-weight:700;">1771</strong></div>
+      </div>
+    </div>
+
+
+    <!-- HISTORY -->
+    <div id="tab-history" class="tab-c">
+      <div class="range-select">
+        <button class="rtab act" id="rday" onclick="setRange('day')">รายวัน</button>
+        <button class="rtab" id="rweek" onclick="setRange('week')">7 วัน</button>
+        <button class="rtab" id="rmonth" onclick="setRange('month')">30 วัน</button>
+      </div>
+      <div id="histDayView">
+        <div class="hist-date-nav">
+          <button class="hist-date-btn" id="histPrev" onclick="histMove(-1)">‹</button>
+          <div class="hist-date-lbl">
+            <div class="hist-date-main" id="histDateMain">วันนี้</div>
+            <div class="hist-date-sub" id="histDateSub"></div>
+          </div>
+          <button class="hist-date-btn" id="histNext" onclick="histMove(1)" disabled>›</button>
+        </div>
+        <button onclick="exportMedicalPDF()" style="margin-top:10px;width:100%;background:var(--blue);color:white;border:none;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          ส่งออก PDF รายงานทางการแพทย์
+        </button>
+        <div id="histContent"><div class="no-data-day"><p>กำลังโหลด...</p></div></div>
+      </div>
+      <div id="histRangeView" style="display:none;">
+        <div id="histRangeContent"></div>
+      </div>
+    </div>
+
+    <!-- HEALTH MONITORING TAB -->
+    <div id="tab-health" class="tab-c">
+
+      <!-- PERIOD CHECKLIST -->
+      <div id="healthChecklistWrap"></div>
+
+      <!-- DAILY OBSERVATION LOG -->
+      <div class="card" style="margin-bottom:12px;">
+        <div class="clbl">บันทึกสิ่งที่สังเกตวันนี้</div>
+        <div style="margin-bottom:10px;">
+          <textarea id="healthObsInput" placeholder="เช่น ลูกยกหัวได้ครั้งแรก, ตาตามวัตถุได้, ชักเล็กน้อย 30 วิ..." 
+            style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;resize:none;height:80px;line-height:1.6;"></textarea>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <select id="healthObsCat" style="flex:1;padding:9px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;">
+            <option value="milestone">🎯 Milestone พัฒนาการ</option>
+            <option value="seizure">⚠️ ชัก / Seizure</option>
+            <option value="feeding">🍼 การกิน / สำลัก</option>
+            <option value="motor">💪 กล้ามเนื้อ / การเคลื่อนไหว</option>
+            <option value="vision">👁 ตา / การมอง</option>
+            <option value="general">📝 ทั่วไป</option>
+          </select>
+          <input type="time" id="healthObsTime" style="flex:1;padding:9px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;">
+        </div>
+        <button onclick="addHealthObs()" style="width:100%;background:var(--sage);color:white;border:none;border-radius:11px;padding:12px;font-size:14px;font-weight:700;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;">+ บันทึก</button>
+      </div>
+
+      <!-- OBSERVATION HISTORY -->
+      <div class="card">
+        <div class="clbl">บันทึกที่ผ่านมา</div>
+        <div id="healthObsList"><div class="empty">ยังไม่มีการบันทึก</div></div>
+      </div>
+
+    </div>
+    <!-- /HEALTH MONITORING TAB -->
+
+  </div><!-- /content -->
+
+  <nav class="nav">
+    <button class="nbtn act" id="nav-home" onclick="setTab('home')">
+      <div class="nbtn-ico"><svg width="20" height="20" style="color:white"><use href="#i-home"/></svg></div>
+      <div class="nlbl">หน้าหลัก</div>
+    </button>
+    <button class="nbtn" id="nav-log" onclick="setTab('log')">
+      <div class="nbtn-ico"><svg width="20" height="20" style="color:var(--tx3)"><use href="#i-pencil"/></svg></div>
+      <div class="nlbl">บันทึก</div>
+    </button>
+    <button class="nbtn" id="nav-timer" onclick="setTab('timer')">
+      <div class="nbtn-ico"><svg width="20" height="20" style="color:var(--tx3)"><use href="#i-timer"/></svg></div>
+      <div class="nlbl">จับเวลา</div>
+    </button>
+    <button class="nbtn" id="nav-nutrition" onclick="setTab('nutrition')">
+      <div class="nbtn-ico"><svg width="20" height="20" style="color:var(--tx3)"><use href="#i-leaf"/></svg></div>
+      <div class="nlbl">โภชนาการ</div>
+    </button>
+    <button class="nbtn" id="nav-vaccine" onclick="setTab('vaccine')">
+      <div class="nbtn-ico"><svg width="20" height="20" style="color:var(--tx3)"><use href="#i-syringe"/></svg></div>
+      <div class="nlbl">วัคซีน</div>
+    </button>
+    <button class="nbtn" id="nav-history" onclick="setTab('history')">
+      <div class="nbtn-ico"><svg width="20" height="20" style="color:var(--tx3)"><use href="#i-chart"/></svg></div>
+      <div class="nlbl">ประวัติ</div>
+    </button>
+    <button class="nbtn" id="nav-health" onclick="setTab('health')">
+      <div class="nbtn-ico"><svg width="20" height="20" style="color:var(--tx3)"><use href="#i-heart"/></svg></div>
+      <div class="nlbl">เฝ้าระวัง</div>
+    </button>
+  </nav>
+</div>
+</div>
+
+<script>
+const lsGet=k=>{try{const v=localStorage.getItem('tn5_'+k);return v?JSON.parse(v):null;}catch(e){return null;}};
+const lsSet=(k,v)=>{try{localStorage.setItem('tn5_'+k,JSON.stringify(v));}catch(e){}};
+const fbUrl=p=>`${cfg.dbUrl}/baby/${cfg.pin}/${p}.json`;
+const pad=n=>String(n).padStart(2,'0');
+const fmtT=d=>{const dt=new Date(d);return pad(dt.getHours())+':'+pad(dt.getMinutes());};
+const fmtD=d=>new Date(d).toLocaleDateString('th-TH',{day:'numeric',month:'short'});
+const since=d=>{const m=Math.floor((Date.now()-new Date(d).getTime())/60000);return m<60?m+' น.':Math.floor(m/60)+'ชม.'+m%60+'น.';};
+const getAge=()=>{const ms=Date.now()-BIRTH.getTime(),d=Math.floor(ms/86400000),h=Math.floor((ms%86400000)/3600000);if(d===0)return h+' ชั่วโมง';if(d<7)return d+' วัน '+h+' ชม.';const w=Math.floor(d/7),rd=d%7;if(w<5)return w+' สัปดาห์ '+rd+' วัน';return Math.floor(d/30)+' เดือน '+d%30+' วัน';};
+const getDays=()=>Math.floor((Date.now()-BIRTH.getTime())/86400000);
+const today=()=>new Date().toDateString();
+const todayF=()=>state.feedings.filter(f=>new Date(f.t).toDateString()===today());
+const todayS=()=>state.sleeps.filter(s=>new Date(s.s).toDateString()===today());
+const todayD=()=>state.diapers.filter(d=>new Date(d.t).toDateString()===today());
+const sleepMins=()=>{let m=todayS().reduce((s,sl)=>sl.e?s+(new Date(sl.e)-new Date(sl.s))/60000:s,0);if(state.isSleeping&&state.sleepStart)m+=(Date.now()-new Date(state.sleepStart).getTime())/60000;return m;};
+const whoTag=w=>{if(!w||cfg.offline)return'';return w===cfg.who?`<span class="who-tag who-me">${w}</span>`:`<span class="who-tag who-partner">${w}</span>`;};
+
+var BIRTH=new Date('2026-03-10T14:48:00'); // overridden by cfg.babyDOB on startApp
+const TIPS=[
+  {max:3,tip:'ช่วง 3 วันแรก ลูกจะได้น้ำนมเหลือง (colostrum) มีภูมิคุ้มกันสูงมาก แม้ออกน้อย แต่คุณค่ามหาศาล ให้ดูดบ่อยๆ เพื่อกระตุ้นน้ำนม'},
+  {max:7,tip:'ตรวจสอบดีซ่าน สังเกตสีผิว ตาขาว ฝ่ามือ ฝ่าเท้า อาบแดดอ่อนๆ ตอนเช้า 7–9 โมง ช่วยได้'},
+  {max:14,tip:'น้ำหนักแรกเกิดลดได้ 7–10% จะกลับมาภายใน 2 สัปดาห์ หากลดเกิน 10% ปรึกษาแพทย์'},
+  {max:30,tip:'สะดือจะหลุดภายใน 1–3 สัปดาห์ ดูแลให้แห้งสะอาด เช็ดหลังอาบน้ำ ไม่ต้องปิดผ้ากอซ'},
+  {max:60,tip:'ลูกเริ่มยิ้มตอบสนองแล้ว! คุยกับลูก สบตา เล่นเสียงหัวเราะ เสริมสมองและความผูกพัน'},
+  {max:999,tip:'ลูกกำลังโตขึ้นทุกวัน บันทึกพัฒนาการ เช่น ยกศีรษะ กลิ้งตัว เพื่อแชร์กับหมอในนัดหน้า'},
+];
+const VACCINES=[
+  {id:1,name:'BCG + HBV#1',detail:'วัณโรค + ตับอักเสบบี',days:0},
+  {id:2,name:'HBV#2',detail:'ตับอักเสบบี',days:30},
+  {id:3,name:'DTP-HB-Hib + IPV + PCV + RV#1',detail:'คอตีบ-บาดทะยัก-ไอกรน + โปลิโอ + ปอดบวม + โรตา',days:60},
+  {id:4,name:'DTP-HB-Hib + IPV + PCV + RV#2',detail:'เข็มที่ 2',days:120},
+  {id:5,name:'DTP-HB-Hib + IPV + RV#3',detail:'เข็มที่ 3',days:180},
+  {id:6,name:'MMR#1 + JEV#1',detail:'หัด-หัดเยอรมัน-คางทูม + ไข้สมองอักเสบ',days:270},
+  {id:7,name:'HBV#3 + PCV#3',detail:'ตับอักเสบบี + ปอดบวม',days:365},
+  {id:8,name:'DTP-HB-Hib#4 + MMR#2 + VAR',detail:'กระตุ้น + อีสุกอีใส',days:540},
+].map(v=>({...v,dueDate:new Date(BIRTH.getTime()+v.days*86400000)}));
+const MOM_FOODS=[
+  {name:'น้ำเปล่า',target:'3+ ลิตร/วัน',icon:'💧'},
+  {name:'นม/ผลิตภัณฑ์นม',target:'3 เสิร์ฟ',icon:'🥛'},
+  {name:'ผักใบเขียวเข้ม',target:'1 ถ้วย',icon:'🥦'},
+  {name:'โปรตีน (ไข่/เนื้อ/ปลา)',target:'3 เสิร์ฟ',icon:'🥚'},
+  {name:'ผลไม้',target:'2–3 ผล',icon:'🍊'},
+  {name:'ธัญพืชไม่ขัดสี',target:'3 เสิร์ฟ',icon:'🌾'},
+  {name:'วิตามินหลังคลอด',target:'1 เม็ด/วัน',icon:'💊'},
+  {name:'แคลเซียม',target:'1000 มก./วัน',icon:'🦴'},
+];
+
+let cfg={dbUrl:'',pin:'',who:'',offline:false,aiKey:'',geminiKey:'',babyName:'',babyNick:'',babyDOB:'',babyTOB:'',babyGender:'',babyWeight:'',userId:''};
+let state={feedings:[],sleeps:[],diapers:[],weights:[],doneVax:{},vaxAppt:{},isSleeping:false,sleepStart:null,momLogs:[],momDate:'',pumpLogs:[]};
+let fType='breast',fSide='L',dType='wet',dupCallback=null;
+
+// Timer state
+let timerL={on:false,start:null,elapsed:0,iv:null};
+let timerR={on:false,start:null,elapsed:0,iv:null};
+let swState={on:false,start:null,elapsed:0,iv:null,laps:[]};
+
+function fmtMs(ms){const t=Math.floor(ms/1000),m=Math.floor(t/60),s=t%60;return pad(m)+':'+pad(s);}
+function fmtMsMs(ms){return '.'+String(Math.floor((ms%1000)/10)).padStart(2,'0');}
+
+function toggleTimer(side){
+  const t=side==='L'?timerL:timerR;
+  const btn=document.getElementById('timerBtn'+side);
+  const disp=document.getElementById('timer'+side);
+  if(!t.on){
+    t.start=Date.now()-t.elapsed;t.on=true;
+    t.iv=setInterval(()=>{t.elapsed=Date.now()-t.start;disp.textContent=fmtMs(t.elapsed);},100);
+    btn.textContent='หยุด';btn.className='fbtn '+(side==='L'?'fbtn-blue':'fbtn-sage');
+    btn.style.background=side==='L'?'linear-gradient(135deg,#C45050,#A03030)':'linear-gradient(135deg,#C45050,#A03030)';
+  }else{
+    clearInterval(t.iv);t.on=false;
+    btn.textContent='ต่อ';btn.style.background='';
+    btn.className='fbtn '+(side==='L'?'fbtn-blue':'fbtn-sage');
+  }
+}
+function resetTimers(){
+  ['L','R'].forEach(s=>{
+    const t=s==='L'?timerL:timerR;
+    clearInterval(t.iv);t.on=false;t.start=null;t.elapsed=0;
+    document.getElementById('timer'+s).textContent='00:00';
+    const btn=document.getElementById('timerBtn'+s);
+    btn.textContent='เริ่ม';btn.style.background='';
+    btn.className='fbtn '+(s==='L'?'fbtn-blue':'fbtn-sage');
+  });
+}
+function saveTimerFeeding(){
+  const totMs=timerL.elapsed+timerR.elapsed;
+  const dur=Math.round(totMs/60000);
+  const side=timerL.elapsed>0&&timerR.elapsed>0?'LR':timerL.elapsed>0?'L':'R';
+  if(dur<1){showToast('กดเริ่มจับเวลาก่อนนะครับ');return;}
+  const entry={id:Date.now(),t:new Date().toISOString(),type:'breast',side,dur,amt:null,note:'จากจับเวลา',who:cfg.who};
+  state.feedings.push(entry);pushCloud();
+  showToast('✓ บันทึก '+pad(Math.floor(totMs/60000))+':'+pad(Math.round((totMs%60000)/1000))+' นาที');
+  resetTimers();renderAll();
+}
+
+function toggleSW(){
+  if(!swState.on){
+    swState.start=Date.now()-swState.elapsed;swState.on=true;
+    swState.iv=setInterval(updateSW,50);
+    document.getElementById('swBtn').textContent='หยุด';
+    document.getElementById('swBtn').style.background='linear-gradient(135deg,#C45050,#A03030)';
+  }else{
+    clearInterval(swState.iv);swState.on=false;
+    document.getElementById('swBtn').textContent='ต่อ';
+    document.getElementById('swBtn').style.background='linear-gradient(135deg,var(--blue),var(--blueD))';
+  }
+}
+function updateSW(){
+  swState.elapsed=Date.now()-swState.start;
+  document.getElementById('swDisplay').textContent=fmtMs(swState.elapsed);
+  document.getElementById('swMs').textContent=fmtMsMs(swState.elapsed);
+  const pct=Math.min(1,(swState.elapsed%(60000))/60000);
+  document.getElementById('swCircle').setAttribute('stroke-dashoffset',502-(502*pct));
+}
+function resetSW(){
+  clearInterval(swState.iv);swState.on=false;swState.elapsed=0;swState.start=null;swState.laps=[];
+  document.getElementById('swDisplay').textContent='00:00';
+  document.getElementById('swMs').textContent='.00';
+  document.getElementById('swBtn').textContent='เริ่ม';
+  document.getElementById('swBtn').style.background='linear-gradient(135deg,var(--blue),var(--blueD))';
+  document.getElementById('swCircle').setAttribute('stroke-dashoffset',502);
+  document.getElementById('lapList').innerHTML='';
+}
+function swLap(){
+  if(!swState.on&&swState.elapsed===0)return;
+  const n=swState.laps.length+1;
+  swState.laps.push(swState.elapsed);
+  const el=document.getElementById('lapList');
+  const prev=swState.laps.length>1?swState.laps[swState.laps.length-2]:0;
+  const lapTime=swState.elapsed-prev;
+  el.innerHTML=`<div class="litem"><span style="color:var(--tx3);font-weight:600;">Lap ${n}</span><span style="font-weight:700;">${fmtMs(swState.elapsed)}</span><span style="color:var(--tx3);font-size:11px;">+${fmtMs(lapTime)}</span></div>`+el.innerHTML;
+}
+
+// Mom nutrition - per-instance logging
+function logMomFood(name,icon){
+  const entry={id:Date.now(),t:new Date().toISOString(),name,icon,who:cfg.who};
+  const td=today();
+  if(state.momDate!==td){state.momLogs=[];state.momDate=td;}
+  state.momLogs.push(entry);
+  pushCloud();showToast('✓ บันทึก: '+name);renderAll();
+}
+function deleteMomLog(id){
+  state.momLogs=state.momLogs.filter(l=>l.id!==id);
+  pushCloud();renderAll();
+}
+
+async function fbGet(p){try{const r=await fetch(fbUrl(p));if(!r.ok)return null;return await r.json();}catch(e){return null;}}
+async function fbSet(p,data){if(cfg.offline)return false;try{const r=await fetch(fbUrl(p),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});return r.ok;}catch(e){return false;}}
+
+
+// Force push all local data to Firebase (fixes cross-device sync)
+async function forcePushAll(){
+  var btn = document.getElementById('syncBtn');
+  if(btn) btn.textContent = '...';
+  await pushCloud();
+  if(btn) btn.textContent = '⟳';
+  showToast('✓ Sync ทุกข้อมูลขึ้น Firebase แล้ว');
+}
+
+async function syncFromCloud(){
+  if(cfg.offline||!cfg.dbUrl)return;
+  setSS('syncing','กำลัง sync...');
+  try{
+    const data=await fbGet('data');
+    if(data){
+      if(data.feedings)state.feedings=data.feedings;
+      if(data.sleeps)state.sleeps=data.sleeps;
+      if(data.diapers)state.diapers=data.diapers;
+      if(data.weights)state.weights=data.weights;
+      if(data.doneVax)state.doneVax=data.doneVax;
+      if(data.sleepState){state.isSleeping=data.sleepState.on;state.sleepStart=data.sleepState.start;}
+      if(data.momNut){state.momLogs=Array.isArray(data.momNut.logs)?data.momNut.logs:[];state.momDate=data.momNut.d||'';}
+      if(data.pumpLogs && Array.isArray(data.pumpLogs) && data.pumpLogs.length>0){
+        state.pumpLogs=data.pumpLogs;
+      } else if(!data.pumpLogs && state.pumpLogs && state.pumpLogs.length>0){
+        // Local has data but Firebase doesn't — push up
+        pushCloud();
+      }
+      if(data.vaxAppt)state.vaxAppt=data.vaxAppt;
+      if(data.healthObs)state.healthObs=Array.isArray(data.healthObs)?data.healthObs:[];
+      // Load photo separately
+      try{const pd=await fbGet('photo');if(pd&&pd.data&&pd.data!==state.photo){state.photo=pd.data;renderPhoto();}}catch(e){}
+      lsSet('state',state);
+    }
+    setSS('on','sync แล้ว '+fmtT(new Date()));
+  }catch(e){setSS('off','ออฟไลน์');}
+  renderAll();
+}
+async function pushCloud(){
+  if(cfg.offline||!cfg.dbUrl)return;
+  setSS('syncing','กำลัง sync...');
+  const ok=await fbSet('data',{feedings:state.feedings,sleeps:state.sleeps,diapers:state.diapers,weights:state.weights,doneVax:state.doneVax,sleepState:{on:state.isSleeping,start:state.sleepStart},momNut:{logs:state.momLogs,d:state.momDate},pumpLogs:state.pumpLogs||[],vaxAppt:state.vaxAppt||{},healthObs:state.healthObs||[],lastUpdate:{time:new Date().toISOString(),who:cfg.who}});
+  setSS(ok?'on':'off',ok?'sync แล้ว '+fmtT(new Date()):'บันทึกในเครื่องแล้ว');
+  lsSet('state',state);
+}
+function setSS(status,msg){
+  const dot=document.getElementById('sdot');
+  const lbl=document.getElementById('slbl');
+  const fill=document.getElementById('sfill');
+  if(dot){dot.className='sdot'+(status==='on'?' on':status==='syncing'?' syncing':'');}
+  if(lbl)lbl.textContent=msg;
+  if(fill){fill.className='sline-fill'+(status==='syncing'?' go':'');if(status==='on')fill.style.width='100%';else if(status!=='syncing')fill.style.width='0%';}
+  const who=document.getElementById('swho');
+  if(who)who.textContent=cfg.who?'👤 '+cfg.who:'';
+}
+
+
+function toggleSyncFields(){
+  var cb = document.getElementById('setupOffline');
+  var sf = document.getElementById('syncFields');
+  if(sf) sf.style.display = cb && cb.checked ? 'none' : 'block';
+}
+
+function checkSetup(){
+  const s=lsGet('cfg');
+  if(s&&(s.babyName||s.babyNick)){
+    cfg=s;
+    // Migrate old format
+    if(!cfg.babyName)cfg.babyName=cfg.babyNick||'Baby';
+    startApp();
+  } else {
+    showScreen('auth');
+  }
+}
+function showScreen(name){
+  ['setupScreen','authScreen','mainApp'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.style.display='none';
+  });
+  var target=document.getElementById(name==='auth'?'authScreen':name==='setup'?'setupScreen':'mainApp');
+  if(target) target.style.display='flex';
+}
+function doSetup(){
+  var nick=document.getElementById('setupNick').value.trim();
+  var fullname=document.getElementById('setupFullname').value.trim();
+  var dob=document.getElementById('setupDOB').value;
+  var tob=document.getElementById('setupTOB').value;
+  var gender=document.getElementById('setupGender').value;
+  var bw=parseFloat(document.getElementById('setupBW').value)||0;
+  var who=document.getElementById('setupWho').value.trim();
+  var url=document.getElementById('setupUrl').value.trim();
+  var pin=document.getElementById('setupPin').value.trim();
+  var offline=document.getElementById('setupOffline').checked;
+  if(!nick||!dob){showToast('Please enter baby nickname and date of birth');return;}
+  if(!offline&&(!url||!pin)){showToast('Enter Firebase URL + PIN, or enable Offline mode');return;}
+  cfg.babyNick=nick;
+  cfg.babyName=fullname||nick;
+  cfg.babyDOB=dob;
+  cfg.babyTOB=tob||'00:00';
+  cfg.babyGender=gender;
+  cfg.babyWeight=bw;
+  cfg.who=who||'Parent';
+  cfg.dbUrl=url;
+  cfg.pin=pin;
+  cfg.offline=offline;
+  cfg.userId='user_'+Date.now();
+  // Update BIRTH constant based on user input
+  if(dob){
+    var dobStr=dob+'T'+(tob||'00:00')+':00';
+    window.BIRTH=new Date(dobStr);
+  }
+  lsSet('cfg',cfg);
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('mainApp').style.display='flex';
+  syncFromCloud();
+  renderAll();
+  showToast('Welcome! Your baby journal has begun 🌙');
+}
+
+function useOffline(){cfg={dbUrl:'',pin:'',who:'ผู้ใช้',offline:true};lsSet('cfg',cfg);document.getElementById('setupScreen').classList.remove('show');startApp();}
+function openSettings(){if(confirm('ต้องการตั้งค่าใหม่?\n(ข้อมูลที่บันทึกไว้จะไม่หาย)')){
+  const el=document.getElementById('setupAiKey');if(el)el.value=cfg.aiKey||'';
+  document.getElementById('setupScreen').classList.add('show');
+}}
+function saveGeminiKey(){
+  const el=document.getElementById('geminiKeyInput');
+  const st=document.getElementById('geminiKeyStatus');
+  if(!el)return;
+  const k=el.value.trim();
+  cfg.geminiKey=k;
+  lsSet('cfg',cfg);
+  if(st){st.textContent=k?'✓ บันทึก Gemini key แล้ว — AI จะวิเคราะห์อัตโนมัติ':'ลบ key แล้ว (ใช้การวิเคราะห์แบบ offline)';st.style.color=k?'var(--sage)':'var(--tx3)';}
+  Object.keys(aiCache).forEach(k=>delete aiCache[k]); // clear cache so next view re-analyzes
+  setTimeout(()=>{if(st)st.textContent='';},3000);
+}
+function saveAiKey(){saveGeminiKey();}
+function startApp(){
+  updateBabyNameUI();
+  const s=lsGet('state');
+  if(s){
+    state=s;
+    // migration: old format used momChecked, new uses momLogs
+    if(!Array.isArray(state.momLogs)) state.momLogs=[];
+    if(!state.momDate) state.momDate='';
+    if(!state.feedings) state.feedings=[];
+    if(!state.sleeps) state.sleeps=[];
+    if(!state.diapers) state.diapers=[];
+    if(!state.weights) state.weights=[];
+    if(!state.doneVax) state.doneVax={};
+  }
+  document.getElementById('mainApp').classList.add('show');
+  initTimeInputs();
+  document.getElementById('swho').textContent='👤 '+cfg.who+(cfg.offline?' · ออฟไลน์':'');
+  if(!cfg.offline){syncFromCloud();setInterval(syncFromCloud,20000);}
+  else setSS('off','ออฟไลน์ · ข้อมูลในเครื่อง');
+  setInterval(()=>{renderHeader();if(state.isSleeping)renderSleepLog();},30000);
+  renderAll();
+}
+
+function checkDup(type,data,cb){
+  const now=Date.now(),thresh=5*60000;
+  let recent=[];
+  if(type==='feeding')recent=state.feedings.filter(f=>(now-new Date(f.t).getTime())<thresh);
+  else if(type==='diaper')recent=state.diapers.filter(d=>(now-new Date(d.t).getTime())<thresh&&d.type===data.dtype);
+  if(recent.length>0){
+    const who=recent[0].who||'',mins=Math.floor((now-new Date(recent[0].t).getTime())/60000);
+    let m=type==='feeding'?`มีบันทึกมื้อนม${mins===0?'เมื่อกี้นี้':mins+' นาทีที่แล้ว'}อยู่แล้ว`:`มีบันทึกผ้าอ้อม${mins===0?'เมื่อกี้นี้':mins+' นาทีที่แล้ว'}อยู่แล้ว`;
+    if(who&&who!==cfg.who)m+=` (โดย ${who})`;
+    m+='\n\nต้องการบันทึกซ้ำหรือไม่?';
+    document.getElementById('dupMsg').textContent=m;
+    dupCallback=cb;document.getElementById('dupModal').classList.add('show');
+  }else cb();
+}
+function dupCancel(){document.getElementById('dupModal').classList.remove('show');dupCallback=null;}
+function dupConfirm(){document.getElementById('dupModal').classList.remove('show');if(dupCallback)dupCallback();dupCallback=null;}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+function setFTimeNow(){
+  document.getElementById('fTime').value=getNowStr();
+}
+
+function addFeeding(){
+  const dur=parseInt(document.getElementById('fDur').value)||null;
+  const amt=parseInt(document.getElementById('fAmt').value)||null;
+  const note=document.getElementById('fNote').value;
+  const timeVal=document.getElementById('fTime').value;
+  // Build timestamp from manual time input or now
+  let entryTime=new Date();
+  if(timeVal){
+    const [h,m]=timeVal.split(':').map(Number);
+    entryTime=new Date();entryTime.setHours(h,m,0,0);
+  }
+  const entry={id:Date.now(),t:entryTime.toISOString(),type:fType,side:fType==='breast'?fSide:null,dur,amt,note,who:cfg.who};
+  // Dup check: compare against entry time, not Date.now()
+  const thresh=5*60000;
+  const recent=state.feedings.filter(f=>Math.abs(entryTime.getTime()-new Date(f.t).getTime())<thresh);
+  if(recent.length>0){
+    const who=recent[0].who||'',diff=Math.floor(Math.abs(entryTime.getTime()-new Date(recent[0].t).getTime())/60000);
+    let m=`มีบันทึกมื้อนมเวลาใกล้กัน (ห่างกัน ${diff} นาที)`;
+    if(who&&who!==cfg.who)m+=` บันทึกโดย ${who}`;
+    m+='\n\nต้องการบันทึกซ้ำหรือไม่?';
+    document.getElementById('dupMsg').textContent=m;
+    dupCallback=()=>{
+      state.feedings.push(entry);
+      // Sort by time
+      state.feedings.sort((a,b)=>new Date(a.t)-new Date(b.t));
+      pushCloud();clearFeedForm();showToast('✓ บันทึกมื้อนมแล้ว');renderAll();
+    };
+    document.getElementById('dupModal').classList.add('show');
+  }else{
+    state.feedings.push(entry);
+    state.feedings.sort((a,b)=>new Date(a.t)-new Date(b.t));
+    pushCloud();clearFeedForm();showToast('✓ บันทึก '+fmtT(entry.t));renderAll();
+  }
+}
+
+function clearFeedForm(){
+  document.getElementById('fDur').value='';
+  document.getElementById('fAmt').value='';
+  document.getElementById('fNote').value='';
+  document.getElementById('fTime').value=getNowStr();
+}
+function uploadPhoto(e){
+  const file=e.target.files[0];if(!file)return;
+  if(file.size>2*1024*1024){showToast('⚠️ รูปใหญ่เกิน 2MB กรุณาเลือกรูปขนาดเล็กกว่า');return;}
+  const reader=new FileReader();
+  reader.onload=async ev=>{
+    const b64=ev.target.result;
+    state.photo=b64;
+    lsSet('state',state);
+    // push photo separately (large data)
+    if(!cfg.offline&&cfg.dbUrl){
+      setSS('syncing','กำลัง sync รูป...');
+      await fbSet('photo',{data:b64,by:cfg.who,t:new Date().toISOString()});
+      setSS('on','sync แล้ว '+fmtT(new Date()));
+    }
+    renderPhoto();
+    showToast('✓ บันทึกรูปโปรไฟล์แล้ว');
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderPhoto(){
+  const photo=state.photo;
+  // Hero card avatar
+  const hw=document.getElementById('heroAvatarWrap');
+  if(hw){
+    hw.innerHTML=photo
+      ?`<img src="${photo}" class="avatar-img">`
+      :`<div class="avatar-placeholder"><svg width="32" height="32" style="color:var(--blue)"><use href="#i-baby"/></svg></div>`;
+  }
+  // Header mini avatar
+  const hh=document.getElementById('hdrAvatarWrap');
+  if(hh){
+    hh.innerHTML=photo
+      ?`<img src="${photo}" class="hdr-avatar">`
+      :`<div class="hdr-avatar-placeholder"><svg width="18" height="18" style="color:rgba(255,255,255,0.7)"><use href="#i-baby"/></svg></div>`;
+  }
+}
+function setDTimeNow(){
+  document.getElementById('dTime').value=getNowStr();
+}
+function setSlpTimeNow(){
+  document.getElementById('slpTime').value=getNowStr();
+}
+
+function getNowStr(){const n=new Date();return String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');}
+function initTimeInputs(){
+  const ids=['fTime','dTime','slpTime','slpEnd'];
+  ids.forEach(id=>{const el=document.getElementById(id);if(el&&!el.value)el.value=getNowStr();});
+}
+function getTimeFromInput(inputId){
+  const el=document.getElementById(inputId);
+  const val=el?el.value:'';
+  if(!val) return new Date();
+  const [h,m]=val.split(':').map(Number);
+  const d=new Date(); d.setHours(h,m,0,0); return d;
+}
+
+function setSlpMode(m){
+  ['live','range'].forEach(k=>{
+    const el=document.getElementById('slpM-'+k);
+    if(el)el.className='tpill'+(k===m?' act':'');
+  });
+  document.getElementById('slpLivePanel').style.display=m==='live'?'':'none';
+  document.getElementById('slpRangePanel').style.display=m==='range'?'':'none';
+  if(m==='range'){
+    // Pre-fill start=1h ago, end=now as sensible defaults
+    const now=new Date();
+    const ago=new Date(now-60*60*1000);
+    const el_s=document.getElementById('slpStart');
+    const el_e=document.getElementById('slpEnd');
+    if(el_s&&!el_s.value)el_s.value=String(ago.getHours()).padStart(2,'0')+':'+String(ago.getMinutes()).padStart(2,'0');
+    if(el_e)el_e.value=getNowStr();
+    updateRangeDur();
+  }
+}
+
+function updateRangeDur(){
+  const s=document.getElementById('slpStart').value;
+  const e=document.getElementById('slpEnd').value;
+  const lbl=document.getElementById('slpRangeDur');
+  if(!lbl)return;
+  if(!s||!e){lbl.textContent='';return;}
+  const sd=new Date();const ed=new Date();
+  const[sh,sm]=s.split(':').map(Number);const[eh,em]=e.split(':').map(Number);
+  sd.setHours(sh,sm,0,0);ed.setHours(eh,em,0,0);
+  if(ed<=sd)ed.setDate(ed.getDate()+1); // crosses midnight
+  const dur=Math.round((ed-sd)/60000);
+  if(dur<=0){lbl.textContent='⚠️ เวลาตื่นต้องหลังเวลานอน';lbl.style.color='var(--red)';return;}
+  lbl.style.color='var(--sage)';
+  lbl.textContent='ระยะเวลานอน: '+Math.floor(dur/60)+' ชม. '+dur%60+' นาที';
+}
+
+function addSleepRange(){
+  const sVal=document.getElementById('slpStart').value;
+  const eVal=document.getElementById('slpEnd').value;
+  if(!sVal||!eVal){showToast('กรุณาระบุเวลาเริ่มและตื่น');return;}
+  const[sh,sm]=sVal.split(':').map(Number);
+  const[eh,em]=eVal.split(':').map(Number);
+  const sd=new Date();sd.setHours(sh,sm,0,0);
+  const ed=new Date();ed.setHours(eh,em,0,0);
+  if(ed<=sd)ed.setDate(ed.getDate()+1);
+  const dur=Math.round((ed-sd)/60000);
+  if(dur<=0){showToast('⚠️ เวลาตื่นต้องหลังเวลานอน');return;}
+  if(dur>720){showToast('⚠️ ช่วงเวลานานเกิน 12 ชม. ตรวจสอบอีกที');return;}
+  const ns={id:Date.now(),s:sd.toISOString(),e:ed.toISOString(),who:cfg.who};
+  state.sleeps.push(ns);
+  state.sleeps.sort((a,b)=>new Date(a.s)-new Date(b.s));
+  // Reset end to now, keep start as previous end for quick next entry
+  document.getElementById('slpStart').value=eVal;
+  document.getElementById('slpEnd').value=getNowStr();
+  updateRangeDur();
+  pushCloud();
+  showToast('✓ บันทึก '+Math.floor(dur/60)+'ชม.'+dur%60+'น.');
+  renderAll();
+}
+
+function toggleSleep(){
+  const manualTime=getTimeFromInput('slpTime');
+  if(!state.isSleeping){
+    const s=manualTime.toISOString();
+    state.isSleeping=true; state.sleepStart=s;
+    showToast('😴 บันทึกว่านอนแล้ว ('+fmtT(s)+')');
+    document.getElementById('slpTime').value=getNowStr();
+    // Update label for wake time
+    const lbl=document.getElementById('slpTimeLabel');
+    if(lbl) lbl.textContent='เวลาตื่น';
+  } else {
+    const wakeTime=manualTime;
+    const startTime=new Date(state.sleepStart);
+    // Guard: wake must be after sleep
+    if(wakeTime<=startTime){
+      showToast('⚠️ เวลาตื่นต้องหลังเวลานอน');return;
+    }
+    const ns={id:Date.now(),s:state.sleepStart,e:wakeTime.toISOString(),who:cfg.who};
+    const dur=Math.round((wakeTime-startTime)/60000);
+    state.sleeps.push(ns);
+    state.isSleeping=false; state.sleepStart=null;
+    showToast('⏰ ตื่นแล้ว! '+Math.floor(dur/60)+'ชม.'+dur%60+'น.');
+    document.getElementById('slpTime').value=getNowStr();
+    const lbl=document.getElementById('slpTimeLabel');
+    if(lbl) lbl.textContent='เวลาเริ่มนอน';
+  }
+  pushCloud(); renderAll();
+}
+function quickSleep(){toggleSleep();}
+
+function addDiaper(dtype){
+  const t=dtype||dType;
+  const entryTime=getTimeFromInput('dTime');
+  const thresh=5*60000;
+  const recent=state.diapers.filter(d=>
+    Math.abs(entryTime.getTime()-new Date(d.t).getTime())<thresh && d.type===t
+  );
+  const doSave=()=>{
+    state.diapers.push({id:Date.now(),t:entryTime.toISOString(),type:t,who:cfg.who});
+    state.diapers.sort((a,b)=>new Date(a.t)-new Date(b.t));
+    document.getElementById('dTime').value=getNowStr();
+    pushCloud(); showToast('✓ บันทึก '+fmtT(entryTime)); renderAll();
+  };
+  if(recent.length>0){
+    const who=recent[0].who||'',diff=Math.floor(Math.abs(entryTime-new Date(recent[0].t))/60000);
+    let m=`มีบันทึกผ้าอ้อมเวลาใกล้กัน (ห่างกัน ${diff} นาที)`;
+    if(who&&who!==cfg.who) m+=` บันทึกโดย ${who}`;
+    m+='\n\nต้องการบันทึกซ้ำหรือไม่?';
+    document.getElementById('dupMsg').textContent=m;
+    dupCallback=doSave;
+    document.getElementById('dupModal').classList.add('show');
+  } else { doSave(); }
+}
+function qDiaper(t){
+  // Quick button — set current time and save directly
+  const now=new Date();
+  const entry={id:Date.now(),t:now.toISOString(),type:t,who:cfg.who};
+  state.diapers.push(entry);
+  state.diapers.sort((a,b)=>new Date(a.t)-new Date(b.t));
+  pushCloud(); showToast('✓ บันทึกผ้าอ้อม '+fmtT(now)); renderAll();
+}
+function addWeight(){const w=parseFloat(document.getElementById('wIn').value);const h=parseFloat(document.getElementById('hIn').value)||null;if(!w){showToast('กรอกน้ำหนักด้วย');return;}state.weights.push({id:Date.now(),d:new Date().toISOString(),w,h,who:cfg.who});pushCloud();showToast('✓ บันทึกแล้ว');document.getElementById('wIn').value='';document.getElementById('hIn').value='';renderAll();}
+// removed toggleMom - replaced by logMomFood above
+function toggleVax(id){state.doneVax[id]=!state.doneVax[id];pushCloud();renderAll();}
+// ===== GOOGLE CALENDAR INTEGRATION =====
+function addToCalendar(vaxId, apptDateStr){
+  const v = VACCINES.find(x=>x.id===vaxId);
+  if(!v) return;
+  const useDate = apptDateStr ? new Date(apptDateStr) : v.dueDate;
+  const pad2 = n=>String(n).padStart(2,'0');
+  const ymd = d=>d.getFullYear()+''+pad2(d.getMonth()+1)+''+pad2(d.getDate());
+  const start = ymd(useDate)+'T090000';
+  const end = ymd(useDate)+'T110000';
+  const title = encodeURIComponent('💉 วัคซีน: '+v.name+' — น้องต้าเหนิง');
+  const detail = encodeURIComponent(
+    'วัคซีน: '+v.name+'\n'+
+    'รายละเอียด: '+v.detail+'\n'+
+    'อายุที่ฉีด: '+(v.days===0?'แรกเกิด':v.days<30?v.days+' วัน':Math.floor(v.days/30)+' เดือน')+'\n\n'+
+    'บันทึกจากแอพ Da\'Neng Care'
+  );
+  const url = 'https://calendar.google.com/calendar/event?action=TEMPLATE&text='+title+'&dates='+start+'/'+end+'&details='+detail;
+  window.open(url,'_blank');
+}
+
+function addApptToCalendar(vaxId){
+  const appt = state.vaxAppt && state.vaxAppt[vaxId];
+  if(!appt){ alert('กรุณาเลือกวันนัดก่อนครับ'); return; }
+  addToCalendar(vaxId, appt);
+}
+
+function addCustomEventToCalendar(title, dateStr, detail, location){
+  const pad2 = n=>String(n).padStart(2,'0');
+  const d = new Date(dateStr);
+  const ymd = d.getFullYear()+''+pad2(d.getMonth()+1)+''+pad2(d.getDate());
+  const t = encodeURIComponent(title);
+  const dt = encodeURIComponent(detail||'');
+  const loc = encodeURIComponent(location||'โรงพยาบาลสระบุรี');
+  const url = 'https://calendar.google.com/calendar/event?action=TEMPLATE&text='+t+'&dates='+ymd+'T090000/'+ymd+'T110000&details='+dt+'&location='+loc;
+  window.open(url,'_blank');
+}
+
+function shareCalendarSetup(){
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:flex-end;justify-content:center;';
+  modal.innerHTML = `
+    <div style="background:var(--card);border-radius:20px 20px 0 0;padding:24px 20px 36px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;">
+      <div style="font-size:17px;font-weight:800;color:var(--tx);margin-bottom:6px;">📅 แชร์ Calendar ให้ครอบครัว</div>
+      <div style="font-size:12px;color:var(--tx3);margin-bottom:20px;line-height:1.7;">เมื่อแชร์แล้ว คุณแม่หรือสมาชิกครอบครัวจะเห็นนัดหมายทุกอย่างพร้อมกันแบบ real-time</div>
+      
+      <div style="background:var(--blueL);border-radius:12px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:10px;">วิธีแชร์ Google Calendar (ง่ายที่สุด)</div>
+        <div style="font-size:12px;color:var(--tx);line-height:2;">
+          1. เปิด <b>Google Calendar</b> ในมือถือ<br>
+          2. กดเมนู ☰ → เลือก Calendar ที่ต้องการแชร์<br>
+          3. กด ⚙️ → <b>Settings and sharing</b><br>
+          4. เลื่อนหา <b>Share with specific people</b><br>
+          5. ใส่ Email คุณแม่ → กด Send<br>
+          6. คุณแม่กด Accept ในอีเมล → เห็นนัดทันที ✅
+        </div>
+      </div>
+
+      <div style="background:var(--sageL);border-radius:12px;padding:16px;margin-bottom:20px;">
+        <div style="font-size:12px;font-weight:700;color:var(--sage);margin-bottom:10px;">💡 สิ่งที่ครอบครัวจะเห็นพร้อมกัน</div>
+        <div style="font-size:12px;color:var(--tx);line-height:2;">
+          ✅ นัดวัคซีนทุกเข็ม<br>
+          ✅ นัดหมอ / ผลตรวจ<br>
+          ✅ แจ้งเตือนล่วงหน้า 1 วัน + 2 ชั่วโมง<br>
+          ✅ รายละเอียดครบทุก event
+        </div>
+      </div>
+
+      <button onclick="this.closest('div[style*=fixed]').remove()" 
+        style="width:100%;background:var(--blue);color:white;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;">
+        เข้าใจแล้ว
+      </button>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e=>{ if(e.target===modal) modal.remove(); });
+}
+
+function saveVaxAppt(id,val){
+  if(!state.vaxAppt)state.vaxAppt={};
+  if(val)state.vaxAppt[id]=val;
+  else delete state.vaxAppt[id];
+  pushCloud();
+  // Update just the display label without full re-render
+  const lbl=document.getElementById('vappt-lbl-'+id);
+  if(lbl)lbl.textContent=val?'นัด: '+new Date(val).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'}):'';
+}
+
+function setTab(t){
+  document.querySelectorAll('.tab-c').forEach(e=>e.classList.remove('act'));
+  document.querySelectorAll('.nbtn').forEach(e=>{
+    e.classList.remove('act');
+    const ico=e.querySelector('.nbtn-ico');
+    if(ico)ico.style.background='';
+    const s=e.querySelector('svg');if(s)s.style.color='var(--tx3)';
+  });
+  const tab=document.getElementById('tab-'+t);if(tab)tab.classList.add('act');
+  const nb=document.getElementById('nav-'+t);
+  if(nb){
+    nb.classList.add('act');
+    const s=nb.querySelector('svg');if(s)s.style.color='white';
+  }
+  renderAll();
+  if(t==='health'){renderHealthTab();} if(t==='history'){histOffset=0;setRange(histRange);}
+}
+function setLT(t){
+  document.querySelectorAll('[id^="lt-"]').forEach(e=>e.classList.remove('act'));
+  document.querySelectorAll('[id^="ls-"]').forEach(e=>e.style.display='none');
+  document.getElementById('lt-'+t).classList.add('act');
+  document.getElementById('ls-'+t).style.display='block';
+  initTimeInputs();
+  renderAll();
+}
+function goTo(tab,lt){setTab(tab);if(lt)setLT(lt);}
+function setFT(t){fType=t;['breast','formula'].forEach(k=>{const e=document.getElementById('ft-'+k);if(e)e.className='tpill'+(k===t?' act':'');});document.getElementById('brF').style.display=t==='breast'?'block':'none';document.getElementById('foF').style.display=t==='formula'?'block':'none';}
+function setFS(s){fSide=s;['L','R','LR'].forEach(k=>{const e=document.getElementById('fs-'+k);if(e)e.className='tpill'+(k===s?' act':'');});}
+function setDT(t){dType=t;['wet','poop','both'].forEach(k=>{const e=document.getElementById('dt-'+k);if(e)e.className='tpill'+(k===t?' act act-amber':'');});}
+
+function renderAll(){renderHeader();renderHome();renderFeedLog();renderSleepLog();renderDiaperLog();renderWeightLog();renderNutrition();renderVaccines();renderPhoto();} // history tab renders only on explicit navigation, not on every renderAll
+
+// AI HOME CARD - greeting + rotating tip + news
+const AI_HOME_TIPS = [
+  'ทารกแรกเกิดมองเห็นได้ชัดที่สุดในระยะ 20–30 ซม. — ระยะห่างจากหน้าอกคุณแม่พอดีขณะให้นม',
+  'เสียงหัวใจและเสียงกลืนน้ำนมของแม่ในครรภ์ช่วยปลอบลูกได้ดี การโอบกอดสไตล์ swaddle จำลองความอบอุ่นนั้น',
+  'การสัมผัสผิวโดยตรง (skin-to-skin) 1 ชั่วโมงหลังคลอดช่วยควบคุมอุณหภูมิกายลูกและกระตุ้นน้ำนมแม่',
+  'ลูกร้องไม่ได้แปลว่าหิวเสมอไป ลองเช็ค: ผ้าอ้อมเปียก ร้อนเกินไป หรือต้องการสัมผัส',
+  'การพูดคุยกับลูกตั้งแต่วันแรก แม้เขายังไม่เข้าใจ ช่วยพัฒนาสมองส่วนภาษาได้อย่างมีนัยสำคัญ',
+  'นมแม่เปลี่ยนสารอาหารตามความต้องการของลูกในแต่ละช่วงวัย แม้แต่ภูมิคุ้มกันที่เด็กขาดก็จะเพิ่มขึ้น',
+  'จังหวะการหายใจของทารกแรกเกิดไม่สม่ำเสมอเป็นเรื่องปกติ แต่ถ้าหยุดเกิน 20 วิ ต้องพบแพทย์ทันที',
+  'การอาบแดดอ่อน 7–9 โมงเช้า ช่วยสร้าง Vitamin D และลดดีซ่านในทารกแรกเกิดได้ดี',
+];
+
+const AI_HOME_NEWS = [
+  // สิทธิ์ & นโยบายไทย (4 รายการล่าสุด)
+  {title:'สปสช 2568: คลินิกเด็กดี ฟรี 9 ครั้งใน 2 ปีแรก ตรวจพัฒนาการ วัคซีน ชั่งน้ำหนัก ไม่มีค่าใช้จ่าย', tag:'สปสช', cat:'th', url:'https://www.nhso.go.th/news/3618'},
+  {title:'สปสช 2568: ขยายสิทธิ์ฝากครรภ์ฟรี 5 ครั้ง + อัลตราซาวด์ 2 ครั้ง สำหรับมารดาบัตรทองทุกสิทธิ์', tag:'สปสช', cat:'th', url:'https://www.nhso.go.th/news/3595'},
+  {title:'สปสช 2568–2569: ขยายตรวจคัดกรองทารกแรกเกิด (Newborn Screening) เพิ่มเป็น 40 โรค ฟรีทุกสิทธิ์', tag:'สปสช', cat:'th', url:'https://www.nhso.go.th/news/3521'},
+  {title:'กรมอนามัย 2568: โครงการ 1,000 วันแรกแห่งชีวิต คู่มือดูแลทารกแรกเกิดถึง 2 ปี ดาวน์โหลดฟรี', tag:'สธ.', cat:'th', url:'https://hp.anamai.moph.go.th/th/1000-days'},
+  // วิชาการ & งานวิจัยระดับโลก (6 รายการ)
+  {title:'AAP 2024: Safe Sleep Guidelines ใหม่ แนะนอนในห้องเดียวกับพ่อแม่ไม่น้อยกว่า 6 เดือน หลีกเลี่ยงสิ่งของนุ่มในเตียง', tag:'AAP', cat:'intl', url:'https://publications.aap.org/pediatrics/article/153/3/e2023065055/196051'},
+  {title:'WHO 2024: ยืนยันนมแม่ล้วน 6 เดือนแรกลดความเสี่ยงโรคอ้วนในเด็กได้ 15–20% และเสริมภูมิคุ้มกัน', tag:'WHO', cat:'intl', url:'https://www.who.int/news/item/15-01-2024-new-lancet-series-on-breastfeeding'},
+  {title:'Lancet 2024: Skin-to-skin contact ใน 1 ชั่วโมงแรกหลังคลอดลด NICU admission ในทารกครบกำหนดได้ 25%', tag:'Lancet', cat:'intl', url:'https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(23)02221-6'},
+  {title:'NEJM 2024: วัคซีน RSV แบบ monoclonal antibody (nirsevimab) ป้องกันการนอนโรงพยาบาลในทารกแรกเกิดได้ 83%', tag:'NEJM', cat:'intl', url:'https://www.nejm.org/doi/full/10.1056/NEJMoa2309189'},
+  {title:'Nature 2024: การพูดคุยกับทารกตั้งแต่แรกเกิดวันละ 30 นาทีสัมพันธ์กับ vocabulary ที่สูงกว่า 300 คำในวัย 2 ปี', tag:'Nature', cat:'intl', url:'https://www.nature.com/articles/s41562-023-01807-6'},
+  {title:'UNICEF & WHO 2024: รายงานสถานการณ์โลก — ทารกเพียง 48% ได้รับนมแม่ใน 1 ชั่วโมงแรก เป้าหมายปี 2030 คือ 70%', tag:'UNICEF', cat:'intl', url:'https://www.unicef.org/reports/breastfeeding-report-2024'},
+];
+
+let aiHomeLastRender = 0;
+let aiHomeTipIdx = 0;
+
+function renderAIHomeCard(ageD){
+  const now = Date.now();
+  // Update tip every 4 hours
+  const fourHrs = 4 * 3600 * 1000;
+  if(now - aiHomeLastRender > fourHrs || aiHomeLastRender === 0){
+    aiHomeLastRender = now;
+    // Rotate tip based on time block
+    aiHomeTipIdx = Math.floor(now / fourHrs) % AI_HOME_TIPS.length;
+  }
+
+  // Greeting based on hour
+  const hr = new Date().getHours();
+  let greet = hr < 6 ? 'ดึกแล้วนะครับ คุณพ่อ' : hr < 12 ? 'สวัสดีตอนเช้าครับ คุณพ่อ' : hr < 17 ? 'สวัสดีตอนบ่ายครับ คุณพ่อ' : 'สวัสดีตอนเย็นครับ คุณพ่อ';
+  
+  const g = id => document.getElementById(id);
+  if(g('aiHomeGreeting')) g('aiHomeGreeting').textContent = greet;
+  if(g('aiHomeTip')) g('aiHomeTip').textContent = AI_HOME_TIPS[aiHomeTipIdx];
+
+  // Update time label
+  const lastUpdate = new Date(aiHomeLastRender);
+  const nextUpdate = new Date(aiHomeLastRender + fourHrs);
+  const minsLeft = Math.max(0, Math.floor((nextUpdate - now) / 60000));
+  const hLeft = Math.floor(minsLeft/60), mLeft = minsLeft % 60;
+  if(g('tipUpdateLabel')) g('tipUpdateLabel').textContent = `อัปเดตใน ${hLeft > 0 ? hLeft+'ชม. ' : ''}${mLeft}น.`;
+
+  // Render news
+  const newsEl = g('aiHomeNews');
+  if(newsEl && newsEl.querySelector('.ai-news-loading')){
+    const tagColors = {'สปสช':'rgba(255,190,60,0.35);color:#ffd580','สธ.':'rgba(255,130,80,0.35);color:#ffb088','AAP':'rgba(91,155,138,0.35);color:#7dd4c0','WHO':'rgba(80,160,220,0.35);color:#80c8ff','Lancet':'rgba(220,80,100,0.35);color:#ff9aaa','NEJM':'rgba(100,140,220,0.35);color:#a0c0ff','Nature':'rgba(160,100,220,0.35);color:#d0a0ff','UNICEF':'rgba(30,160,220,0.35);color:#60d0ff','Research':'rgba(140,180,100,0.35);color:#c0e080'};
+    const thNews = AI_HOME_NEWS.filter(n=>n.cat==='th').slice(0,4);
+    const intlNews = AI_HOME_NEWS.filter(n=>n.cat==='intl').slice(0,6);
+    const renderItem = n => {
+      const col = tagColors[n.tag]||'rgba(91,155,138,0.35);color:#7dd4c0';
+      const [bg,fg] = col.split(';color:');
+      return `<a href="${n.url}" target="_blank" rel="noopener" style="text-decoration:none;display:block;" class="ai-news-item">
+        <div class="ai-news-dot"></div>
+        <div style="flex:1;">
+          <span style="font-size:9px;background:${bg};color:${fg};padding:2px 7px;border-radius:10px;margin-right:6px;font-weight:700;display:inline-block;margin-bottom:3px;">${n.tag}</span>
+          <span style="color:rgba(255,255,255,0.75);font-size:12px;line-height:1.5;">${n.title}</span>
+          <div style="font-size:9px;color:rgba(255,255,255,0.3);margin-top:3px;">กดเพื่อดูข้อมูลต้นทาง ↗</div>
+        </div>
+      </a>`;
+    };
+    newsEl.innerHTML =
+      '<div style="font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,210,100,0.7);margin-bottom:8px;">สิทธิ์ & นโยบาย</div>' +
+      thNews.map(renderItem).join('') +
+      '<div style="font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin:12px 0 8px;">วิชาการ & งานวิจัย</div>' +
+      intlNews.map(renderItem).join('');
+  }
+}
+
+
+// ===== PDF MEDICAL REPORT EXPORT =====
+function exportMedicalPDF(){
+  const days = getDays()+1;
+  const ageD = days-1;
+  const now = new Date();
+  const thDate = now.toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
+  const birthDate = BIRTH.toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
+
+  // Collect last 7 days of data
+  const rows = [];
+  for(let i=Math.min(6,ageD); i>=0; i--){
+    const d = new Date(BIRTH); d.setDate(BIRTH.getDate()+i);
+    const ds = d.toDateString();
+    const s = getDaySummary(ds);
+    rows.push({
+      date: d.toLocaleDateString('th-TH',{day:'numeric',month:'short'}),
+      age: i+1,
+      feeds: s.feeds.length,
+      breast: s.breastCount,
+      formula: s.formulaCount,
+      ml: s.totalMl||0,
+      sleep: (s.sleepMin/60).toFixed(1),
+      wet: s.wet,
+      poop: s.poop,
+      weight: s.weights.length>0?s.weights[0].w:'—'
+    });
+  }
+
+  // Latest weight
+  const allW = state.weights.slice().sort((a,b)=>new Date(b.d)-new Date(a.d));
+  const latestW = allW.length>0?allW[0].w+'  กก.':'ไม่มีข้อมูล';
+
+  // Build pump summary for PDF
+  var pumpAllLogs = state.pumpLogs||[];
+  var pumpPdfSection = '';
+  if(pumpAllLogs.length>0){
+    var pumpAllOz = pumpAllLogs.reduce(function(s,p){return s+p.oz;},0);
+    var pumpAllMl = Math.round(pumpAllOz*29.5735);
+    var pumpUniqueDays = [...new Set(pumpAllLogs.map(function(p){return p.d;}))];
+    var pumpAvgDay = (pumpAllOz/pumpUniqueDays.length).toFixed(1);
+    var pumpAvgSess = (pumpAllOz/pumpAllLogs.length).toFixed(1);
+    // Build daily rows (last 7 days)
+    var pumpDates = pumpUniqueDays.sort(function(a,b){return new Date(b)-new Date(a);}).slice(0,7);
+    var pumpTableRows = pumpDates.map(function(d){
+      var dl = pumpAllLogs.filter(function(p){return p.d===d;}).sort(function(a,b){return new Date(a.t)-new Date(b.t);});
+      var dOz = dl.reduce(function(s,p){return s+p.oz;},0);
+      var dMl = Math.round(dOz*29.5735);
+      var dateDisp = new Date(dl[0].t).toLocaleDateString('th-TH',{day:'numeric',month:'short'});
+      var sessions = dl.map(function(p){return fmtT(p.t)+' = '+p.oz+' oz';}).join('<br>');
+      return '<tr><td>'+dateDisp+'</td><td style="font-size:11px;">'+sessions+'</td><td><strong>'+dOz.toFixed(1)+' oz</strong><br><small>'+dMl+' ml</small></td></tr>';
+    }).join('');
+    pumpPdfSection = '<div style="margin-bottom:8px;display:flex;gap:20px;flex-wrap:wrap;">'
+      +'<div><span style="color:#666;">รวมทั้งหมด:</span> <strong>'+pumpAllOz.toFixed(1)+' oz ('+pumpAllMl.toLocaleString()+' ml)</strong></div>'
+      +'<div><span style="color:#666;">จำนวนครั้ง:</span> <strong>'+pumpAllLogs.length+' ครั้ง</strong></div>'
+      +'<div><span style="color:#666;">วันที่บันทึก:</span> <strong>'+pumpUniqueDays.length+' วัน</strong></div>'
+      +'<div><span style="color:#666;">เฉลี่ย/วัน:</span> <strong>'+pumpAvgDay+' oz</strong></div>'
+      +'<div><span style="color:#666;">เฉลี่ย/ครั้ง:</span> <strong>'+pumpAvgSess+' oz</strong></div>'
+      +'</div>'
+      +'<table><thead><tr><th>วันที่</th><th>รายละเอียด</th><th>รวม</th></tr></thead><tbody>'+pumpTableRows+'</tbody></table>'
+      +'<p style="font-size:10px;color:#888;margin-top:6px;">* แสดง 7 วันล่าสุด</p>';
+  } else {
+    pumpPdfSection = '<p style="color:#888;font-size:12px;">ยังไม่มีข้อมูลการปั๊มนม</p>';
+  }
+
+  // Build vaccine rows
+  const vaxRows = VACCINES.map(v=>{
+    const done = state.doneVax[v.id];
+    const dueDate = new Date(BIRTH.getTime()+v.days*86400000);
+    const dueTh = dueDate.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});
+    const age = v.days===0?'แรกเกิด':v.days<30?v.days+' วัน':Math.floor(v.days/30)+' เดือน';
+    const dLeft = Math.ceil((dueDate-Date.now())/86400000);
+    const statusBadge = done
+      ? '<span class="badge badge-ok">✓ ฉีดแล้ว</span>'
+      : dLeft<0
+        ? '<span class="badge badge-bad">เลยกำหนด '+Math.abs(dLeft)+' วัน</span>'
+        : dLeft<=30
+          ? '<span class="badge badge-warn">อีก '+dLeft+' วัน</span>'
+          : '<span style="color:#888;font-size:11px;">อีก '+dLeft+' วัน</span>';
+    const doneDateStr = done ? dueDate.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'}) : '—';
+    const apptDate = !done && state.vaxAppt && state.vaxAppt[v.id]
+      ? '<div style="font-size:10px;color:#d97706;margin-top:3px;">📅 นัด: '+new Date(state.vaxAppt[v.id]).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'})+'</div>'
+      : '';
+    return '<tr><td><strong>'+v.name+'</strong></td><td style="font-size:11px;color:#555;">'+v.detail+'</td><td>'+dueTh+'<br><small style="color:#888;">อายุ '+age+'</small></td><td>'+doneDateStr+apptDate+'</td><td>'+statusBadge+'</td></tr>';
+  }).join('');
+
+  const tableRows = rows.map(r=>`
+    <tr>
+      <td>${r.date}</td><td>${r.age}</td>
+      <td>${r.feeds} มื้อ<br><small>แม่ ${r.breast} / สูตร ${r.formula}${r.ml?' ('+r.ml+' มล.)':''}</small></td>
+      <td>${r.sleep} ชม.</td>
+      <td>${r.wet+r.poop} ครั้ง<br><small>เปียก ${r.wet} / ถ่าย ${r.poop}</small></td>
+      <td>${r.weight!=='—'?r.weight+' กก.':'—'}</td>
+    </tr>`).join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>รายงานสุขภาพทารก — ธราพิชญ์ สารีคำ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Noto Sans Thai',sans-serif;font-size:13px;color:#1a1a2e;background:#fff;padding:32px 40px;}
+  .header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2.5px solid #1a3a6b;padding-bottom:16px;margin-bottom:20px;}
+  .logo-area{display:flex;flex-direction:column;gap:4px;}
+  .doc-title{font-size:20px;font-weight:700;color:#1a3a6b;letter-spacing:-0.3px;}
+  .doc-sub{font-size:11px;color:#666;margin-top:2px;}
+  .doc-no{font-size:11px;color:#888;text-align:right;}
+  .section{margin-bottom:20px;}
+  .sec-title{font-size:12px;font-weight:700;color:#1a3a6b;text-transform:uppercase;letter-spacing:0.8px;border-left:3px solid #1a3a6b;padding-left:8px;margin-bottom:10px;}
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px;}
+  .info-row{display:flex;gap:8px;font-size:12.5px;padding:4px 0;border-bottom:1px solid #f0f0f0;}
+  .info-lbl{color:#666;min-width:130px;flex-shrink:0;}
+  .info-val{font-weight:600;color:#1a1a2e;}
+  table{width:100%;border-collapse:collapse;font-size:12px;}
+  thead tr{background:#1a3a6b;color:white;}
+  thead th{padding:8px 10px;text-align:left;font-weight:600;font-size:11px;}
+  tbody tr:nth-child(even){background:#f7f9fc;}
+  tbody td{padding:7px 10px;border-bottom:1px solid #e8ecf4;vertical-align:top;line-height:1.5;}
+  tbody td small{color:#888;font-size:10.5px;}
+  .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+  .badge-ok{background:#e8f5e9;color:#2e7d32;}
+  .badge-warn{background:#fff8e1;color:#f57f17;}
+  .badge-bad{background:#ffebee;color:#c62828;}
+  .footer{margin-top:28px;padding-top:14px;border-top:1px solid #ddd;display:flex;justify-content:space-between;font-size:10.5px;color:#888;}
+  .sig-area{margin-top:32px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;}
+  .sig-box{border-top:1px solid #999;padding-top:6px;font-size:11px;color:#555;text-align:center;}
+  .notice{background:#f0f4ff;border:1px solid #c5d3f0;border-radius:6px;padding:10px 14px;font-size:11px;color:#3a4a7a;margin-bottom:16px;}
+  @media print{body{padding:20px 28px;} .no-print{display:none;}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo-area">
+    <div class="doc-title">รายงานบันทึกสุขภาพทารก</div>
+    <div class="doc-sub">Newborn Health Record — สำหรับใช้ประกอบการพบแพทย์</div>
+  </div>
+  <div class="doc-no">
+    <div>วันที่พิมพ์: ${thDate}</div>
+    <div style="margin-top:4px;">เอกสาร: NHR-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-title">ข้อมูลผู้ป่วย</div>
+  <div class="info-grid">
+    <div>
+      <div class="info-row"><span class="info-lbl">ชื่อ-สกุล</span><span class="info-val">ธราพิชญ์ สารีคำ</span></div>
+      <div class="info-row"><span class="info-lbl">ชื่อเล่น</span><span class="info-val">ต้าเหนิง</span></div>
+      <div class="info-row"><span class="info-lbl">วันเกิด</span><span class="info-val">${birthDate}</span></div>
+      <div class="info-row"><span class="info-lbl">อายุ ณ วันนี้</span><span class="info-val">${days} วัน (${Math.floor(days/7)} สัปดาห์ ${days%7} วัน)</span></div>
+    </div>
+    <div>
+      <div class="info-row"><span class="info-lbl">เพศ</span><span class="info-val">ชาย</span></div>
+      <div class="info-row"><span class="info-lbl">น้ำหนักล่าสุด</span><span class="info-val">${latestW}</span></div>
+      <div class="info-row"><span class="info-lbl">ผู้บันทึก</span><span class="info-val">บิดา (แอปพลิเคชัน Da'Neng Care)</span></div>
+      <div class="info-row"><span class="info-lbl">ช่วงข้อมูล</span><span class="info-val">7 วันย้อนหลัง</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-title">บันทึกการดูแลรายวัน (7 วันล่าสุด)</div>
+  <table>
+    <thead>
+      <tr>
+        <th>วันที่</th><th>อายุ (วัน)</th><th>การให้นม</th><th>การนอนหลับ</th><th>การขับถ่าย</th><th>น้ำหนัก</th>
+      </tr>
+    </thead>
+    <tbody>${tableRows}</tbody>
+  </table>
+</div>
+
+<div class="section">
+  <div class="sec-title">เกณฑ์อ้างอิง (AAP / WHO)</div>
+  <div class="info-grid">
+    <div>
+      <div class="info-row"><span class="info-lbl">จำนวนมื้อนม</span><span class="info-val">8–12 มื้อ/วัน</span></div>
+      <div class="info-row"><span class="info-lbl">ชั่วโมงนอน</span><span class="info-val">16–18 ชั่วโมง/วัน</span></div>
+    </div>
+    <div>
+      <div class="info-row"><span class="info-lbl">ผ้าอ้อมเปียก</span><span class="info-val">≥6 ครั้ง/วัน</span></div>
+      <div class="info-row"><span class="info-lbl">การถ่าย</span><span class="info-val">3–4 ครั้ง/วัน (แรกเกิด)</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-title">ประวัติการฉีดวัคซีน</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:28%">วัคซีน</th>
+        <th style="width:28%">รายละเอียด</th>
+        <th style="width:16%">กำหนดฉีด</th>
+        <th style="width:16%">วันที่ฉีด</th>
+        <th style="width:12%">สถานะ</th>
+      </tr>
+    </thead>
+    <tbody>${vaxRows}</tbody>
+  </table>
+</div>
+
+<div class="section">
+  <div class="sec-title">สรุปการปั๊มนม (คุณแม่)</div>
+  ${pumpPdfSection}
+</div>
+
+<div class="notice">
+  ⚠️ เอกสารนี้จัดทำโดยแอปพลิเคชันบันทึกการดูแลทารก ข้อมูลทั้งหมดบันทึกโดยผู้ดูแล เป็นข้อมูลเสริมสำหรับแพทย์ ไม่ใช่เอกสารทางการแพทย์อย่างเป็นทางการ
+</div>
+
+<div class="sig-area">
+  <div class="sig-box">ลายมือชื่อผู้ดูแล<br><br><br>วันที่ .................</div>
+  <div class="sig-box">ลายมือชื่อแพทย์<br><br><br>วันที่ .................</div>
+  <div class="sig-box">ตราสถานพยาบาล<br><br><br>&nbsp;</div>
+</div>
+
+<div class="footer">
+  <span>Da'Neng Care App — ระบบบันทึกการดูแลทารก</span>
+  <span>พิมพ์เมื่อ ${now.toLocaleString('th-TH')} น.</span>
+</div>
+
+<script>window.onload=function(){window.print();}<\/script>
+</body>
+</html>`;
+
+  const win = window.open('','_blank');
+  win.document.write(html);
+  win.document.close();
+}
+
+
+// ===== PUMP LOG =====
+function initPumpTime(){
+  var el=document.getElementById('pumpTimeIn');
+  if(el&&!el.value){var n=new Date();el.value=pad(n.getHours())+':'+pad(n.getMinutes());}
+  var dl=document.getElementById('pumpDateIn');
+  if(dl&&!dl.value){var nd=new Date();var mm=pad(nd.getMonth()+1);var dd=pad(nd.getDate());dl.value=nd.getFullYear()+'-'+mm+'-'+dd;}
+}
+
+function addPumpLog(){
+  var dEl=document.getElementById('pumpDateIn');
+  var tEl=document.getElementById('pumpTimeIn');
+  var aEl=document.getElementById('pumpAmtIn');
+  if(!tEl||!aEl)return;
+  var t=tEl.value;
+  var a=parseFloat(aEl.value);
+  if(!t||isNaN(a)||a<=0){alert('กรุณาใส่เวลาและปริมาณครับ');return;}
+  // Build datetime from selected date+time
+  var dateVal=dEl&&dEl.value?dEl.value:'';
+  var parts=t.split(':');
+  var dt;
+  if(dateVal){
+    dt=new Date(dateVal+'T'+parts[0]+':'+parts[1]+':00');
+  } else {
+    dt=new Date();dt.setHours(parseInt(parts[0]),parseInt(parts[1]),0,0);
+  }
+  var entryDate=dt.toDateString();
+  if(!state.pumpLogs)state.pumpLogs=[];
+  state.pumpLogs.push({id:Date.now(),d:entryDate,t:dt.toISOString(),oz:a,who:cfg.who||'แม่'});
+  aEl.value='';
+  pushCloud();
+  renderPumpLog();
+}
+
+function deletePumpLog(id){
+  if(!state.pumpLogs)return;
+  state.pumpLogs=state.pumpLogs.filter(function(p){return p.id!==id;});
+  pushCloud();
+  renderPumpLog();
+}
+
+function renderPumpLog(){
+  var td=today();
+  var listEl=document.getElementById('pumpLogList');
+  var totalEl=document.getElementById('pumpTotalToday');
+  var mlEl=document.getElementById('pumpTotalMlToday');
+  var statsBar=document.getElementById('pumpStatsBar');
+  var statCount=document.getElementById('pumpStatCount');
+  var statAvg=document.getElementById('pumpStatAvg');
+  var statMl=document.getElementById('pumpStatMl');
+  if(!listEl)return;
+  if(!state.pumpLogs)state.pumpLogs=[];
+
+  var todayLogs=state.pumpLogs.filter(function(p){return p.d===td;});
+  todayLogs.sort(function(a,b){return new Date(a.t)-new Date(b.t);});
+  var totalOz=todayLogs.reduce(function(s,p){return s+p.oz;},0);
+  var totalMl=Math.round(totalOz*29.5735);
+  var avgOz=todayLogs.length?+(totalOz/todayLogs.length).toFixed(1):0;
+
+  if(totalEl)totalEl.innerHTML=totalOz.toFixed(1)+'<span style="font-size:13px;font-weight:600;margin-left:1px;">oz</span>';
+  if(mlEl)mlEl.textContent=totalMl+' ml · รวมวันนี้';
+  if(statsBar)statsBar.style.display=todayLogs.length?'flex':'none';
+  if(statCount)statCount.textContent=todayLogs.length;
+  if(statAvg)statAvg.textContent=avgOz;
+  if(statMl)statMl.textContent=totalMl;
+
+  var allDates=[...new Set(state.pumpLogs.map(function(p){return p.d;}))];
+  allDates.sort(function(a,b){return new Date(b)-new Date(a);});
+
+  // Overall summary
+  var allSumEl=document.getElementById('pumpAllSummary');
+  var allOzEl=document.getElementById('pumpAllOz');
+  var allMlEl=document.getElementById('pumpAllMl');
+  var allSessEl=document.getElementById('pumpAllSessions');
+  var allDaysEl=document.getElementById('pumpAllDays');
+  var avgDayEl=document.getElementById('pumpAvgPerDay');
+  var avgSessEl=document.getElementById('pumpAvgPerSession');
+  if(state.pumpLogs.length>0 && allSumEl){
+    var allOz=state.pumpLogs.reduce(function(s,p){return s+p.oz;},0);
+    var allMl=Math.round(allOz*29.5735);
+    var uniqueDays=[...new Set(state.pumpLogs.map(function(p){return p.d;}))].length;
+    allSumEl.style.display='block';
+    if(allOzEl)allOzEl.textContent=allOz.toFixed(1);
+    if(allMlEl)allMlEl.textContent=allMl.toLocaleString();
+    if(allSessEl)allSessEl.textContent=state.pumpLogs.length;
+    if(allDaysEl)allDaysEl.textContent=uniqueDays;
+    if(avgDayEl)avgDayEl.textContent=(allOz/uniqueDays).toFixed(1)+' oz';
+    if(avgSessEl)avgSessEl.textContent=(allOz/state.pumpLogs.length).toFixed(1)+' oz';
+  } else if(allSumEl){
+    allSumEl.style.display='none';
+  }
+
+  if(!allDates.length){
+    listEl.innerHTML='<div class="empty">ยังไม่มีการบันทึก</div>';
+    return;
+  }
+
+  var html='';
+  for(var di=0;di<allDates.length;di++){
+    var d=allDates[di];
+    var logs=state.pumpLogs.filter(function(p){return p.d===d;});
+    logs.sort(function(a,b){return new Date(a.t)-new Date(b.t);});
+    var dayOz=logs.reduce(function(s,p){return s+p.oz;},0);
+    var dayMl=Math.round(dayOz*29.5735);
+    var isToday=d===td;
+    var dateObj=new Date(logs[0].t);
+    var dayLabel=isToday?'วันนี้':dateObj.toLocaleDateString('th-TH',{weekday:'short',day:'numeric',month:'short'});
+    html+='<div style="margin-bottom:14px;">';
+    html+='<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:6px;border-bottom:1.5px solid var(--border);margin-bottom:6px;">';
+    html+='<div style="font-size:12px;font-weight:700;color:var(--tx);">'+dayLabel+'</div>';
+    html+='<div style="font-size:13px;font-weight:800;color:var(--sage);">'+dayOz.toFixed(1)+' oz <span style="color:var(--tx3);font-size:10px;font-weight:500;">('+dayMl+' ml)</span></div>';
+    html+='</div>';
+    for(var li=0;li<logs.length;li++){
+      var p=logs[li];
+      html+='<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);">';
+      html+='<div style="display:flex;align-items:center;gap:10px;">';
+      html+='<span style="font-size:13px;font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums;">'+fmtT(p.t)+'</span>';
+      html+='<span style="background:var(--sageL);color:var(--sage);border-radius:20px;padding:2px 10px;font-size:13px;font-weight:700;">'+p.oz+' oz</span>';
+      html+='<span style="font-size:11px;color:var(--tx3);">'+Math.round(p.oz*29.5735)+' ml</span>';
+      html+='</div>';
+      html+='<button onclick="deletePumpLog('+p.id+')" style="background:none;border:none;cursor:pointer;color:var(--tx3);font-size:16px;padding:4px;">×</button>';
+      html+='</div>';
+    }
+    html+='</div>';
+  }
+  listEl.innerHTML=html;
+}
+
+
+function updateBabyNameUI(){
+  var nick = cfg.babyNick || cfg.babyName || 'Baby';
+  var full = cfg.babyName || nick;
+  var els = {
+    'hdr-name': nick,
+    'hero-nick': nick,
+    'baby-fullname': full,
+  };
+  Object.keys(els).forEach(function(cls){
+    document.querySelectorAll('.'+cls).forEach(function(el){ el.textContent = els[cls]; });
+  });
+  // Also update title elements that have id
+  ['hdrBabyName','heroBabyName'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.textContent = nick;
+  });
+  // Update BIRTH if cfg has DOB
+  if(cfg.babyDOB){
+    var dobStr = cfg.babyDOB + 'T' + (cfg.babyTOB||'14:48') + ':00';
+    window.BIRTH = new Date(dobStr);
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HEALTH MONITORING — Period Checklists + Observation Log
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Observation log stored in state
+// state.healthObs = [{id, t, cat, text, d}]
+
+function initHealthObs(){
+  if(!state.healthObs) state.healthObs = [];
+  var el = document.getElementById('healthObsTime');
+  if(el && !el.value){ var n=new Date(); el.value=pad(n.getHours())+':'+pad(n.getMinutes()); }
+}
+
+function addHealthObs(){
+  var txt = document.getElementById('healthObsInput');
+  var cat = document.getElementById('healthObsCat');
+  var tEl = document.getElementById('healthObsTime');
+  if(!txt || !txt.value.trim()){ showToast('กรุณาใส่สิ่งที่สังเกต'); return; }
+  if(!state.healthObs) state.healthObs = [];
+  var parts = (tEl.value||'00:00').split(':');
+  var dt = new Date(); dt.setHours(parseInt(parts[0]),parseInt(parts[1]),0,0);
+  state.healthObs.unshift({
+    id: Date.now(),
+    t: dt.toISOString(),
+    d: today(),
+    cat: cat.value,
+    text: txt.value.trim()
+  });
+  txt.value = '';
+  pushCloud();
+  renderHealthObs();
+  renderHealthChecklist();
+}
+
+function deleteHealthObs(id){
+  if(!state.healthObs) return;
+  state.healthObs = state.healthObs.filter(function(o){ return o.id !== id; });
+  pushCloud(); renderHealthObs();
+}
+
+var CAT_LABEL = {
+  milestone:'🎯 Milestone', seizure:'⚠️ ชัก', feeding:'🍼 การกิน',
+  motor:'💪 กล้ามเนื้อ', vision:'👁 ตา', general:'📝 ทั่วไป'
+};
+var CAT_COLOR = {
+  milestone:'var(--sage)', seizure:'var(--red)', feeding:'var(--blue)',
+  motor:'var(--amber)', vision:'#7c3aed', general:'var(--tx3)'
+};
+
+function renderHealthObs(){
+  var el = document.getElementById('healthObsList');
+  if(!el) return;
+  if(!state.healthObs) state.healthObs = [];
+  if(!state.healthObs.length){
+    el.innerHTML='<div class="empty">ยังไม่มีการบันทึก</div>'; return;
+  }
+  el.innerHTML = state.healthObs.slice(0,30).map(function(o){
+    var col = CAT_COLOR[o.cat]||'var(--tx3)';
+    var lbl = CAT_LABEL[o.cat]||o.cat;
+    var seizureWarn = o.cat==='seizure'
+      ? '<div style="font-size:10px;color:var(--red);font-weight:700;margin-top:3px;">⚠️ แจ้งหมอในนัดถัดไปหรือทันทีถ้ารุนแรง</div>'
+      : '';
+    return '<div style="padding:10px 0;border-bottom:1px solid var(--border);">'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
+      +'<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(0,0,0,0.05);color:'+col+';">'+lbl+'</span>'
+      +'<span style="font-size:11px;color:var(--tx3);">'+fmtT(o.t)+'</span>'
+      +'<button onclick="deleteHealthObs('+o.id+')" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--tx3);font-size:15px;">×</button>'
+      +'</div>'
+      +'<div style="font-size:13px;color:var(--tx);line-height:1.6;">'+o.text+'</div>'
+      + seizureWarn
+      +'</div>';
+  }).join('');
+}
+
+// ─── PERIOD CHECKLISTS ─────────────────────────────────────────────────────
+
+var HEALTH_PERIODS = [
+  {
+    label: 'แรกเกิด — 1 เดือน (0-4 สัปดาห์)',
+    minDays: 0, maxDays: 30,
+    redFlags: [
+      'ตัวเหลืองมากขึ้นหลังวันที่ 5 หรือยังเหลืองหลัง 2 สัปดาห์',
+      'หายใจหยุด > 20 วินาที หรือหายใจเร็ว > 60 ครั้ง/นาที',
+      'ดูดนมไม่ได้เลย ซึม ไม่ตื่นให้กิน',
+      'ตาขาวมีหนองหรือแดงมาก',
+      'สะดือบวมแดง มีกลิ่น หรือมีหนอง',
+    ],
+    milestones: [
+      'ตอบสนองต่อเสียงดัง (สะดุ้ง)',
+      'มองหน้าคนที่อยู่ห่าง 20-30 ซม.',
+      'กำมือสะท้อน (Grasp reflex)',
+      'รีเฟล็กซ์ดูดนม (Sucking reflex)',
+      'ขาเตะเมื่อถูกกระตุ้น',
+    ],
+    watch: [
+      'ลูกสำลักนมทุกมื้อหรือบ่อยผิดปกติ',
+      'ตาเหล่ตลอดเวลา (บางครั้งปกติ แต่ถ้าตลอดเวลาควรแจ้ง)',
+      'แขนหรือขาข้างใดข้างหนึ่งไม่ขยับเลย',
+    ]
+  },
+  {
+    label: '1–3 เดือน',
+    minDays: 31, maxDays: 90,
+    redFlags: [
+      'ไม่ยิ้มตอบสนองเลยตอนอายุ 2 เดือน',
+      'ไม่มองตามสิ่งของที่เคลื่อนไหว',
+      'ศีรษะอ่อนแอมากผิดปกติ ไม่พัฒนาเลย',
+      'ชักหรือมีอาการสั่นแบบผิดปกติ',
+    ],
+    milestones: [
+      'ยิ้มตอบสนอง (Social smile) — อายุ ~6 สัปดาห์',
+      'ตามมองวัตถุที่เคลื่อนไหว 90-180 องศา',
+      'ออกเสียง "อา อู" (Cooing)',
+      'ยกศีรษะได้ขณะนอนคว่ำ 45 องศา',
+      'มองหน้าและตาคนที่คุยด้วย',
+    ],
+    watch: [
+      'ตาเหล่หรือมองไม่ตรง 2 ข้างไม่เท่ากัน',
+      'กล้ามเนื้อแข็งเกร็งมากผิดปกติ หรืออ่อนแรงมาก',
+      'ไม่สนใจเสียงพ่อแม่เลย',
+    ]
+  },
+  {
+    label: '3–6 เดือน',
+    minDays: 91, maxDays: 180,
+    redFlags: [
+      'ไม่ยกศีรษะได้เลยตอนอายุ 4 เดือน',
+      'ไม่หัวเราะหรือส่งเสียงเลย',
+      'ไม่สนใจมองสิ่งแวดล้อม',
+      'ชักหรือกระตุกที่สงสัยว่า seizure',
+    ],
+    milestones: [
+      'คว่ำเองได้ (Rolls front to back)',
+      'นั่งพยุงได้ชั่วคราวเมื่อจับพยุง',
+      'หัวเราะ ส่งเสียงดังสนุก',
+      'ยื่นมือหยิบของ',
+      'หันศีรษะตามเสียง',
+      'รู้จักหน้าพ่อแม่ ยิ้มทักทาย',
+    ],
+    watch: [
+      'น้ำหนักตัวไม่เพิ่มเลย หรือลดลง',
+      'ไม่สามารถรับน้ำหนักขาได้เลยเมื่อพยุงยืน',
+      'แขน 2 ข้าง หรือขา 2 ข้าง ไม่แข็งแรงเท่ากัน',
+    ]
+  },
+  {
+    label: '6–9 เดือน',
+    minDays: 181, maxDays: 270,
+    redFlags: [
+      'ไม่นั่งได้เลยตอนอายุ 9 เดือน',
+      'ไม่คลานหรือพยายามเคลื่อนไหวเลย',
+      'ไม่พูดเสียงพยัญชนะ ba, da, ma',
+      'ไม่โต้ตอบเมื่อเรียกชื่อ',
+    ],
+    milestones: [
+      'นั่งได้โดยไม่ต้องพยุง',
+      'คลาน (อาจคลานแบบท้องลาก หรือ 4 ขา)',
+      'พูดเสียง ba-ba, da-da, ma-ma',
+      'เล่น Peek-a-boo เข้าใจ',
+      'จับของด้วยนิ้ว Pincer grasp เริ่มพัฒนา',
+      'กินอาหารเสริมชิ้นเล็กได้',
+    ],
+    watch: [
+      'ขากรรไกรหรือการกัดผิดรูปเพิ่มขึ้น (เพดานโหว่)',
+      'การได้ยิน — ไม่หันตามเสียง ไม่ตกใจเมื่อมีเสียงดัง',
+      'Sacral dimple: ขาสองข้างแข็งแรงเท่ากันไหม',
+    ]
+  },
+  {
+    label: '9–12 เดือน',
+    minDays: 271, maxDays: 365,
+    redFlags: [
+      'ไม่ยืนพยุงได้เลยตอนอายุ 12 เดือน',
+      'ไม่พูดคำศัพท์หรือเสียงที่มีความหมายเลย',
+      'ไม่ชี้นิ้วหรือแสดงความสนใจสิ่งต่างๆ',
+      'เดินผิดปกติมาก หรือขาข้างหนึ่งลาก',
+    ],
+    milestones: [
+      'ยืนพยุงขอบได้',
+      'เดินจูงมือ หรือเดินได้เอง (บางคน)',
+      'พูดคำที่มีความหมาย 1-2 คำ',
+      'ชี้นิ้วบอกสิ่งที่ต้องการ',
+      'เข้าใจคำสั่งง่ายๆ "มาหาพ่อ", "หยุด"',
+      'เล่น Clapping hands',
+    ],
+    watch: [
+      'ไม่มีอาการ Stranger anxiety เลย (อาจเป็น social cue ผิดปกติ)',
+      'การพูด: ถ้าไม่มีเสียงหรือคำเดียวเลย — ต้องตรวจการได้ยิน',
+      'การเดิน: Toe-walking หรือเดินไม่มั่นคงมาก',
+    ]
+  },
+  {
+    label: '12–18 เดือน',
+    minDays: 366, maxDays: 548,
+    redFlags: [
+      'ไม่เดินได้เองเลยตอนอายุ 18 เดือน',
+      'พูดได้น้อยกว่า 6 คำตอนอายุ 18 เดือน',
+      'เสียพัฒนาการที่เคยทำได้ (regression)',
+      'ชักบ่อยกว่า 1 ครั้งต่อเดือน',
+    ],
+    milestones: [
+      'เดินได้มั่นคง',
+      'วิ่งได้ (อาจล้มบ้าง)',
+      'พูดได้ 6-20 คำ',
+      'ชี้รูปภาพในหนังสือได้',
+      'ทำตามคำสั่ง 2 ขั้นตอน',
+      'เริ่มกินข้าวเองด้วยช้อน (บางส่วน)',
+    ],
+    watch: [
+      'การพูดล่าช้า — ต้องประเมิน Speech therapy',
+      'เดิน Toe-walking อย่างต่อเนื่อง — ตรวจ Spinal cord',
+      'พฤติกรรมซ้ำๆ หรือไม่สบตา — ประเมิน ASD',
+    ]
+  },
+  {
+    label: '18–24 เดือน',
+    minDays: 549, maxDays: 730,
+    redFlags: [
+      'ไม่พูดประโยค 2 คำเลยตอนอายุ 2 ขวบ',
+      'ไม่เล่นสมมติเลย (Symbolic play)',
+      'ไม่ทำตามคำสั่ง 2 ขั้นตอน',
+      'เดินไม่มั่นคงหรือล้มบ่อยผิดปกติ',
+    ],
+    milestones: [
+      'พูดประโยค 2 คำ เช่น "กินข้าว" "ไปเล่น"',
+      'คำศัพท์ 50+ คำ',
+      'เล่นสมมติ (เล่นครัว, เล่นตุ๊กตา)',
+      'วิ่ง ปีนขั้นบันไดได้',
+      'ใช้ช้อนส้อมได้บ้าง',
+      'ชี้อวัยวะในร่างกายตามที่บอกได้',
+    ],
+    watch: [
+      'ยังปัสสาวะรดที่นอนบ่อยผิดปกติ (อาจเป็น bladder/spinal cord)',
+      'เดิน Toe-walk ยังคงต่อเนื่อง',
+      'ไม่สนใจเพื่อนหรือเด็กคนอื่นเลย',
+    ]
+  },
+];
+
+function renderHealthChecklist(){
+  var wrap = document.getElementById('healthChecklistWrap');
+  if(!wrap) return;
+  var ageD = getDays();
+  var period = null;
+  for(var i=0; i<HEALTH_PERIODS.length; i++){
+    if(ageD >= HEALTH_PERIODS[i].minDays && ageD <= HEALTH_PERIODS[i].maxDays){
+      period = HEALTH_PERIODS[i]; break;
+    }
+  }
+  if(!period){
+    // Use last period if beyond
+    period = ageD > 730 ? HEALTH_PERIODS[HEALTH_PERIODS.length-1] : HEALTH_PERIODS[0];
+  }
+
+  var html = '<div class="card" style="margin-bottom:12px;border-left:3px solid var(--red);">'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
+    +'<div style="background:var(--red-l);border-radius:8px;padding:6px;"><svg width="16" height="16" style="color:var(--red)"><use href="#i-heart"/></svg></div>'
+    +'<div><div class="clbl" style="margin-bottom:0;color:var(--red);">⚠️ สัญญาณอันตราย — พาหมอทันที</div>'
+    +'<div style="font-size:10px;color:var(--tx3);">'+period.label+'</div></div>'
+    +'</div>'
+    + period.redFlags.map(function(f){
+        return '<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--border);">'
+          +'<div style="width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:5px;"></div>'
+          +'<div style="font-size:12.5px;color:var(--tx);line-height:1.5;">'+f+'</div>'
+          +'</div>';
+      }).join('')
+    +'</div>';
+
+  html += '<div class="card" style="margin-bottom:12px;border-left:3px solid var(--sage);">'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
+    +'<div style="background:var(--sage-l);border-radius:8px;padding:6px;"><svg width="16" height="16" style="color:var(--sage)"><use href="#i-check"/></svg></div>'
+    +'<div><div class="clbl" style="margin-bottom:0;color:var(--sage);">🎯 Milestone ที่ควรสังเกต</div>'
+    +'<div style="font-size:10px;color:var(--tx3);">'+period.label+'</div></div>'
+    +'</div>'
+    + period.milestones.map(function(m){
+        return '<div style="display:flex;gap:9px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--border);">'
+          +'<div style="width:16px;height:16px;border-radius:4px;border:1.5px solid var(--sage);flex-shrink:0;margin-top:2px;background:white;"></div>'
+          +'<div style="font-size:12.5px;color:var(--tx);line-height:1.5;">'+m+'</div>'
+          +'</div>';
+      }).join('')
+    +'</div>';
+
+  html += '<div class="card" style="margin-bottom:12px;border-left:3px solid var(--amber);">'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
+    +'<div style="background:var(--amber-l);border-radius:8px;padding:6px;"><svg width="16" height="16" style="color:var(--amber)"><use href="#i-bottle"/></svg></div>'
+    +'<div><div class="clbl" style="margin-bottom:0;color:var(--amber);">👁 สิ่งที่ต้องสังเกตเพิ่มเติม</div>'
+    +'<div style="font-size:10px;color:var(--tx3);">เฉพาะน้องต้าเหนิง — ASP / เพดานโหว่ / Sacral dimple</div></div>'
+    +'</div>'
+    + period.watch.map(function(w){
+        return '<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--border);">'
+          +'<div style="width:7px;height:7px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:5px;"></div>'
+          +'<div style="font-size:12.5px;color:var(--tx);line-height:1.5;">'+w+'</div>'
+          +'</div>';
+      }).join('')
+    +'</div>';
+
+  wrap.innerHTML = html;
+}
+
+function renderHealthTab(){
+  initHealthObs();
+  renderHealthChecklist();
+  renderHealthObs();
+}
+
+function renderHeader(){
+  const d=getDays(),now=new Date();
+  const g=id=>document.getElementById(id);
+  if(g('hAge'))g('hAge').textContent='อายุ '+getAge();
+  if(g('hTime'))g('hTime').textContent=pad(now.getHours())+':'+pad(now.getMinutes());
+  if(g('hDate'))g('hDate').textContent=now.toLocaleDateString('th-TH',{weekday:'short',day:'numeric',month:'short'});
+  const tf=todayF(),tm=sleepMins(),td=todayD();
+  if(g('hF'))g('hF').textContent=tf.length;
+  if(g('hS'))g('hS').textContent=Math.floor(tm/60)+'h';
+  if(g('hD'))g('hD').textContent=td.length;
+  // legacy pill ids
+  if(g('hPillF'))g('hPillF').textContent=tf.length;
+  if(g('hPillS'))g('hPillS').textContent=Math.floor(tm/60)+'h';
+  if(g('hPillD'))g('hPillD').textContent=td.length;
+}
+function renderHome(){
+  const d=getDays(),tf=todayF(),tm=sleepMins(),td=todayD();
+  const g=id=>document.getElementById(id);
+  if(g('homeAge'))g('homeAge').textContent='อายุ '+getAge();
+  if(g('homeDayN'))g('homeDayN').textContent=d+1;
+  g('stF').textContent=tf.length;
+  g('stS').textContent=Math.floor(tm/60)+'h'+Math.floor(tm%60)+'m';
+  g('stD').textContent=td.length;
+  const tip=TIPS.find(t=>d<=t.max)||TIPS[TIPS.length-1];
+  g('dailyTip').textContent=tip.tip;
+  renderAIHomeCard(d);
+  const fa=g('feedAlert');
+  if(state.feedings.length>0){
+    fa.style.display='block';
+    const lf=state.feedings[state.feedings.length-1];
+    const nd=new Date(new Date(lf.t).getTime()+3*3600000);
+    const ml=Math.max(0,Math.floor((nd-Date.now())/60000));
+    const ov=nd<Date.now();
+    fa.className='feed-alert '+(ov?'fa-warn':'fa-ok');
+    g('faL').innerHTML=`<span style="font-size:16px;font-weight:800;">${fmtT(lf.t)}</span> <span style="color:var(--tx3);font-size:13px;">${lf.type==='breast'?'นมแม่ '+(lf.side||'')+' '+(lf.dur?lf.dur+' น.':''):'นมสูตร '+(lf.amt||'?')+' มล.'}</span> ${whoTag(lf.who)}`;
+    g('faR').innerHTML=(ov?`<div style="color:var(--red);font-weight:700;font-size:13px;">ถึงเวลาให้นม!</div>`:`<div style="color:var(--sage);font-weight:700;font-size:13px;">อีก ${Math.floor(ml/60)}ชม. ${ml%60}น.</div>`)+`<div style="font-size:10px;color:var(--tx3);">${since(lf.t)} ที่แล้ว</div>`;
+  }else fa.style.display='none';
+
+  // Pump summary on home
+  var pumpCard=g('pumpSummaryCard');
+  var pumpOzEl=g('pumpSummaryOz');
+  var pumpCntEl=g('pumpSummaryCount');
+  if(pumpCard){
+    var td2=today();
+    var todayPumps=state.pumpLogs?state.pumpLogs.filter(function(p){return p.d===td2;}):[];
+    var pOz=todayPumps.reduce(function(s,p){return s+p.oz;},0);
+    if(todayPumps.length>0){
+      pumpCard.style.display='block';
+      if(pumpOzEl)pumpOzEl.textContent=pOz.toFixed(1);
+      if(pumpCntEl)pumpCntEl.textContent=todayPumps.length+' ครั้ง';
+    } else {
+      pumpCard.style.display='none';
+    }
+  }
+  const sb=g('qSleepBtn');
+  if(state.isSleeping){sb.querySelector('div').innerHTML='<svg width="22" height="22"><use href="#i-check"/></svg>';sb.childNodes[sb.childNodes.length-1].textContent='ตื่นแล้ว';sb.classList.add('sleeping');}
+  else{sb.querySelector('div').innerHTML='<svg width="22" height="22"><use href="#i-moon"/></svg>';sb.childNodes[sb.childNodes.length-1].textContent='นอนแล้ว';sb.classList.remove('sleeping');}
+}
+function renderFeedLog(){
+  const tf=todayF();
+  const l=document.getElementById('feedTodayLbl');if(l)l.textContent='วันนี้ — '+tf.length+' มื้อ';
+  const el=document.getElementById('feedList');if(!el)return;
+  if(!tf.length){el.innerHTML='<div class="empty">ยังไม่มีการบันทึก</div>';return;}
+  el.innerHTML=[...tf].reverse().map(f=>`<div class="litem"><div class="litem-l"><div class="litem-dot"></div><div><div class="litem-main">${fmtT(f.t)} ${whoTag(f.who)}</div><div class="litem-sub">${f.type==='breast'?'นมแม่ '+(f.side||'')+' '+(f.dur?f.dur+' นาที':''):'นมสูตร '+(f.amt||'?')+' มล.'}</div></div></div><button onclick="deleteEntry('feedings','${f.id}')" class="del-btn">✕</button></div>`).join('');
+}
+function deleteEntry(type,id){
+  id=String(id);
+  state[type]=state[type].filter(e=>String(e.id)!==id);
+  pushCloud();renderAll();showToast('ลบแล้ว');
+}
+function renderSleepLog(){
+  const tm=sleepMins();
+  const g=id=>document.getElementById(id);
+  const orb=g('slpOrb');
+  if(orb){orb.className='sleep-orb '+(state.isSleeping?'asleep':'awake');const ico=orb.querySelector('svg');if(ico)ico.style.color=state.isSleeping?'var(--blue)':'var(--beigeT)';}
+  if(g('slpTxt'))g('slpTxt').textContent=state.isSleeping?'กำลังนอน… ('+(state.sleepStart?since(state.sleepStart):'')+')':'ตื่นอยู่';
+  const lbl=g('slpTimeLabel');
+  if(lbl) lbl.textContent=state.isSleeping?'เวลาตื่น':'เวลาเริ่มนอน';
+  const btn=g('slpBtn');if(btn){btn.textContent=state.isSleeping?'บันทึกว่าตื่นแล้ว':'บันทึกว่านอนแล้ว';btn.className='fbtn '+(state.isSleeping?'fbtn-sage':'fbtn-blue');}
+  if(g('slpTotal'))g('slpTotal').textContent=Math.floor(tm/60)+' ชม. '+Math.floor(tm%60)+' นาที';
+  if(g('slpProg'))g('slpProg').style.width=Math.min(100,(tm/1020)*100)+'%';
+  const sl=g('sleepList');if(!sl)return;
+  const ts=todayS();
+  let items=ts.map(s=>{const dur=s.e?Math.round((new Date(s.e)-new Date(s.s))/60000):null;return`<div class="litem"><div class="litem-l"><div class="litem-dot" style="background:var(--blue);opacity:0.5;"></div><div><div class="litem-main">${fmtT(s.s)} → ${s.e?fmtT(s.e):'กำลังนอน…'} ${whoTag(s.who)}</div><div class="litem-sub">${dur?Math.floor(dur/60)+'ชม.'+dur%60+'น.':'กำลังนอน'}</div></div></div><button onclick="deleteEntry('sleeps','${s.id}')" class="del-btn">✕</button></div>`;});
+  if(state.isSleeping&&state.sleepStart){const dur=Math.round((Date.now()-new Date(state.sleepStart).getTime())/60000);items.unshift(`<div class="litem" style="background:rgba(234,240,252,0.6);border-radius:10px;padding:8px;"><div class="litem-main">กำลังนอน… ${fmtT(state.sleepStart)}</div><span style="color:var(--sage);font-weight:700;">${Math.floor(dur/60)}ชม.${dur%60}น.</span></div>`);}
+  sl.innerHTML=items.length?items.join(''):'<div class="empty">ยังไม่มีการบันทึก</div>';
+}
+function renderDiaperLog(){
+  const td=todayD();
+  const wet=td.filter(d=>d.type==='wet'||d.type==='both').length;
+  const poop=td.filter(d=>d.type==='poop'||d.type==='both').length;
+  const g=id=>document.getElementById(id);
+  if(g('dW'))g('dW').textContent=wet;if(g('dP'))g('dP').textContent=poop;if(g('dT'))g('dT').textContent=td.length;
+  const el=g('diaperList');if(!el)return;
+  if(!td.length){el.innerHTML='<div class="empty">ยังไม่มีการบันทึก</div>';return;}
+  el.innerHTML=[...td].reverse().map(d=>`<div class="litem"><div class="litem-l"><div class="litem-dot" style="background:var(--amber);opacity:0.6;"></div><div><div class="litem-main">${d.type==='wet'?'เปียก':d.type==='poop'?'ถ่าย':'เปียก + ถ่าย'} ${whoTag(d.who)}</div><div class="litem-sub">${fmtT(d.t)}</div></div></div><button onclick="deleteEntry('diapers','${d.id}')" class="del-btn">✕</button></div>`).join('');
+}
+function renderWeightLog(){
+  const el=document.getElementById('weightList');if(!el)return;
+  if(!state.weights.length){el.innerHTML='<div class="empty">ยังไม่มีการบันทึก</div>';return;}
+  el.innerHTML=[...state.weights].reverse().map(w=>`<div class="litem"><span style="color:var(--tx3);font-weight:400;">${fmtD(w.d)}</span><span style="font-weight:800;font-size:15px;">${w.w} กก.${w.h?' · '+w.h+' ซม.':''} ${whoTag(w.who)}</span><button onclick="deleteEntry('weights','${w.id}')" class="del-btn">✕</button></div>`).join('');
+}
+function renderNutrition(){
+  initPumpTime();
+  renderPumpLog();
+  const tf=todayF();const td=today();
+  const g=id=>document.getElementById(id);
+  if(g('nutF'))g('nutF').textContent=tf.length+' มื้อ';
+  if(g('nutStatus')){if(tf.length>=8){g('nutStatus').textContent='✓ ผ่านเป้า';g('nutStatus').style.color='var(--sage)';}else{g('nutStatus').textContent='ยังไม่ถึงเป้า';g('nutStatus').style.color='var(--amber)';}}
+  // Mom logs for today
+  const logs=state.momDate===td&&Array.isArray(state.momLogs)?state.momLogs:[];
+  const cl=g('momCL');
+  if(cl)cl.innerHTML=MOM_FOODS.map(f=>{
+    const cnt=logs.filter(l=>l.name===f.name).length;
+    return`<div style="display:flex;align-items:center;gap:10px;padding:9px 8px;border-radius:12px;background:${cnt>0?'rgba(226,242,239,0.5)':'transparent'};margin-bottom:2px;cursor:pointer;" onclick="logMomFood('${f.name}','${f.icon}')">
+      <span style="font-size:20px;">${f.icon}</span>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;color:var(--tx);">${f.name}</div>
+        <div style="font-size:11px;color:var(--tx3);">${f.target}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        ${cnt>0?`<span style="background:var(--sage);color:white;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700;">${cnt}×</span>`:''}
+        <div style="width:30px;height:30px;border-radius:50%;background:${cnt>0?'var(--sage)':'rgba(180,210,240,0.3)'};border:1.5px solid ${cnt>0?'var(--sage)':'rgba(180,210,240,0.6)'};display:flex;align-items:center;justify-content:center;">
+          <svg width="14" height="14" fill="none" stroke="${cnt>0?'white':'var(--tx3)'}" stroke-width="2" stroke-linecap="round"><use href="#i-plus"/></svg>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  const ll=g('momLogList');
+  if(ll){
+    if(!logs.length){ll.innerHTML='<div class="empty" style="padding:10px;">ยังไม่มีการบันทึก</div>';return;}
+    ll.innerHTML=[...logs].reverse().map(l=>`
+      <div class="litem">
+        <div class="litem-l">
+          <span style="font-size:16px;">${l.icon}</span>
+          <div><div class="litem-main">${l.name} ${whoTag(l.who)}</div><div class="litem-sub">${fmtT(l.t)}</div></div>
+        </div>
+        <button onclick="deleteMomLog(${l.id})" style="background:none;border:none;cursor:pointer;color:var(--tx3);font-size:16px;padding:4px;">×</button>
+      </div>`).join('');
+  }
+}
+function renderVaccines(){
+  const el=document.getElementById('vaccineList');if(!el)return;
+  // Show current config
+  const cd=document.getElementById('cfgDisplay');
+  if(cd)cd.innerHTML=cfg.offline?'ออฟไลน์ (ไม่ sync)':`URL: ${cfg.dbUrl||'-'}<br>รหัส: ${cfg.pin||'-'}<br>ชื่อ: ${cfg.who||'-'}`;
+  const shareBtn = document.getElementById('calShareBtn');
+  if(shareBtn) shareBtn.style.display='block';
+  el.innerHTML=VACCINES.map(v=>{
+    const dLeft=Math.ceil((v.dueDate-Date.now())/86400000);
+    const done=state.doneVax[v.id],ov=!done&&dLeft<0,soon=!done&&dLeft>=0&&dLeft<=14;
+    const borderColor=done?'var(--sage)':ov?'var(--red)':soon?'var(--amber)':'rgba(180,210,240,0.4)';
+    const bgClass=done?'done':ov?'overdue':'';
+    const badge=done?`<span class="vbadge" style="background:rgba(226,242,239,0.9);color:var(--sage);">ฉีดแล้ว</span>`:ov?`<span class="vbadge" style="background:var(--redL);color:var(--red);">เลยกำหนด</span>`:soon?`<span class="vbadge" style="background:var(--amberL);color:var(--amber);">อีก ${dLeft} วัน</span>`:`<span class="vbadge" style="background:rgba(234,240,252,0.8);color:var(--tx3);">${dLeft} วัน</span>`;
+    const age=v.days===0?'แรกเกิด':v.days<30?v.days+' วัน':Math.floor(v.days/30)+' เดือน';
+    const appt=state.vaxAppt&&state.vaxAppt[v.id]?state.vaxAppt[v.id]:'';
+    const apptLabel=appt?'นัด: '+new Date(appt).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'}):'';
+    return`<div class="vcard ${bgClass}" style="border-left:3px solid ${borderColor};">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:700;color:${done?'var(--sage)':'var(--tx)'};text-decoration:${done?'line-through':'none'};">${v.name}</div>
+          <div style="font-size:11px;color:var(--tx3);margin-top:3px;font-weight:400;">${v.detail}</div>
+          <div style="font-size:11px;color:var(--tx3);margin-top:2px;font-weight:400;">${fmtD(v.dueDate)} · อายุ ${age}</div>
+          ${!done?`<div style="margin-top:8px;display:flex;align-items:center;gap:6px;">
+            <svg width="11" height="11" fill="none" stroke="var(--amber)" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <input type="date" value="${appt}" onchange="saveVaxAppt(${v.id},this.value)"
+              style="border:none;background:transparent;font-size:11px;color:var(--amber);font-family:'Noto Sans Thai',sans-serif;font-weight:600;cursor:pointer;outline:none;width:130px;">
+            <span id="vappt-lbl-${v.id}" style="font-size:10px;color:var(--amber);">${apptLabel}</span>
+            ${appt?`<button onclick="addApptToCalendar(${v.id})" style="background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.3);color:#4285f4;border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;">+ Calendar</button>`:''}
+          </div>`:''}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;">
+          ${badge}
+          <button class="vtoggle" onclick="toggleVax(${v.id})" style="background:${done?'var(--redL)':'rgba(226,242,239,0.9)'};color:${done?'var(--red)':'var(--sage)'};border-color:${done?'rgba(196,80,80,0.2)':'rgba(91,155,138,0.3)'};font-family:'Noto Sans Thai',sans-serif;">${done?'ยกเลิก':'บันทึกว่าฉีดแล้ว'}</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== HISTORY / ANALYTICS =====
+let histOffset=0;
+let histRange='day';
+
+function setRange(r){
+  histRange=r;
+  ['day','week','month'].forEach(k=>{const el=document.getElementById('r'+k);if(el)el.className='rtab'+(k===r?' act':'');});
+  const dv=document.getElementById('histDayView'),rv=document.getElementById('histRangeView');
+  if(r==='day'){dv.style.display='';rv.style.display='none';renderHistDay();}
+  else{dv.style.display='none';rv.style.display='';renderHistRange(r);}
+}
+
+function histMove(d){
+  const minDay=-(getDays());
+  histOffset=Math.max(minDay,Math.min(0,histOffset+d));
+  // Clear cache for this day so fresh AI loads
+  document.getElementById('histNext').disabled=histOffset>=0;
+  const prevBtn=document.getElementById('histPrev');
+  if(prevBtn)prevBtn.disabled=histOffset<=minDay;
+  renderHistDay();
+}
+
+function getDateKey(offset){
+  const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+offset);return d.toDateString();
+}
+
+function getDaySummary(dateStr){
+  const feeds=state.feedings.filter(f=>new Date(f.t).toDateString()===dateStr);
+  const sleeps=state.sleeps.filter(s=>new Date(s.s).toDateString()===dateStr);
+  const diapers=state.diapers.filter(d=>new Date(d.t).toDateString()===dateStr);
+  const weights=state.weights.filter(w=>new Date(w.d).toDateString()===dateStr);
+  const sleepMin=sleeps.reduce((acc,sl)=>{if(!sl.e)return acc;return acc+(new Date(sl.e)-new Date(sl.s))/60000;},0);
+  const breastCount=feeds.filter(f=>f.type==='breast').length;
+  const formulaCount=feeds.filter(f=>f.type==='formula').length;
+  const totalDur=feeds.filter(f=>f.type==='breast').reduce((a,f)=>a+(f.dur||0),0);
+  const totalMl=feeds.filter(f=>f.type==='formula').reduce((a,f)=>a+(f.amt||0),0);
+  const wet=diapers.filter(d=>d.type==='wet'||d.type==='both').length;
+  const poop=diapers.filter(d=>d.type==='poop'||d.type==='both').length;
+  return{feeds,sleeps,diapers,weights,sleepMin,breastCount,formulaCount,totalDur,totalMl,wet,poop,dateStr};
+}
+
+function assessFeeding(sum,ageD){
+  const n=sum.feeds.length;
+  if(ageD<=28){if(n>=8&&n<=12)return{s:'ok',t:'ดี ('+n+' มื้อ)'};if(n<8)return{s:'bad',t:'น้อยไป ('+n+' มื้อ)'};return{s:'warn',t:'บ่อยมาก ('+n+' มื้อ)'};}
+  if(n>=6)return{s:'ok',t:'ดี ('+n+' มื้อ)'};if(n>=4)return{s:'warn',t:'น้อยกว่าเกณฑ์ ('+n+' มื้อ)'};return{s:'bad',t:'น้อยมาก ('+n+' มื้อ)'};
+}
+function assessSleep(sum){
+  const h=sum.sleepMin/60;
+  if(h>=16)return{s:'ok',t:h.toFixed(1)+' ชม.'};if(h>=14)return{s:'warn',t:h.toFixed(1)+' ชม.'};return{s:'bad',t:h.toFixed(1)+' ชม.'};
+}
+function assessDiaper(sum,ageD){
+  const total=sum.diapers.length;
+  if(ageD<=3){if(total>=1)return{s:'ok',t:total+' ครั้ง'};return{s:'warn',t:'น้อยอยู่'};}
+  if(total>=6)return{s:'ok',t:total+' ครั้ง'};if(total>=4)return{s:'warn',t:total+' ครั้ง'};return{s:'bad',t:total+' ครั้ง'};
+}
+function barCol(p){if(p>=0.85)return'var(--sage)';if(p>=0.6)return'var(--amber)';return'var(--red)';}
+
+function renderHistDay(){
+  const dateStr=getDateKey(histOffset);
+  const date=new Date(dateStr);
+  const isToday=histOffset===0;
+  const ageD=Math.floor((date-BIRTH)/86400000);
+  const days=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์'];
+  const mo=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const g=id=>document.getElementById(id);
+  if(g('histDateMain'))g('histDateMain').textContent=isToday?'วันนี้':'วัน'+days[date.getDay()]+' '+date.getDate()+' '+mo[date.getMonth()]+' '+(date.getFullYear()+543);
+  if(g('histDateSub'))g('histDateSub').textContent='วันที่ '+(ageD+1)+' ของชีวิต · '+(ageD<7?ageD+' วัน':Math.floor(ageD/7)+' สัปดาห์ '+ageD%7+' วัน');
+  if(g('histNext'))g('histNext').disabled=histOffset>=0;
+  const sum=getDaySummary(dateStr);
+  var pumpDayCheck=(state.pumpLogs||[]).filter(function(p){return p.d===dateStr;});
+  const noData=sum.feeds.length===0&&sum.sleeps.length===0&&sum.diapers.length===0&&pumpDayCheck.length===0;
+  if(noData){g('histContent').innerHTML='<div class="no-data-day"><svg width="48" height="48" style="color:var(--border)"><use href="#i-chart"></use></svg><p>ยังไม่มีข้อมูลในวันนี้</p></div>';return;}
+  const fA=assessFeeding(sum,ageD),sA=assessSleep(sum),dA=assessDiaper(sum,ageD);
+  const fP=Math.min(1,sum.feeds.length/10),sP=Math.min(1,sum.sleepMin/(18*60)),dP=Math.min(1,sum.diapers.length/8);
+  // Pump log for this day
+  var pumpDayLogs=(state.pumpLogs||[]).filter(function(p){return p.d===dateStr;});
+  pumpDayLogs.sort(function(a,b){return new Date(a.t)-new Date(b.t);});
+  var pumpDayOz=pumpDayLogs.reduce(function(s,p){return s+p.oz;},0);
+  var pumpDayMl=Math.round(pumpDayOz*29.5735);
+  var pumpSection='';
+  if(pumpDayLogs.length>0){
+    var pumpRows=pumpDayLogs.map(function(p){
+      return '<div class="hlog-row"><span class="hlog-t">'+fmtT(p.t)+'</span>'
+        +'<span class="hlog-d">'+p.oz+' oz ('+Math.round(p.oz*29.5735)+' ml)</span></div>';
+    }).join('');
+    pumpSection='<div class="hsec">'
+      +'<div class="hsec-hd">'
+      +'<div class="hsec-ico" style="background:var(--sageL)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="2"><path d="M12 2C8 2 6 6 6 10c0 5 4 10 6 12 2-2 6-7 6-12 0-4-2-8-6-8z"/><circle cx="12" cy="10" r="2"/></svg></div>'
+      +'<div class="hsec-title">ปั๊มนม (คุณแม่)</div>'
+      +'<span class="hsec-badge badge-ok">'+pumpDayOz.toFixed(1)+' oz</span>'
+      +'</div>'
+      +'<div class="hstat-grid">'
+      +'<div class="hstat"><div class="hstat-v">'+pumpDayLogs.length+'</div><div class="hstat-l">ครั้ง</div></div>'
+      +'<div class="hstat"><div class="hstat-v">'+pumpDayOz.toFixed(1)+'</div><div class="hstat-l">oz รวม</div></div>'
+      +'<div class="hstat"><div class="hstat-v">'+pumpDayMl+'</div><div class="hstat-l">ml รวม</div></div>'
+      +'</div>'
+      +'<div style="margin-top:8px;">'+pumpRows+'</div>'
+      +'</div>';
+  }
+
+  const boxKey='ai3-'+dateStr.replace(/ /g,'_');
+  let html=`
+  <div class="hsec">
+    <div class="hsec-hd">
+      <div class="hsec-ico" style="background:var(--blueL)"><svg width="18" height="18" style="color:var(--blue)"><use href="#i-bottle"></use></svg></div>
+      <div class="hsec-title">การให้นม</div>
+      <span class="hsec-badge badge-${fA.s}">${fA.t}</span>
+    </div>
+    <div class="hstat-grid">
+      <div class="hstat"><div class="hstat-v">${sum.feeds.length}</div><div class="hstat-l">รวมมื้อ</div><div class="hstat-t">เป้า 8–12</div></div>
+      <div class="hstat"><div class="hstat-v">${sum.breastCount}</div><div class="hstat-l">นมแม่</div><div class="hstat-t">${sum.totalDur?sum.totalDur+' น.':'—'}</div></div>
+      <div class="hstat"><div class="hstat-v">${sum.formulaCount}</div><div class="hstat-l">นมสูตร</div><div class="hstat-t">${sum.totalMl?sum.totalMl+' มล.':'—'}</div></div>
+    </div>
+    <div class="hbar-row"><span class="hbar-lbl">จำนวนมื้อ</span><div class="hbar-track"><div class="hbar-fill" style="width:${(fP*100).toFixed(0)}%;background:${barCol(fP)}"></div></div><span class="hbar-val">${sum.feeds.length}/10</span></div>
+    <div style="margin-top:10px;">${sum.feeds.slice(-6).reverse().map(f=>'<div class="hlog-row"><span class="hlog-t">'+fmtT(f.t)+'</span><span class="hlog-d">'+(f.type==='breast'?'นมแม่ '+(f.side||'')+' '+(f.dur?f.dur+'น.':''):'นมสูตร '+(f.amt||'?')+' มล.')+'</span></div>').join('')}</div>
+  </div>
+  <div class="hsec">
+    <div class="hsec-hd">
+      <div class="hsec-ico" style="background:var(--sageL)"><svg width="18" height="18" style="color:var(--sage)"><use href="#i-moon"></use></svg></div>
+      <div class="hsec-title">การนอนหลับ</div>
+      <span class="hsec-badge badge-${sA.s}">${sA.t}</span>
+    </div>
+    <div class="hstat-grid">
+      <div class="hstat"><div class="hstat-v">${Math.floor(sum.sleepMin/60)}h${Math.floor(sum.sleepMin%60)}m</div><div class="hstat-l">รวม</div><div class="hstat-t">เป้า 16–18h</div></div>
+      <div class="hstat"><div class="hstat-v">${sum.sleeps.filter(s=>s.e).length}</div><div class="hstat-l">รอบนอน</div><div class="hstat-t">บันทึกแล้ว</div></div>
+      <div class="hstat"><div class="hstat-v">${sum.sleeps.filter(s=>s.e).length>0?Math.round(sum.sleepMin/sum.sleeps.filter(s=>s.e).length):'—'}</div><div class="hstat-l">เฉลี่ย/รอบ</div><div class="hstat-t">นาที</div></div>
+    </div>
+    <div class="hbar-row"><span class="hbar-lbl">ชม.นอน</span><div class="hbar-track"><div class="hbar-fill" style="width:${(sP*100).toFixed(0)}%;background:${barCol(sP)}"></div></div><span class="hbar-val">${(sum.sleepMin/60).toFixed(1)}/18h</span></div>
+    <div style="margin-top:10px;">${sum.sleeps.filter(s=>s.e).slice(-5).reverse().map(s=>'<div class="hlog-row"><span class="hlog-t">'+fmtT(s.s)+'</span><span class="hlog-d">นอน → ตื่น '+fmtT(s.e)+'</span><span style="color:var(--sage);font-size:12px;font-weight:700">'+Math.round((new Date(s.e)-new Date(s.s))/60000)+' น.</span></div>').join('')}</div>
+  </div>
+  <div class="hsec">
+    <div class="hsec-hd">
+      <div class="hsec-ico" style="background:var(--amberL)"><svg width="18" height="18" style="color:var(--amber)"><use href="#i-pin"></use></svg></div>
+      <div class="hsec-title">ผ้าอ้อม</div>
+      <span class="hsec-badge badge-${dA.s}">${dA.t}</span>
+    </div>
+    <div class="hstat-grid">
+      <div class="hstat"><div class="hstat-v">${sum.diapers.length}</div><div class="hstat-l">รวม</div><div class="hstat-t">เป้า ≥6</div></div>
+      <div class="hstat"><div class="hstat-v" style="color:var(--blue)">${sum.wet}</div><div class="hstat-l">เปียก</div><div class="hstat-t">≥6/วัน</div></div>
+      <div class="hstat"><div class="hstat-v" style="color:var(--amber)">${sum.poop}</div><div class="hstat-l">ถ่าย</div><div class="hstat-t">3–4/วัน</div></div>
+    </div>
+    <div class="hbar-row"><span class="hbar-lbl">ผ้าอ้อม</span><div class="hbar-track"><div class="hbar-fill" style="width:${(dP*100).toFixed(0)}%;background:${barCol(dP)}"></div></div><span class="hbar-val">${sum.diapers.length}/8</span></div>
+  </div>
+  ${sum.weights.length>0?'<div class="hsec"><div class="hsec-hd"><div class="hsec-ico" style="background:var(--blueL)"><svg width="18" height="18" style="color:var(--blue)"><use href="#i-chart"></use></svg></div><div class="hsec-title">น้ำหนัก / การเติบโต</div></div>'+sum.weights.map(w=>'<div class="hlog-row"><span class="hlog-t">'+fmtT(w.d)+'</span><span class="hlog-d">'+w.w+' กก.'+(w.h?' · '+w.h+' ซม.':'')+'</span></div>').join('')+'</div>':''}
+  <div class="ai-box" id="${boxKey}">
+    <div class="ai-hd">
+      <div class="ai-avatar"><svg width="16" height="16" style="color:white"><use href="#i-spark"></use></svg></div>
+      <div><div class="ai-name">ผู้ช่วยส่วนตัว</div><div class="ai-sub">วิเคราะห์โดย AI · อ้างอิง AAP / WHO</div></div>
+    </div>
+    <div id="${boxKey}-body" class="ai-body"><div class="ai-loading"><span>กำลังวิเคราะห์</span><div class="ai-dots"><span></span><span></span><span></span></div></div></div>
+  </div>`;
+  g('histContent').innerHTML=pumpSection+html;
+  requestAIComment(sum,ageD,boxKey);
+}
+
+const aiCache={};
+
+function generateAnalysis(sum, ageD){
+  const lines = [];
+
+  // === นม ===
+  const feeds = sum.feeds.length;
+  const target = ageD <= 28 ? '8–12' : '6–8';
+  const feedOk = ageD <= 28 ? (feeds >= 8 && feeds <= 12) : feeds >= 6;
+  const feedLow = ageD <= 28 ? feeds < 8 : feeds < 4;
+  const sleepH = sum.sleepMin / 60;
+  const sleepOk = sleepH >= 16;
+  const sleepLow = sleepH < 14;
+  const diapers = sum.diapers.length;
+  const diaperOk = diapers >= 6;
+  const diaperLow = diapers < 4;
+
+  // === ประโยคที่ 1: ภาพรวม ===
+  const goodCount = [feedOk, sleepOk, diaperOk].filter(Boolean).length;
+  if (goodCount === 3) {
+    lines.push('วันนี้ทำได้ดีมาก ทั้งการให้นม การนอน และผ้าอ้อมอยู่ในเกณฑ์ปกติตามมาตรฐาน AAP ทั้งหมด');
+  } else if (goodCount === 2) {
+    lines.push('วันนี้โดยรวมอยู่ในเกณฑ์ดี มีบางจุดที่ยังปรับได้อีกเล็กน้อย');
+  } else if (goodCount === 1) {
+    lines.push('วันนี้มีบางหมวดที่ต้องใส่ใจเพิ่มขึ้น ลองปรับตามคำแนะนำด้านล่าง');
+  } else {
+    lines.push('วันนี้ค่อนข้างท้าทาย ทั้งนม นอน และผ้าอ้อมยังไม่ถึงเกณฑ์ ไม่ต้องกังวล ค่อยๆ ปรับทีละจุด');
+  }
+
+  // === ประโยคที่ 2: นม ===
+  if (feedOk) {
+    const breastPct = feeds > 0 ? Math.round(sum.breastCount/feeds*100) : 0;
+    if (sum.breastCount > 0 && sum.formulaCount === 0) {
+      lines.push('ให้นมแม่ล้วน ' + feeds + ' มื้อ ดีมากสำหรับภูมิคุ้มกันและพัฒนาการของลูก');
+    } else {
+      lines.push('ให้นมรวม ' + feeds + ' มื้อ อยู่ในช่วงเป้าหมาย ' + target + ' มื้อ/วัน');
+    }
+  } else if (feedLow) {
+    lines.push('ให้นมเพียง ' + feeds + ' มื้อ ยังน้อยกว่าเป้า ' + target + ' มื้อ/วัน ในทารกแรกเกิดควรให้ทุก 2–3 ชั่วโมงเพื่อกระตุ้นน้ำนมและป้องกันน้ำตาลต่ำ');
+  } else {
+    lines.push('ให้นม ' + feeds + ' มื้อ มากกว่าเกณฑ์เล็กน้อย ซึ่งเป็นเรื่องปกติในทารกที่ดูดเพื่อความสบาย ไม่ต้องกังวล');
+  }
+
+  // === ประโยคที่ 3: นอน ===
+  if (sleepOk) {
+    lines.push('การนอนรวม ' + sleepH.toFixed(1) + ' ชั่วโมงอยู่ในเกณฑ์ WHO ที่แนะนำ 16–18 ชั่วโมง/วันสำหรับทารกแรกเกิด');
+  } else if (sleepLow) {
+    lines.push('การนอนรวม ' + sleepH.toFixed(1) + ' ชั่วโมงยังน้อยกว่าเกณฑ์ 16 ชั่วโมง/วัน ลองสังเกตว่ามีเสียงรบกวนหรือแสงสว่างที่ทำให้ลูกตื่นบ่อยไหม');
+  } else {
+    lines.push('นอนได้ ' + sleepH.toFixed(1) + ' ชั่วโมง ใกล้เกณฑ์ดีแล้ว อีกนิดก็จะครบ 16 ชั่วโมงตามที่แนะนำ');
+  }
+
+  // === ประโยคที่ 4: ผ้าอ้อม + คำแนะนำ ===
+  if (ageD <= 3) {
+    if (diapers >= 1) {
+      lines.push('ช่วง ' + (ageD+1) + ' วันแรก ผ้าอ้อม ' + diapers + ' ครั้งถือว่าปกติ เพราะร่างกายยังปรับตัว สังเกตสีอุจจาระด้วย ควรค่อยๆ เปลี่ยนจากสีดำเขียวเป็นเหลือง');
+    } else {
+      lines.push('ยังไม่มีบันทึกผ้าอ้อม ช่วงนี้ควรสังเกตให้ดีว่าลูกปัสสาวะและถ่ายอุจจาระหรือเปล่า หากไม่ถ่ายใน 24 ชั่วโมงควรปรึกษาแพทย์');
+    }
+  } else if (diaperOk) {
+    lines.push('ผ้าอ้อม ' + diapers + ' ครั้ง (เปียก ' + sum.wet + ' ถ่าย ' + sum.poop + ') อยู่ในเกณฑ์ดี แสดงว่าลูกได้รับนมเพียงพอ');
+  } else if (diaperLow) {
+    lines.push('ผ้าอ้อมเพียง ' + diapers + ' ครั้ง น้อยกว่าเกณฑ์ 6 ครั้ง/วัน อาจเป็นสัญญาณว่าลูกได้รับนมไม่เพียงพอ ลองเพิ่มความถี่การให้นม');
+  } else {
+    lines.push('ผ้าอ้อม ' + diapers + ' ครั้ง ใกล้เกณฑ์ดีแล้ว พยายามให้นมบ่อยขึ้นเล็กน้อยเพื่อให้ครบ 6 ครั้ง/วัน');
+  }
+
+  // === ประโยคที่ 5: คำแนะนำพรุ่งนี้ ===
+  const tips = [];
+  if (feedLow) tips.push('เพิ่มความถี่ให้นมทุก 2–3 ชั่วโมง');
+  if (sleepLow) tips.push('สร้าง routine นอน ลดแสงและเสียง');
+  if (diaperLow) tips.push('สังเกตสัญญาณหิว อย่ารอให้ลูกร้องก่อน');
+  if (sum.weights.length > 0) {
+    const w = sum.weights[0].w;
+    if (ageD <= 5 && w < 2.5) tips.push('น้ำหนัก ' + w + ' กก. ควรติดตามกับแพทย์อย่างใกล้ชิด');
+  }
+  if (tips.length > 0) {
+    lines.push('สำหรับพรุ่งนี้ลองเน้น: ' + tips.join(', '));
+  } else {
+    lines.push('พรุ่งนี้รักษาระดับนี้ไว้ให้ได้ ทำได้ดีมากแล้ว');
+  }
+
+  return lines.join(' ');
+}
+
+async function requestAIComment(sum, ageD, boxKey){
+  const bodyEl = document.getElementById(boxKey+'-body');
+  if(!bodyEl) return;
+  if(aiCache[boxKey]){ bodyEl.innerHTML = aiCache[boxKey]; return; }
+
+  // If no Gemini key — use free rule-based analysis
+  if(!cfg.geminiKey){
+    const text = generateAnalysis(sum, ageD);
+    const html = '<p style="line-height:2;font-size:13.5px;">' + text + '</p>';
+    aiCache[boxKey] = html;
+    if(bodyEl) bodyEl.innerHTML = html;
+    return;
+  }
+
+  // Use Gemini API (free tier: 1,500 requests/day)
+  const _now = new Date();
+  const _isToday = (dateStr === new Date().toDateString());
+  const _timeNote = _isToday ? '(บันทึกถึงเวลา '+pad(_now.getHours())+':'+pad(_now.getMinutes())+' น. ยังไม่สิ้นวัน)' : '(ข้อมูลเต็มวัน)';
+  const prompt = 'ข้อมูลทารก '+_timeNote+':\nอายุ '+ageD+' วัน\nนม '+sum.feeds.length+' มื้อ (นมแม่ '+sum.breastCount+' มื้อ นมสูตร '+sum.formulaCount+' มื้อ)\nนอน '+(sum.sleepMin/60).toFixed(1)+' ชม.\nผ้าอ้อม '+sum.diapers.length+' ครั้ง (เปียก '+sum.wet+' ถ่าย '+sum.poop+')'+(sum.weights.length>0?'\nน้ำหนัก '+sum.weights[0].w+' กก.':'')+'\n\nวิเคราะห์สั้นๆ ภาษาไทย ไม่ใช้ ครับ/ค่ะ หากเป็นข้อมูลบางส่วนของวันให้ระบุด้วย ตอบ 4 หัวข้อ แต่ละหัวข้อ 1 ประโยคจบ:\n1. ภาพรวม:\n2. จุดเด่น:\n3. ควรระวัง:\n4. คำแนะนำ:';
+
+  try {
+    const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + cfg.geminiKey, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({contents:[{parts:[{text: prompt}]}], generationConfig:{maxOutputTokens:1500,temperature:0.6}})
+    });
+    const data = await res.json();
+    if(data.error){throw new Error(data.error.message);}
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || generateAnalysis(sum, ageD);
+    const lines = text.split(/\n/).filter(p=>p.trim()); const html = lines.map(p=>'<div style="margin-bottom:10px;line-height:1.8;font-size:13.5px;color:var(--tx);">'+p.trim()+'</div>').join('')||'<div style="font-size:13.5px;">'+text+'</div>';
+    aiCache[boxKey] = html;
+    if(bodyEl) bodyEl.innerHTML = html;
+  } catch(e) {
+    // Fallback to rule-based on error
+    const text = generateAnalysis(sum, ageD);
+    const html = '<p style="line-height:2;font-size:13.5px;">' + text + '</p><p style="font-size:10px;color:var(--tx3);">⚠️ Gemini: '+e.message+'</p>';
+    aiCache[boxKey] = html;
+    if(bodyEl) bodyEl.innerHTML = html;
+  }
+}
+
+
+function renderHistRange(range){
+  const days=range==='week'?7:30;
+  const container=document.getElementById('histRangeContent');
+  if(!container)return;
+  const mo=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const summaries=[];
+  for(let i=0;i<days;i++){const dateStr=getDateKey(-i);const sum=getDaySummary(dateStr);if(sum.feeds.length>0||sum.diapers.length>0||sum.sleeps.length>0)summaries.push({dateStr,sum,ageD:Math.floor((new Date(dateStr)-BIRTH)/86400000)});}
+  if(summaries.length===0){container.innerHTML='<div class="no-data-day"><svg width="48" height="48" style="color:var(--border)"><use href="#i-chart"></use></svg><p>ยังไม่มีข้อมูลในช่วงนี้</p></div>';return;}
+  const avgFeed=(summaries.reduce((a,s)=>a+s.sum.feeds.length,0)/summaries.length).toFixed(1);
+  const avgSleep=(summaries.reduce((a,s)=>a+s.sum.sleepMin,0)/summaries.length/60).toFixed(1);
+  const avgDiaper=(summaries.reduce((a,s)=>a+s.sum.diapers.length,0)/summaries.length).toFixed(1);
+  let html=`<div class="hsec"><div class="hsec-hd"><div class="hsec-ico" style="background:var(--blueL)"><svg width="18" height="18" style="color:var(--blue)"><use href="#i-chart"></use></svg></div><div class="hsec-title">ค่าเฉลี่ย ${days} วัน (${summaries.length} วันที่มีข้อมูล)</div></div><div class="hstat-grid"><div class="hstat"><div class="hstat-v">${avgFeed}</div><div class="hstat-l">มื้อนม/วัน</div><div class="hstat-t">เป้า 8–12</div></div><div class="hstat"><div class="hstat-v">${avgSleep}h</div><div class="hstat-l">นอน/วัน</div><div class="hstat-t">เป้า 16–18h</div></div><div class="hstat"><div class="hstat-v">${avgDiaper}</div><div class="hstat-l">ผ้าอ้อม/วัน</div><div class="hstat-t">เป้า ≥6</div></div></div></div>`;
+  summaries.forEach(({dateStr,sum,ageD})=>{
+    const d=new Date(dateStr);const lbl=d.getDate()+' '+mo[d.getMonth()];
+    const fA=assessFeeding(sum,ageD),sA=assessSleep(sum),dA=assessDiaper(sum,ageD);
+    const off=-Math.floor((Date.now()-new Date(dateStr).getTime())/86400000);
+    html+=`<div class="hsec" style="cursor:pointer" onclick="histOffset=${off};setRange('day')"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div><div style="font-size:14px;font-weight:800;color:var(--tx)">${lbl}</div><div style="font-size:11px;color:var(--tx3)">วันที่ ${ageD+1} · กดดูละเอียด</div></div><svg width="14" height="14" style="color:var(--tx3)"><use href="#i-chart"></use></svg></div><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="hsec-badge badge-${fA.s}">🍼 ${sum.feeds.length}</span><span class="hsec-badge badge-${sA.s}">🌙 ${(sum.sleepMin/60).toFixed(1)}h</span><span class="hsec-badge badge-${dA.s}">🩲 ${sum.diapers.length}</span></div></div>`;
+  });
+  container.innerHTML=html;
+}
+
+checkSetup();
+</script>
+</body>
+</html>
