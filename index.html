@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>น้องต้าเหนิง</title>
+<title>{BABY_NICK}</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
@@ -458,36 +458,81 @@ input:focus,button:focus{outline:none;}
 </div>
 
 <!-- SETUP -->
-<div id="setupScreen">
-  <div class="setup-wrap">
-    <div class="setup-hero">
-      <div class="setup-avatar">
-        <svg width="44" height="44" style="color:var(--blue)"><use href="#i-baby"/></svg>
+<div <div id="authScreen" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);padding:32px 20px;">
+  <div style="width:100%;max-width:400px;">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="font-size:48px;margin-bottom:12px;">🌙</div>
+      <div style="font-family:'Noto Sans Thai',sans-serif;font-size:24px;font-weight:800;color:var(--tx);margin-bottom:6px;">Da'Neng Care</div>
+      <div style="font-size:13px;color:var(--tx3);">A magical journal for your baby's first year</div>
+    </div>
+    <!-- STEP 1: Baby Info -->
+    <div id="step1" style="background:var(--card);border-radius:20px;padding:24px;box-shadow:0 4px 24px rgba(0,0,0,0.08);margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">Step 1 — About Your Baby</div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Baby Nickname *</div>
+        <input id="setupNick" type="text" placeholder="e.g. Ta-Neng" style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
       </div>
-      <div class="setup-title">น้องต้าเหนิง</div>
-      <div class="setup-sub">ตั้งค่าครั้งแรก เพื่อ sync ข้อมูลระหว่าง<br>คุณพ่อและคุณแม่แบบ real-time</div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Full Name (optional)</div>
+        <input id="setupFullname" type="text" placeholder="Legal name" style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:12px;">
+        <div style="flex:1.2;">
+          <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Date of Birth *</div>
+          <input id="setupDOB" type="date" style="width:100%;padding:11px 10px;border:1.5px solid var(--border);border-radius:11px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Time of Birth</div>
+          <input id="setupTOB" type="time" style="width:100%;padding:11px 10px;border:1.5px solid var(--border);border-radius:11px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:12px;">
+        <div style="flex:1;">
+          <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Gender</div>
+          <select id="setupGender" style="width:100%;padding:11px 10px;border:1.5px solid var(--border);border-radius:11px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+            <option value="male">👦 Boy</option>
+            <option value="female">👧 Girl</option>
+          </select>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Birth Weight (kg)</div>
+          <input id="setupBW" type="number" placeholder="3.20" step="0.01" style="width:100%;padding:11px 10px;border:1.5px solid var(--border);border-radius:11px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+        </div>
+      </div>
+      <div style="margin-bottom:0;">
+        <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Your name (parent/caregiver)</div>
+        <input id="setupWho" type="text" placeholder="e.g. Dad, Ton, Mom" style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;font-size:14px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+      </div>
     </div>
-    <div class="scard">
-      <div class="scard-t">สร้าง Firebase ฟรี</div>
-      <div class="sstep"><div class="sstep-n">1</div><div class="sstep-t">เปิด <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → Sign in</div></div>
-      <div class="sstep"><div class="sstep-n">2</div><div class="sstep-t"><strong>Create a project</strong> → ชื่อ tanerng-baby</div></div>
-      <div class="sstep"><div class="sstep-n">3</div><div class="sstep-t">Build → <strong>Realtime Database</strong> → Create database</div></div>
-      <div class="sstep"><div class="sstep-n">4</div><div class="sstep-t"><strong>Start in test mode</strong> → Enable</div></div>
-      <div class="sstep" style="margin-bottom:0;"><div class="sstep-n">5</div><div class="sstep-t">Copy <strong>Database URL</strong><div class="url-ex">https://tanerng-baby-xxxx-default-rtdb.firebaseio.com</div></div></div>
+    <!-- STEP 2: Sync -->
+    <div id="step2" style="background:var(--card);border-radius:20px;padding:24px;box-shadow:0 4px 24px rgba(0,0,0,0.08);margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">Step 2 — Family Sync (Optional)</div>
+      <div style="background:var(--blueL);border-radius:12px;padding:12px;font-size:12px;color:var(--blueD);line-height:1.6;margin-bottom:14px;">
+        📱 <b>Skip this step</b> to use offline on one device only.<br>
+        🔄 Fill in Firebase URL to sync between Dad & Mom's phones.
+      </div>
+      <label style="display:flex;align-items:center;gap:10px;margin-bottom:14px;cursor:pointer;">
+        <input id="setupOffline" type="checkbox" onchange="toggleSyncFields()" style="width:18px;height:18px;accent-color:var(--sage);">
+        <span style="font-size:13px;font-weight:600;color:var(--tx);">Use offline (single device, no sync)</span>
+      </label>
+      <div id="syncFields">
+        <div style="margin-bottom:10px;">
+          <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Firebase Database URL</div>
+          <input id="setupUrl" type="url" placeholder="https://your-project.firebaseio.com" style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;font-size:12px;font-family:monospace;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:5px;">Family PIN (4–8 digits, share with family)</div>
+          <input id="setupPin" type="text" placeholder="e.g. 1234" maxlength="8" style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:11px;font-size:14px;font-family:monospace;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+        </div>
+      </div>
     </div>
-    <div class="scard">
-      <div class="scard-t">ข้อมูลของคุณ</div>
-      <input class="sinput" id="setupUrl" type="url" placeholder="Firebase Database URL (https://...)">
-      <input class="sinput" id="setupPin" type="text" placeholder="รหัสครอบครัว เช่น Daneng69" maxlength="30">
-      <input class="sinput" id="setupWho" type="text" placeholder="ชื่อคุณ เช่น คุณพ่อ / Ton" maxlength="20">
-      <input class="sinput" id="setupAiKey" type="password" placeholder="Anthropic API Key (สำหรับ AI วิเคราะห์ข้อมูล)">
-      <div class="snote" style="margin-bottom:10px;text-align:left;">🔑 API key เก็บในเครื่องเท่านั้น ไม่ส่งออกไปที่อื่น<br>สร้างได้ฟรีที่ <a href="https://console.anthropic.com" target="_blank" style="color:var(--blue)">console.anthropic.com</a> → API Keys</div>
-      <button class="sbtn" onclick="doSetup()">เริ่มใช้งาน →</button>
-      <div class="snote">ใช้ <strong>รหัสครอบครัวเดียวกัน</strong> ทั้งคุณพ่อและคุณแม่<br>Firebase ฟรี 1GB/เดือน</div>
+    <!-- Privacy consent -->
+    <div style="background:var(--amberL);border-radius:12px;padding:12px;margin-bottom:16px;font-size:11px;color:var(--tx2);line-height:1.7;">
+      <b>Data & Privacy:</b> All baby data is stored only on YOUR Firebase database or this device. Da'Neng Care does not collect or access your personal data. By continuing you agree to our <span style="color:var(--blue);cursor:pointer;text-decoration:underline;" onclick="void(0)">Privacy Policy</span>.
     </div>
-    <div class="sor">— หรือ —</div>
-    <button class="sbtn-sec" onclick="useOffline()">ใช้แบบออฟไลน์ (เครื่องเดียว)</button>
+    <button onclick="doSetup()" style="width:100%;background:var(--sage);color:white;border:none;border-radius:14px;padding:15px;font-size:16px;font-weight:700;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;">Begin the Story 🌙</button>
   </div>
+</div>
 </div>
 
 <!-- MAIN -->
@@ -498,7 +543,7 @@ input:focus,button:focus{outline:none;}
     <div class="hdr-top">
       <div class="hdr-left">
         <div class="hdr-label">Baby Care</div>
-        <div class="hdr-name">น้องต้าเหนิง</div>
+        <div class="hdr-name">{BABY_NICK}</div>
         <div class="hdr-age" id="hAge">อายุ ...</div>
       </div>
       <div class="hdr-right">
@@ -572,7 +617,7 @@ input:focus,button:focus{outline:none;}
             <input type="file" accept="image/*" onchange="uploadPhoto(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
           </label>
           <div class="hero-info">
-            <div class="hero-nick">น้องต้าเหนิง</div>
+            <div class="hero-nick">{BABY_NICK}</div>
             <div class="hero-full">ธราพิชญ์ สารีคำ</div>
             <div class="hero-age" id="homeAge">อายุ ...</div>
           </div>
@@ -1035,6 +1080,43 @@ input:focus,button:focus{outline:none;}
         <div id="histRangeContent"></div>
       </div>
     </div>
+
+    <!-- HEALTH MONITORING TAB -->
+    <div id="tab-health" class="tab-c">
+
+      <!-- PERIOD CHECKLIST -->
+      <div id="healthChecklistWrap"></div>
+
+      <!-- DAILY OBSERVATION LOG -->
+      <div class="card" style="margin-bottom:12px;">
+        <div class="clbl">บันทึกสิ่งที่สังเกตวันนี้</div>
+        <div style="margin-bottom:10px;">
+          <textarea id="healthObsInput" placeholder="เช่น ลูกยกหัวได้ครั้งแรก, ตาตามวัตถุได้, ชักเล็กน้อย 30 วิ..." 
+            style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;resize:none;height:80px;line-height:1.6;"></textarea>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <select id="healthObsCat" style="flex:1;padding:9px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;">
+            <option value="milestone">🎯 Milestone พัฒนาการ</option>
+            <option value="seizure">⚠️ ชัก / Seizure</option>
+            <option value="feeding">🍼 การกิน / สำลัก</option>
+            <option value="motor">💪 กล้ามเนื้อ / การเคลื่อนไหว</option>
+            <option value="vision">👁 ตา / การมอง</option>
+            <option value="general">📝 ทั่วไป</option>
+          </select>
+          <input type="time" id="healthObsTime" style="flex:1;padding:9px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;">
+        </div>
+        <button onclick="addHealthObs()" style="width:100%;background:var(--sage);color:white;border:none;border-radius:11px;padding:12px;font-size:14px;font-weight:700;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;">+ บันทึก</button>
+      </div>
+
+      <!-- OBSERVATION HISTORY -->
+      <div class="card">
+        <div class="clbl">บันทึกที่ผ่านมา</div>
+        <div id="healthObsList"><div class="empty">ยังไม่มีการบันทึก</div></div>
+      </div>
+
+    </div>
+    <!-- /HEALTH MONITORING TAB -->
+
   </div><!-- /content -->
 
   <nav class="nav">
@@ -1062,6 +1144,10 @@ input:focus,button:focus{outline:none;}
       <div class="nbtn-ico"><svg width="20" height="20" style="color:var(--tx3)"><use href="#i-chart"/></svg></div>
       <div class="nlbl">ประวัติ</div>
     </button>
+    <button class="nbtn" id="nav-health" onclick="setTab('health')">
+      <div class="nbtn-ico"><svg width="20" height="20" style="color:var(--tx3)"><use href="#i-heart"/></svg></div>
+      <div class="nlbl">เฝ้าระวัง</div>
+    </button>
   </nav>
 </div>
 </div>
@@ -1083,7 +1169,7 @@ const todayD=()=>state.diapers.filter(d=>new Date(d.t).toDateString()===today())
 const sleepMins=()=>{let m=todayS().reduce((s,sl)=>sl.e?s+(new Date(sl.e)-new Date(sl.s))/60000:s,0);if(state.isSleeping&&state.sleepStart)m+=(Date.now()-new Date(state.sleepStart).getTime())/60000;return m;};
 const whoTag=w=>{if(!w||cfg.offline)return'';return w===cfg.who?`<span class="who-tag who-me">${w}</span>`:`<span class="who-tag who-partner">${w}</span>`;};
 
-const BIRTH=new Date('2026-03-10T14:48:00');
+var BIRTH=new Date('2026-03-10T14:48:00'); // overridden by cfg.babyDOB on startApp
 const TIPS=[
   {max:3,tip:'ช่วง 3 วันแรก ลูกจะได้น้ำนมเหลือง (colostrum) มีภูมิคุ้มกันสูงมาก แม้ออกน้อย แต่คุณค่ามหาศาล ให้ดูดบ่อยๆ เพื่อกระตุ้นน้ำนม'},
   {max:7,tip:'ตรวจสอบดีซ่าน สังเกตสีผิว ตาขาว ฝ่ามือ ฝ่าเท้า อาบแดดอ่อนๆ ตอนเช้า 7–9 โมง ช่วยได้'},
@@ -1113,7 +1199,7 @@ const MOM_FOODS=[
   {name:'แคลเซียม',target:'1000 มก./วัน',icon:'🦴'},
 ];
 
-let cfg={dbUrl:'',pin:'',who:'',offline:false,aiKey:'',geminiKey:''};
+let cfg={dbUrl:'',pin:'',who:'',offline:false,aiKey:'',geminiKey:'',babyName:'',babyNick:'',babyDOB:'',babyTOB:'',babyGender:'',babyWeight:'',userId:''};
 let state={feedings:[],sleeps:[],diapers:[],weights:[],doneVax:{},vaxAppt:{},isSleeping:false,sleepStart:null,momLogs:[],momDate:'',pumpLogs:[]};
 let fType='breast',fSide='L',dType='wet',dupCallback=null;
 
@@ -1245,6 +1331,7 @@ async function syncFromCloud(){
         pushCloud();
       }
       if(data.vaxAppt)state.vaxAppt=data.vaxAppt;
+      if(data.healthObs)state.healthObs=Array.isArray(data.healthObs)?data.healthObs:[];
       // Load photo separately
       try{const pd=await fbGet('photo');if(pd&&pd.data&&pd.data!==state.photo){state.photo=pd.data;renderPhoto();}}catch(e){}
       lsSet('state',state);
@@ -1256,7 +1343,7 @@ async function syncFromCloud(){
 async function pushCloud(){
   if(cfg.offline||!cfg.dbUrl)return;
   setSS('syncing','กำลัง sync...');
-  const ok=await fbSet('data',{feedings:state.feedings,sleeps:state.sleeps,diapers:state.diapers,weights:state.weights,doneVax:state.doneVax,sleepState:{on:state.isSleeping,start:state.sleepStart},momNut:{logs:state.momLogs,d:state.momDate},pumpLogs:state.pumpLogs||[],vaxAppt:state.vaxAppt||{},lastUpdate:{time:new Date().toISOString(),who:cfg.who}});
+  const ok=await fbSet('data',{feedings:state.feedings,sleeps:state.sleeps,diapers:state.diapers,weights:state.weights,doneVax:state.doneVax,sleepState:{on:state.isSleeping,start:state.sleepStart},momNut:{logs:state.momLogs,d:state.momDate},pumpLogs:state.pumpLogs||[],vaxAppt:state.vaxAppt||{},healthObs:state.healthObs||[],lastUpdate:{time:new Date().toISOString(),who:cfg.who}});
   setSS(ok?'on':'off',ok?'sync แล้ว '+fmtT(new Date()):'บันทึกในเครื่องแล้ว');
   lsSet('state',state);
 }
@@ -1271,18 +1358,69 @@ function setSS(status,msg){
   if(who)who.textContent=cfg.who?'👤 '+cfg.who:'';
 }
 
-function checkSetup(){const s=lsGet('cfg');if(s&&(s.dbUrl||s.offline)){cfg=s;startApp();}else document.getElementById('setupScreen').classList.add('show');}
-function doSetup(){
-  const url=document.getElementById('setupUrl').value.trim();
-  const pin=document.getElementById('setupPin').value.trim();
-  const who=document.getElementById('setupWho').value.trim();
-  if(!url||!pin||!who){showToast('กรุณากรอกให้ครบ');return;}
-  if(!url.startsWith('https://')){showToast('URL ต้องขึ้นต้นด้วย https://');return;}
-  const aiKey=document.getElementById('setupAiKey').value.trim();cfg={dbUrl:url.replace(/\/$/,''),pin:pin.replace(/[^a-zA-Z0-9_-]/g,''),who,offline:false,aiKey};
-  lsSet('cfg',cfg);
-  document.getElementById('setupScreen').classList.remove('show');
-  startApp();
+
+function toggleSyncFields(){
+  var cb = document.getElementById('setupOffline');
+  var sf = document.getElementById('syncFields');
+  if(sf) sf.style.display = cb && cb.checked ? 'none' : 'block';
 }
+
+function checkSetup(){
+  const s=lsGet('cfg');
+  if(s&&(s.babyName||s.babyNick)){
+    cfg=s;
+    // Migrate old format
+    if(!cfg.babyName)cfg.babyName=cfg.babyNick||'Baby';
+    startApp();
+  } else {
+    showScreen('auth');
+  }
+}
+function showScreen(name){
+  ['setupScreen','authScreen','mainApp'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.style.display='none';
+  });
+  var target=document.getElementById(name==='auth'?'authScreen':name==='setup'?'setupScreen':'mainApp');
+  if(target) target.style.display='flex';
+}
+function doSetup(){
+  var nick=document.getElementById('setupNick').value.trim();
+  var fullname=document.getElementById('setupFullname').value.trim();
+  var dob=document.getElementById('setupDOB').value;
+  var tob=document.getElementById('setupTOB').value;
+  var gender=document.getElementById('setupGender').value;
+  var bw=parseFloat(document.getElementById('setupBW').value)||0;
+  var who=document.getElementById('setupWho').value.trim();
+  var url=document.getElementById('setupUrl').value.trim();
+  var pin=document.getElementById('setupPin').value.trim();
+  var offline=document.getElementById('setupOffline').checked;
+  if(!nick||!dob){showToast('Please enter baby nickname and date of birth');return;}
+  if(!offline&&(!url||!pin)){showToast('Enter Firebase URL + PIN, or enable Offline mode');return;}
+  cfg.babyNick=nick;
+  cfg.babyName=fullname||nick;
+  cfg.babyDOB=dob;
+  cfg.babyTOB=tob||'00:00';
+  cfg.babyGender=gender;
+  cfg.babyWeight=bw;
+  cfg.who=who||'Parent';
+  cfg.dbUrl=url;
+  cfg.pin=pin;
+  cfg.offline=offline;
+  cfg.userId='user_'+Date.now();
+  // Update BIRTH constant based on user input
+  if(dob){
+    var dobStr=dob+'T'+(tob||'00:00')+':00';
+    window.BIRTH=new Date(dobStr);
+  }
+  lsSet('cfg',cfg);
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('mainApp').style.display='flex';
+  syncFromCloud();
+  renderAll();
+  showToast('Welcome! Your baby journal has begun 🌙');
+}
+
 function useOffline(){cfg={dbUrl:'',pin:'',who:'ผู้ใช้',offline:true};lsSet('cfg',cfg);document.getElementById('setupScreen').classList.remove('show');startApp();}
 function openSettings(){if(confirm('ต้องการตั้งค่าใหม่?\n(ข้อมูลที่บันทึกไว้จะไม่หาย)')){
   const el=document.getElementById('setupAiKey');if(el)el.value=cfg.aiKey||'';
@@ -1301,6 +1439,7 @@ function saveGeminiKey(){
 }
 function saveAiKey(){saveGeminiKey();}
 function startApp(){
+  updateBabyNameUI();
   const s=lsGet('state');
   if(s){
     state=s;
@@ -1666,7 +1805,7 @@ function setTab(t){
     const s=nb.querySelector('svg');if(s)s.style.color='white';
   }
   renderAll();
-  if(t==='history'){histOffset=0;setRange(histRange);}
+  if(t==='health'){renderHealthTab();} if(t==='history'){histOffset=0;setRange(histRange);}
 }
 function setLT(t){
   document.querySelectorAll('[id^="lt-"]').forEach(e=>e.classList.remove('act'));
@@ -2123,6 +2262,336 @@ function renderPumpLog(){
     html+='</div>';
   }
   listEl.innerHTML=html;
+}
+
+
+function updateBabyNameUI(){
+  var nick = cfg.babyNick || cfg.babyName || 'Baby';
+  var full = cfg.babyName || nick;
+  var els = {
+    'hdr-name': nick,
+    'hero-nick': nick,
+    'baby-fullname': full,
+  };
+  Object.keys(els).forEach(function(cls){
+    document.querySelectorAll('.'+cls).forEach(function(el){ el.textContent = els[cls]; });
+  });
+  // Also update title elements that have id
+  ['hdrBabyName','heroBabyName'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.textContent = nick;
+  });
+  // Update BIRTH if cfg has DOB
+  if(cfg.babyDOB){
+    var dobStr = cfg.babyDOB + 'T' + (cfg.babyTOB||'14:48') + ':00';
+    window.BIRTH = new Date(dobStr);
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HEALTH MONITORING — Period Checklists + Observation Log
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Observation log stored in state
+// state.healthObs = [{id, t, cat, text, d}]
+
+function initHealthObs(){
+  if(!state.healthObs) state.healthObs = [];
+  var el = document.getElementById('healthObsTime');
+  if(el && !el.value){ var n=new Date(); el.value=pad(n.getHours())+':'+pad(n.getMinutes()); }
+}
+
+function addHealthObs(){
+  var txt = document.getElementById('healthObsInput');
+  var cat = document.getElementById('healthObsCat');
+  var tEl = document.getElementById('healthObsTime');
+  if(!txt || !txt.value.trim()){ showToast('กรุณาใส่สิ่งที่สังเกต'); return; }
+  if(!state.healthObs) state.healthObs = [];
+  var parts = (tEl.value||'00:00').split(':');
+  var dt = new Date(); dt.setHours(parseInt(parts[0]),parseInt(parts[1]),0,0);
+  state.healthObs.unshift({
+    id: Date.now(),
+    t: dt.toISOString(),
+    d: today(),
+    cat: cat.value,
+    text: txt.value.trim()
+  });
+  txt.value = '';
+  pushCloud();
+  renderHealthObs();
+  renderHealthChecklist();
+}
+
+function deleteHealthObs(id){
+  if(!state.healthObs) return;
+  state.healthObs = state.healthObs.filter(function(o){ return o.id !== id; });
+  pushCloud(); renderHealthObs();
+}
+
+var CAT_LABEL = {
+  milestone:'🎯 Milestone', seizure:'⚠️ ชัก', feeding:'🍼 การกิน',
+  motor:'💪 กล้ามเนื้อ', vision:'👁 ตา', general:'📝 ทั่วไป'
+};
+var CAT_COLOR = {
+  milestone:'var(--sage)', seizure:'var(--red)', feeding:'var(--blue)',
+  motor:'var(--amber)', vision:'#7c3aed', general:'var(--tx3)'
+};
+
+function renderHealthObs(){
+  var el = document.getElementById('healthObsList');
+  if(!el) return;
+  if(!state.healthObs) state.healthObs = [];
+  if(!state.healthObs.length){
+    el.innerHTML='<div class="empty">ยังไม่มีการบันทึก</div>'; return;
+  }
+  el.innerHTML = state.healthObs.slice(0,30).map(function(o){
+    var col = CAT_COLOR[o.cat]||'var(--tx3)';
+    var lbl = CAT_LABEL[o.cat]||o.cat;
+    var seizureWarn = o.cat==='seizure'
+      ? '<div style="font-size:10px;color:var(--red);font-weight:700;margin-top:3px;">⚠️ แจ้งหมอในนัดถัดไปหรือทันทีถ้ารุนแรง</div>'
+      : '';
+    return '<div style="padding:10px 0;border-bottom:1px solid var(--border);">'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
+      +'<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(0,0,0,0.05);color:'+col+';">'+lbl+'</span>'
+      +'<span style="font-size:11px;color:var(--tx3);">'+fmtT(o.t)+'</span>'
+      +'<button onclick="deleteHealthObs('+o.id+')" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--tx3);font-size:15px;">×</button>'
+      +'</div>'
+      +'<div style="font-size:13px;color:var(--tx);line-height:1.6;">'+o.text+'</div>'
+      + seizureWarn
+      +'</div>';
+  }).join('');
+}
+
+// ─── PERIOD CHECKLISTS ─────────────────────────────────────────────────────
+
+var HEALTH_PERIODS = [
+  {
+    label: 'แรกเกิด — 1 เดือน (0-4 สัปดาห์)',
+    minDays: 0, maxDays: 30,
+    redFlags: [
+      'ตัวเหลืองมากขึ้นหลังวันที่ 5 หรือยังเหลืองหลัง 2 สัปดาห์',
+      'หายใจหยุด > 20 วินาที หรือหายใจเร็ว > 60 ครั้ง/นาที',
+      'ดูดนมไม่ได้เลย ซึม ไม่ตื่นให้กิน',
+      'ตาขาวมีหนองหรือแดงมาก',
+      'สะดือบวมแดง มีกลิ่น หรือมีหนอง',
+    ],
+    milestones: [
+      'ตอบสนองต่อเสียงดัง (สะดุ้ง)',
+      'มองหน้าคนที่อยู่ห่าง 20-30 ซม.',
+      'กำมือสะท้อน (Grasp reflex)',
+      'รีเฟล็กซ์ดูดนม (Sucking reflex)',
+      'ขาเตะเมื่อถูกกระตุ้น',
+    ],
+    watch: [
+      'ลูกสำลักนมทุกมื้อหรือบ่อยผิดปกติ',
+      'ตาเหล่ตลอดเวลา (บางครั้งปกติ แต่ถ้าตลอดเวลาควรแจ้ง)',
+      'แขนหรือขาข้างใดข้างหนึ่งไม่ขยับเลย',
+    ]
+  },
+  {
+    label: '1–3 เดือน',
+    minDays: 31, maxDays: 90,
+    redFlags: [
+      'ไม่ยิ้มตอบสนองเลยตอนอายุ 2 เดือน',
+      'ไม่มองตามสิ่งของที่เคลื่อนไหว',
+      'ศีรษะอ่อนแอมากผิดปกติ ไม่พัฒนาเลย',
+      'ชักหรือมีอาการสั่นแบบผิดปกติ',
+    ],
+    milestones: [
+      'ยิ้มตอบสนอง (Social smile) — อายุ ~6 สัปดาห์',
+      'ตามมองวัตถุที่เคลื่อนไหว 90-180 องศา',
+      'ออกเสียง "อา อู" (Cooing)',
+      'ยกศีรษะได้ขณะนอนคว่ำ 45 องศา',
+      'มองหน้าและตาคนที่คุยด้วย',
+    ],
+    watch: [
+      'ตาเหล่หรือมองไม่ตรง 2 ข้างไม่เท่ากัน',
+      'กล้ามเนื้อแข็งเกร็งมากผิดปกติ หรืออ่อนแรงมาก',
+      'ไม่สนใจเสียงพ่อแม่เลย',
+    ]
+  },
+  {
+    label: '3–6 เดือน',
+    minDays: 91, maxDays: 180,
+    redFlags: [
+      'ไม่ยกศีรษะได้เลยตอนอายุ 4 เดือน',
+      'ไม่หัวเราะหรือส่งเสียงเลย',
+      'ไม่สนใจมองสิ่งแวดล้อม',
+      'ชักหรือกระตุกที่สงสัยว่า seizure',
+    ],
+    milestones: [
+      'คว่ำเองได้ (Rolls front to back)',
+      'นั่งพยุงได้ชั่วคราวเมื่อจับพยุง',
+      'หัวเราะ ส่งเสียงดังสนุก',
+      'ยื่นมือหยิบของ',
+      'หันศีรษะตามเสียง',
+      'รู้จักหน้าพ่อแม่ ยิ้มทักทาย',
+    ],
+    watch: [
+      'น้ำหนักตัวไม่เพิ่มเลย หรือลดลง',
+      'ไม่สามารถรับน้ำหนักขาได้เลยเมื่อพยุงยืน',
+      'แขน 2 ข้าง หรือขา 2 ข้าง ไม่แข็งแรงเท่ากัน',
+    ]
+  },
+  {
+    label: '6–9 เดือน',
+    minDays: 181, maxDays: 270,
+    redFlags: [
+      'ไม่นั่งได้เลยตอนอายุ 9 เดือน',
+      'ไม่คลานหรือพยายามเคลื่อนไหวเลย',
+      'ไม่พูดเสียงพยัญชนะ ba, da, ma',
+      'ไม่โต้ตอบเมื่อเรียกชื่อ',
+    ],
+    milestones: [
+      'นั่งได้โดยไม่ต้องพยุง',
+      'คลาน (อาจคลานแบบท้องลาก หรือ 4 ขา)',
+      'พูดเสียง ba-ba, da-da, ma-ma',
+      'เล่น Peek-a-boo เข้าใจ',
+      'จับของด้วยนิ้ว Pincer grasp เริ่มพัฒนา',
+      'กินอาหารเสริมชิ้นเล็กได้',
+    ],
+    watch: [
+      'ขากรรไกรหรือการกัดผิดรูปเพิ่มขึ้น (เพดานโหว่)',
+      'การได้ยิน — ไม่หันตามเสียง ไม่ตกใจเมื่อมีเสียงดัง',
+      'Sacral dimple: ขาสองข้างแข็งแรงเท่ากันไหม',
+    ]
+  },
+  {
+    label: '9–12 เดือน',
+    minDays: 271, maxDays: 365,
+    redFlags: [
+      'ไม่ยืนพยุงได้เลยตอนอายุ 12 เดือน',
+      'ไม่พูดคำศัพท์หรือเสียงที่มีความหมายเลย',
+      'ไม่ชี้นิ้วหรือแสดงความสนใจสิ่งต่างๆ',
+      'เดินผิดปกติมาก หรือขาข้างหนึ่งลาก',
+    ],
+    milestones: [
+      'ยืนพยุงขอบได้',
+      'เดินจูงมือ หรือเดินได้เอง (บางคน)',
+      'พูดคำที่มีความหมาย 1-2 คำ',
+      'ชี้นิ้วบอกสิ่งที่ต้องการ',
+      'เข้าใจคำสั่งง่ายๆ "มาหาพ่อ", "หยุด"',
+      'เล่น Clapping hands',
+    ],
+    watch: [
+      'ไม่มีอาการ Stranger anxiety เลย (อาจเป็น social cue ผิดปกติ)',
+      'การพูด: ถ้าไม่มีเสียงหรือคำเดียวเลย — ต้องตรวจการได้ยิน',
+      'การเดิน: Toe-walking หรือเดินไม่มั่นคงมาก',
+    ]
+  },
+  {
+    label: '12–18 เดือน',
+    minDays: 366, maxDays: 548,
+    redFlags: [
+      'ไม่เดินได้เองเลยตอนอายุ 18 เดือน',
+      'พูดได้น้อยกว่า 6 คำตอนอายุ 18 เดือน',
+      'เสียพัฒนาการที่เคยทำได้ (regression)',
+      'ชักบ่อยกว่า 1 ครั้งต่อเดือน',
+    ],
+    milestones: [
+      'เดินได้มั่นคง',
+      'วิ่งได้ (อาจล้มบ้าง)',
+      'พูดได้ 6-20 คำ',
+      'ชี้รูปภาพในหนังสือได้',
+      'ทำตามคำสั่ง 2 ขั้นตอน',
+      'เริ่มกินข้าวเองด้วยช้อน (บางส่วน)',
+    ],
+    watch: [
+      'การพูดล่าช้า — ต้องประเมิน Speech therapy',
+      'เดิน Toe-walking อย่างต่อเนื่อง — ตรวจ Spinal cord',
+      'พฤติกรรมซ้ำๆ หรือไม่สบตา — ประเมิน ASD',
+    ]
+  },
+  {
+    label: '18–24 เดือน',
+    minDays: 549, maxDays: 730,
+    redFlags: [
+      'ไม่พูดประโยค 2 คำเลยตอนอายุ 2 ขวบ',
+      'ไม่เล่นสมมติเลย (Symbolic play)',
+      'ไม่ทำตามคำสั่ง 2 ขั้นตอน',
+      'เดินไม่มั่นคงหรือล้มบ่อยผิดปกติ',
+    ],
+    milestones: [
+      'พูดประโยค 2 คำ เช่น "กินข้าว" "ไปเล่น"',
+      'คำศัพท์ 50+ คำ',
+      'เล่นสมมติ (เล่นครัว, เล่นตุ๊กตา)',
+      'วิ่ง ปีนขั้นบันไดได้',
+      'ใช้ช้อนส้อมได้บ้าง',
+      'ชี้อวัยวะในร่างกายตามที่บอกได้',
+    ],
+    watch: [
+      'ยังปัสสาวะรดที่นอนบ่อยผิดปกติ (อาจเป็น bladder/spinal cord)',
+      'เดิน Toe-walk ยังคงต่อเนื่อง',
+      'ไม่สนใจเพื่อนหรือเด็กคนอื่นเลย',
+    ]
+  },
+];
+
+function renderHealthChecklist(){
+  var wrap = document.getElementById('healthChecklistWrap');
+  if(!wrap) return;
+  var ageD = getDays();
+  var period = null;
+  for(var i=0; i<HEALTH_PERIODS.length; i++){
+    if(ageD >= HEALTH_PERIODS[i].minDays && ageD <= HEALTH_PERIODS[i].maxDays){
+      period = HEALTH_PERIODS[i]; break;
+    }
+  }
+  if(!period){
+    // Use last period if beyond
+    period = ageD > 730 ? HEALTH_PERIODS[HEALTH_PERIODS.length-1] : HEALTH_PERIODS[0];
+  }
+
+  var html = '<div class="card" style="margin-bottom:12px;border-left:3px solid var(--red);">'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
+    +'<div style="background:var(--red-l);border-radius:8px;padding:6px;"><svg width="16" height="16" style="color:var(--red)"><use href="#i-heart"/></svg></div>'
+    +'<div><div class="clbl" style="margin-bottom:0;color:var(--red);">⚠️ สัญญาณอันตราย — พาหมอทันที</div>'
+    +'<div style="font-size:10px;color:var(--tx3);">'+period.label+'</div></div>'
+    +'</div>'
+    + period.redFlags.map(function(f){
+        return '<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--border);">'
+          +'<div style="width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:5px;"></div>'
+          +'<div style="font-size:12.5px;color:var(--tx);line-height:1.5;">'+f+'</div>'
+          +'</div>';
+      }).join('')
+    +'</div>';
+
+  html += '<div class="card" style="margin-bottom:12px;border-left:3px solid var(--sage);">'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
+    +'<div style="background:var(--sage-l);border-radius:8px;padding:6px;"><svg width="16" height="16" style="color:var(--sage)"><use href="#i-check"/></svg></div>'
+    +'<div><div class="clbl" style="margin-bottom:0;color:var(--sage);">🎯 Milestone ที่ควรสังเกต</div>'
+    +'<div style="font-size:10px;color:var(--tx3);">'+period.label+'</div></div>'
+    +'</div>'
+    + period.milestones.map(function(m){
+        return '<div style="display:flex;gap:9px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--border);">'
+          +'<div style="width:16px;height:16px;border-radius:4px;border:1.5px solid var(--sage);flex-shrink:0;margin-top:2px;background:white;"></div>'
+          +'<div style="font-size:12.5px;color:var(--tx);line-height:1.5;">'+m+'</div>'
+          +'</div>';
+      }).join('')
+    +'</div>';
+
+  html += '<div class="card" style="margin-bottom:12px;border-left:3px solid var(--amber);">'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">'
+    +'<div style="background:var(--amber-l);border-radius:8px;padding:6px;"><svg width="16" height="16" style="color:var(--amber)"><use href="#i-bottle"/></svg></div>'
+    +'<div><div class="clbl" style="margin-bottom:0;color:var(--amber);">👁 สิ่งที่ต้องสังเกตเพิ่มเติม</div>'
+    +'<div style="font-size:10px;color:var(--tx3);">เฉพาะน้องต้าเหนิง — ASP / เพดานโหว่ / Sacral dimple</div></div>'
+    +'</div>'
+    + period.watch.map(function(w){
+        return '<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--border);">'
+          +'<div style="width:7px;height:7px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:5px;"></div>'
+          +'<div style="font-size:12.5px;color:var(--tx);line-height:1.5;">'+w+'</div>'
+          +'</div>';
+      }).join('')
+    +'</div>';
+
+  wrap.innerHTML = html;
+}
+
+function renderHealthTab(){
+  initHealthObs();
+  renderHealthChecklist();
+  renderHealthObs();
 }
 
 function renderHeader(){
