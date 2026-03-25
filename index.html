@@ -89,7 +89,7 @@ input:focus,button:focus{outline:none;}
 #app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--bg);padding-bottom:96px;}
 
 /* ===== HEADER ===== */
-.hdr{background:var(--card);padding:18px 20px 16px;position:sticky;top:0;z-index:100;position:relative;
+.hdr{background:var(--card);padding:18px 20px 16px;position:sticky;top:0;z-index:100;
   box-shadow:0 1px 0 var(--border),0 2px 12px rgba(0,0,0,0.04);}
 .hdr-top{display:flex;align-items:flex-start;gap:0;justify-content:space-between;}
 .hdr-left{flex:1;}
@@ -107,7 +107,7 @@ input:focus,button:focus{outline:none;}
 .hdr-gear{width:36px;height:36px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--tx3);transition:all 0.15s;flex-shrink:0;}
 .hdr-gear:active{background:var(--bg);border-color:var(--blue);color:var(--blue);}
 .hdr-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);margin-bottom:4px;}
-.hdr-name{font-size:17px;font-weight:800;color:var(--tx);letter-spacing:-0.3px;line-height:1.1;}
+
 .hdr-age{font-size:12px;color:var(--tx3);margin-top:3px;font-weight:500;}
 .hdr-right{text-align:right;flex-shrink:0;padding-left:12px;display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
 .hdr-date{font-size:11px;color:var(--tx3);font-weight:500;letter-spacing:0.2px;}
@@ -466,7 +466,7 @@ input:focus,button:focus{outline:none;}
 </div>
 
 <!-- SETUP -->
-<div <div id="authScreen" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);padding:32px 20px;">
+<div id="authScreen" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);padding:32px 20px;">
   <div style="width:100%;max-width:400px;">
     <div style="text-align:center;margin-bottom:32px;">
       <div style="font-size:48px;margin-bottom:12px;">🌙</div>
@@ -1431,10 +1431,12 @@ function doSetup(){
 }
 
 function useOffline(){cfg={dbUrl:'',pin:'',who:'ผู้ใช้',offline:true};lsSet('cfg',cfg);document.getElementById('setupScreen').classList.remove('show');startApp();}
-function openSettings(){if(confirm('ต้องการตั้งค่าใหม่?\n(ข้อมูลที่บันทึกไว้จะไม่หาย)')){
-  const el=document.getElementById('setupAiKey');if(el)el.value=cfg.aiKey||'';
-  document.getElementById('setupScreen').classList.add('show');
-}}
+function openSettings(){
+  if(confirm('ต้องการแก้ไขข้อมูลลูก/การตั้งค่า?\n(ข้อมูลที่บันทึกไว้จะไม่หาย)')){
+    showScreen('auth');
+  }
+}
+
 function saveGeminiKey(){
   const el=document.getElementById('geminiKeyInput');
   const st=document.getElementById('geminiKeyStatus');
@@ -1534,21 +1536,32 @@ function clearFeedForm(){
   document.getElementById('fTime').value=getNowStr();
 }
 function uploadPhoto(e){
-  const file=e.target.files[0];if(!file)return;
-  if(file.size>2*1024*1024){showToast('⚠️ รูปใหญ่เกิน 2MB กรุณาเลือกรูปขนาดเล็กกว่า');return;}
-  const reader=new FileReader();
-  reader.onload=async ev=>{
-    const b64=ev.target.result;
-    state.photo=b64;
-    lsSet('state',state);
-    // push photo separately (large data)
-    if(!cfg.offline&&cfg.dbUrl){
-      setSS('syncing','กำลัง sync รูป...');
-      await fbSet('photo',{data:b64,by:cfg.who,t:new Date().toISOString()});
-      setSS('on','sync แล้ว '+fmtT(new Date()));
-    }
-    renderPhoto();
-    showToast('✓ บันทึกรูปโปรไฟล์แล้ว');
+  var file=e.target.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    var img=new Image();
+    img.onload=function(){
+      // Compress: resize to max 400px, JPEG 75% — prevents localStorage overflow
+      var canvas=document.createElement('canvas');
+      var MAX=400;
+      var ratio=Math.min(MAX/img.width, MAX/img.height, 1);
+      canvas.width=Math.round(img.width*ratio);
+      canvas.height=Math.round(img.height*ratio);
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      var b64=canvas.toDataURL('image/jpeg',0.75);
+      state.photo=b64;
+      lsSet('state',state);
+      // Optimistic UI: show immediately, upload in background
+      renderPhoto();
+      showToast('✓ บันทึกรูปโปรไฟล์แล้ว');
+      // Background sync
+      if(!cfg.offline&&cfg.dbUrl){
+        setSS('syncing','sync รูป...');
+        fbSet('photo',{data:b64,by:cfg.who,t:new Date().toISOString()})
+          .then(function(ok){setSS(ok?'on':'off',ok?'sync แล้ว '+fmtT(new Date()):'ออฟไลน์');});
+      }
+    };
+    img.src=ev.target.result;
   };
   reader.readAsDataURL(file);
 }
