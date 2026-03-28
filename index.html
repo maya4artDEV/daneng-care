@@ -621,7 +621,7 @@ input:focus,button:focus{outline:none;}
             <div id="faL"></div><div id="faR" style="text-align:right;"></div>
           </div>
         </div>
-        <div id="pumpSummaryCard" style="display:none;flex-shrink:0;background:var(--sageL);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--sage);min-width:100px;text-align:center;">
+        <div id="pumpSummaryCard" style="display:none;flex-shrink:0;background:var(--sageL);border-radius:var(--radius-sm);padding:12px 14px;min-width:100px;text-align:center;border:1.5px solid rgba(43,171,142,0.15)">
           <div style="font-size:10px;font-weight:800;color:var(--sage);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">🧡 ปั๊มนม</div>
           <div id="pumpSummaryOz" style="font-size:22px;font-weight:900;color:var(--sage);letter-spacing:-1px;line-height:1.1;">0</div>
           <div style="font-size:10px;color:var(--sage);font-weight:600;">oz วันนี้</div>
@@ -991,7 +991,7 @@ input:focus,button:focus{outline:none;}
 
     <!-- NUTRITION -->
     <div id="tab-nutrition" class="tab-c">
-      <div class="card" style="margin-bottom:12px;border-left:3px solid var(--sage);">
+      <div class="card" style="margin-bottom:12px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
           <div>
             <div class="clbl" style="margin-bottom:2px;">🧡 ปั๊มนม</div>
@@ -1024,32 +1024,21 @@ input:focus,button:focus{outline:none;}
           <div style="text-align:center;flex:1;"><div id="pumpStatAvg" style="font-size:20px;font-weight:800;color:var(--sage);">—</div><div style="font-size:10px;color:var(--tx3);">oz เฉลี่ย</div></div>
           <div style="text-align:center;flex:1;"><div id="pumpStatMl" style="font-size:20px;font-weight:800;color:var(--tx3);">0</div><div style="font-size:10px;color:var(--tx3);">ml รวม</div></div>
         </div>
-        <div id="pumpAllSummary" style="display:none;background:var(--bg);border-radius:10px;padding:10px 14px;margin-bottom:10px;border:1px solid var(--border);">
-          <div style="font-size:10px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">สรุปรวมทั้งหมด</div>
-          <div style="display:flex;gap:0;flex-wrap:wrap;">
-            <div style="flex:1;min-width:70px;text-align:center;padding:4px 0;">
-              <div id="pumpAllOz" style="font-size:18px;font-weight:900;color:var(--sage);">0</div>
-              <div style="font-size:9px;color:var(--tx3);">oz รวม</div>
-            </div>
-            <div style="flex:1;min-width:70px;text-align:center;padding:4px 0;">
-              <div id="pumpAllMl" style="font-size:18px;font-weight:900;color:var(--tx3);">0</div>
-              <div style="font-size:9px;color:var(--tx3);">ml รวม</div>
-            </div>
-            <div style="flex:1;min-width:70px;text-align:center;padding:4px 0;">
-              <div id="pumpAllSessions" style="font-size:18px;font-weight:900;color:var(--blue);">0</div>
-              <div style="font-size:9px;color:var(--tx3);">ครั้งทั้งหมด</div>
-            </div>
-            <div style="flex:1;min-width:70px;text-align:center;padding:4px 0;">
-              <div id="pumpAllDays" style="font-size:18px;font-weight:900;color:var(--amber);">0</div>
-              <div style="font-size:9px;color:var(--tx3);">วันที่บันทึก</div>
+        <!-- Monthly history view -->
+        <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:0.8px;">ประวัติย้อนหลัง</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <select id="pumpFilterMonth" onchange="renderPumpLog()" style="padding:5px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx);outline:none;">
+                <option value="">ทุกเดือน</option>
+              </select>
+              <select id="pumpFilterYear" onchange="renderPumpLog()" style="padding:5px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:'Noto Sans Thai',sans-serif;background:var(--bg);color:var(--tx);outline:none;">
+                <option value="">ทุกปี</option>
+              </select>
             </div>
           </div>
-          <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:11px;color:var(--tx3);">
-            <span>เฉลี่ย/วัน: <strong id="pumpAvgPerDay" style="color:var(--sage);">—</strong></span>
-            <span>เฉลี่ย/ครั้ง: <strong id="pumpAvgPerSession" style="color:var(--sage);">—</strong></span>
-          </div>
+          <div id="pumpLogList"></div>
         </div>
-        <div id="pumpLogList"></div>
       </div>
       <div class="card" style="border-left:3px solid var(--amber);">
         <div class="clbl">โภชนาการลูก</div>
@@ -1091,11 +1080,23 @@ input:focus,button:focus{outline:none;}
 
       <div class="card" style="border-left:3px solid var(--sage);">
         <div class="clbl">บันทึกอาหารลูก (เริ่มเมื่ออายุ 6 เดือน)</div>
-        <div class="tpills">
-          <div class="tpill act act-sage" id="bfc-solid" onclick="setBFC('solid')">🥕 Solid</div>
-          <div class="tpill" id="bfc-meal" onclick="setBFC('meal')">🍲 Meal</div>
-          <div class="tpill" id="bfc-snack" onclick="setBFC('snack')">🍌 Snack</div>
-          <div class="tpill" id="bfc-drink" onclick="setBFC('drink')">🥤 Drink</div>
+        <div class="tpills" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;">
+          <div id="bfc-solid" onclick="setBFC('solid')" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:50px;border:1.5px solid var(--border);background:var(--sageL);cursor:pointer;transition:all 0.15s;">
+            <span style="font-size:22px;line-height:1;">🥕</span>
+            <span style="font-size:10px;color:var(--sage);font-weight:500;">Solid</span>
+          </div>
+          <div id="bfc-meal" onclick="setBFC('meal')" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:50px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;transition:all 0.15s;">
+            <span style="font-size:22px;line-height:1;">🍲</span>
+            <span style="font-size:10px;color:var(--tx3);font-weight:400;">Meal</span>
+          </div>
+          <div id="bfc-snack" onclick="setBFC('snack')" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:50px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;transition:all 0.15s;">
+            <span style="font-size:22px;line-height:1;">🍌</span>
+            <span style="font-size:10px;color:var(--tx3);font-weight:400;">Snack</span>
+          </div>
+          <div id="bfc-drink" onclick="setBFC('drink')" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:50px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;transition:all 0.15s;">
+            <span style="font-size:22px;line-height:1;">🥤</span>
+            <span style="font-size:10px;color:var(--tx3);font-weight:400;">Drink</span>
+          </div>
         </div>
         <div class="frow">
           <input class="fi" type="text" id="bfName" placeholder="ชื่ออาหาร" style="margin-bottom:0;">
@@ -2111,7 +2112,41 @@ function exportMedicalPDF(){
     pumpPdfSection = '<p style="color:#888;font-size:12px;">ยังไม่มีข้อมูลการปั๊มนม</p>';
   }
 
-  // Build vaccine rows
+  // Build health obs section for PDF
+  var healthObsRows = '';
+  var obsLogs = state.healthObs||[];
+  var genLogs = state.logs||[];
+  var OBS_LBL = {milestone:'🎯 Milestone',seizure:'⚠️ ชัก',feeding:'🍼 การกิน',motor:'💪 กล้ามเนื้อ',vision:'👁 ตา',general:'📝 ทั่วไป'};
+  var GEN_LBL = {temp:'🌡 อุณหภูมิ',bath:'🛁 อาบน้ำ',med:'💊 ยา',symptom:'⚠️ อาการ',note:'📝 โน้ต',babyFood:'🥕 อาหารลูก',measure:'📏 วัดรอบ',appt:'📅 นัดหมาย'};
+  var METH_TH = {axillary:'รักแร้',ear:'หู',forehead:'หน้าผาก',rectal:'ทวาร'};
+  var SYM_TH2 = {cough:'ไอ',vomit:'อ้วก',rash:'ผื่น',fever:'ไข้สูง'};
+  var SEV_TH2 = {mild:'เล็กน้อย',moderate:'ปานกลาง',severe:'รุนแรง'};
+
+  obsLogs.slice(0,50).forEach(function(o){
+    var lbl=OBS_LBL[o.cat]||o.cat;
+    var rowStyle = o.cat==='seizure' ? 'background:#fff5f5;' : o.cat==='milestone' ? 'background:#f0fff4;' : '';
+    var d = new Date(o.t);
+    var dateStr = d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});
+    healthObsRows+='<tr style="'+rowStyle+'"><td>'+dateStr+' '+fmtT(o.t)+'</td><td>'+lbl+'</td><td>'+o.text+'</td></tr>';
+  });
+  genLogs.filter(function(l){return l.cat!=='appt';}).slice(0,50).forEach(function(l){
+    var lbl=GEN_LBL[l.cat]||l.cat;
+    var detail='';
+    if(l.cat==='temp') detail=l.data.v+'°C ('+(METH_TH[l.data.method]||l.data.method)+')';
+    else if(l.cat==='med') detail=l.data.name+(l.data.dose?' '+l.data.dose:'')+(l.data.reason?' — '+l.data.reason:'');
+    else if(l.cat==='symptom') detail=(SYM_TH2[l.data.type]||l.data.type)+' '+(SEV_TH2[l.data.sev]||l.data.sev)+(l.data.note?' ('+l.data.note+')':'');
+    else if(l.cat==='note') detail=l.data.text;
+    else if(l.cat==='bath') detail='อาบน้ำ'+(l.data.note?' — '+l.data.note:'');
+    else if(l.cat==='measure') detail=(l.data.hc?'รอบศีรษะ '+l.data.hc+' ซม. ':'')+(l.data.chest?'รอบอก '+l.data.chest+' ซม.':'');
+    else if(l.cat==='babyFood') detail=l.data.name+(l.data.amt?' '+l.data.amt:'')+'('+l.data.cat+')';
+    var d=new Date(l.t);
+    var dateStr=d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});
+    healthObsRows+='<tr><td>'+dateStr+' '+fmtT(l.t)+'</td><td>'+lbl+'</td><td>'+detail+'</td></tr>';
+  });
+  var apptRows='';
+  genLogs.filter(function(l){return l.cat==='appt';}).forEach(function(l){
+    apptRows+='<tr><td>'+l.data.date+'</td><td>'+l.data.title+'</td><td>'+(l.data.doctor||'—')+'</td><td>'+(l.data.note||'—')+'</td></tr>';
+  });
   const vaxRows = VACCINES.map(v=>{
     const done = state.doneVax[v.id];
     const dueDate = new Date(BIRTH.getTime()+v.days*86400000);
@@ -2255,6 +2290,13 @@ function exportMedicalPDF(){
   ${pumpPdfSection}
 </div>
 
+<div class="section">
+  <div class="sec-title">บันทึกสุขภาพ · Milestones · อาการ</div>
+  ${healthObsRows ? '<table><thead><tr><th style="width:18%">วันที่-เวลา</th><th style="width:20%">ประเภท</th><th>รายละเอียด</th></tr></thead><tbody>'+healthObsRows+'</tbody></table>' : '<p style="color:#888;font-size:12px;">ยังไม่มีบันทึก</p>'}
+</div>
+
+${apptRows ? '<div class="section"><div class="sec-title">นัดหมายแพทย์</div><table><thead><tr><th style="width:20%">วันที่</th><th style="width:30%">ชื่อนัด</th><th style="width:25%">แพทย์/สถานที่</th><th>หมายเหตุ</th></tr></thead><tbody>'+apptRows+'</tbody></table></div>' : ''}
+
 <div class="notice">
   ⚠️ เอกสารนี้จัดทำโดยแอปพลิเคชันบันทึกการดูแลทารก ข้อมูลทั้งหมดบันทึกโดยผู้ดูแล เป็นข้อมูลเสริมสำหรับแพทย์ ไม่ใช่เอกสารทางการแพทย์อย่างเป็นทางการ
 </div>
@@ -2332,12 +2374,11 @@ function renderPumpLog(){
   if(!listEl)return;
   if(!state.pumpLogs)state.pumpLogs=[];
 
+  // Today summary
   var todayLogs=state.pumpLogs.filter(function(p){return p.d===td;});
-  todayLogs.sort(function(a,b){return new Date(a.t)-new Date(b.t);});
   var totalOz=todayLogs.reduce(function(s,p){return s+p.oz;},0);
   var totalMl=Math.round(totalOz*29.5735);
   var avgOz=todayLogs.length?+(totalOz/todayLogs.length).toFixed(1):0;
-
   if(totalEl)totalEl.innerHTML=totalOz.toFixed(1)+'<span style="font-size:13px;font-weight:600;margin-left:1px;">oz</span>';
   if(mlEl)mlEl.textContent=totalMl+' ml · รวมวันนี้';
   if(statsBar)statsBar.style.display=todayLogs.length?'flex':'none';
@@ -2345,73 +2386,107 @@ function renderPumpLog(){
   if(statAvg)statAvg.textContent=avgOz;
   if(statMl)statMl.textContent=totalMl;
 
-  var allDates=[...new Set(state.pumpLogs.map(function(p){return p.d;}))];
-  allDates.sort(function(a,b){return new Date(b)-new Date(a);});
+  if(!state.pumpLogs.length){listEl.innerHTML='<div class="empty">ยังไม่มีการบันทึก</div>';return;}
 
-  // Overall summary
-  var allSumEl=document.getElementById('pumpAllSummary');
-  var allOzEl=document.getElementById('pumpAllOz');
-  var allMlEl=document.getElementById('pumpAllMl');
-  var allSessEl=document.getElementById('pumpAllSessions');
-  var allDaysEl=document.getElementById('pumpAllDays');
-  var avgDayEl=document.getElementById('pumpAvgPerDay');
-  var avgSessEl=document.getElementById('pumpAvgPerSession');
-  if(state.pumpLogs.length>0 && allSumEl){
-    var allOz=state.pumpLogs.reduce(function(s,p){return s+p.oz;},0);
-    var allMl=Math.round(allOz*29.5735);
-    var uniqueDays=[...new Set(state.pumpLogs.map(function(p){return p.d;}))].length;
-    allSumEl.style.display='block';
-    if(allOzEl)allOzEl.textContent=allOz.toFixed(1);
-    if(allMlEl)allMlEl.textContent=allMl.toLocaleString();
-    if(allSessEl)allSessEl.textContent=state.pumpLogs.length;
-    if(allDaysEl)allDaysEl.textContent=uniqueDays;
-    if(avgDayEl)avgDayEl.textContent=(allOz/uniqueDays).toFixed(1)+' oz';
-    if(avgSessEl)avgSessEl.textContent=(allOz/state.pumpLogs.length).toFixed(1)+' oz';
-  } else if(allSumEl){
-    allSumEl.style.display='none';
+  // Populate filter dropdowns
+  var monthSel=document.getElementById('pumpFilterMonth');
+  var yearSel=document.getElementById('pumpFilterYear');
+  var allMonths=new Set(); var allYears=new Set();
+  state.pumpLogs.forEach(function(p){
+    var dt=new Date(p.t);
+    allMonths.add(dt.getMonth()+1);
+    allYears.add(dt.getFullYear());
+  });
+  var TH_MON=['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  if(monthSel&&monthSel.options.length<=1){
+    Array.from(allMonths).sort(function(a,b){return a-b;}).forEach(function(m){
+      var o=document.createElement('option');o.value=m;o.textContent=TH_MON[m];monthSel.appendChild(o);
+    });
   }
+  if(yearSel&&yearSel.options.length<=1){
+    Array.from(allYears).sort(function(a,b){return b-a;}).forEach(function(y){
+      var o=document.createElement('option');o.value=y;o.textContent=y;yearSel.appendChild(o);
+    });
+  }
+  var filterM=monthSel?parseInt(monthSel.value)||0:0;
+  var filterY=yearSel?parseInt(yearSel.value)||0:0;
 
-  if(!allDates.length){
-    listEl.innerHTML='<div class="empty">ยังไม่มีการบันทึก</div>';
-    return;
-  }
+  // Filter logs
+  var filtered=state.pumpLogs.filter(function(p){
+    var dt=new Date(p.t);
+    if(filterM&&dt.getMonth()+1!==filterM)return false;
+    if(filterY&&dt.getFullYear()!==filterY)return false;
+    return true;
+  });
+
+  if(!filtered.length){listEl.innerHTML='<div class="empty">ไม่มีข้อมูลในช่วงนี้</div>';return;}
+
+  // Group by YYYY-MM (month buckets)
+  var byMonth={};
+  filtered.forEach(function(p){
+    var dt=new Date(p.t);
+    var key=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');
+    if(!byMonth[key])byMonth[key]=[];
+    byMonth[key].push(p);
+  });
+  var monthKeys=Object.keys(byMonth).sort(function(a,b){return b.localeCompare(a);});
 
   var html='';
-  for(var di=0;di<allDates.length;di++){
-    var d=allDates[di];
-    var logs=state.pumpLogs.filter(function(p){return p.d===d;});
-    logs.sort(function(a,b){return new Date(a.t)-new Date(b.t);});
-    var dayOz=logs.reduce(function(s,p){return s+p.oz;},0);
-    var dayMl=Math.round(dayOz*29.5735);
-    var isToday=d===td;
-    var dateObj=new Date(logs[0].t);
-    var dayLabel=isToday?'วันนี้':dateObj.toLocaleDateString('th-TH',{weekday:'short',day:'numeric',month:'short'});
-    var bodyId='pump-day-'+d.replace(/ /g,'-');
-    var isOpen=isToday;
-    var rows='';
-    for(var li=0;li<logs.length;li++){
-      var p=logs[li];
-      rows+='<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);">'
-        +'<div style="display:flex;align-items:center;gap:10px;">'
-        +'<span style="font-size:13px;font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums;">'+fmtT(p.t)+'</span>'
-        +'<span style="background:var(--sageL);color:var(--sage);border-radius:20px;padding:2px 10px;font-size:13px;font-weight:700;">'+p.oz+' oz</span>'
-        +'<span style="font-size:11px;color:var(--tx3);">'+Math.round(p.oz*29.5735)+' ml</span>'
+  monthKeys.forEach(function(mk){
+    var mLogs=byMonth[mk];
+    mLogs.sort(function(a,b){return new Date(b.t)-new Date(a.t);});
+    var mOz=mLogs.reduce(function(s,p){return s+p.oz;},0);
+    var mMl=Math.round(mOz*29.5735);
+    var mSess=mLogs.length;
+    var mDays=new Set(mLogs.map(function(p){return p.d;})).size;
+    var parts=mk.split('-');
+    var mLabel=TH_MON[parseInt(parts[1])]+' '+parts[0];
+    var bodyId='pump-m-'+mk;
+    var isCurrentMonth=mk===new Date().getFullYear()+'-'+String(new Date().getMonth()+1).padStart(2,'0');
+
+    // Day-level rows inside month
+    var byDay={};
+    mLogs.forEach(function(p){
+      var d=p.d;
+      if(!byDay[d])byDay[d]=[];
+      byDay[d].push(p);
+    });
+    var dayKeys=Object.keys(byDay).sort(function(a,b){return new Date(b)-new Date(a);});
+    var dayRows='';
+    dayKeys.forEach(function(d){
+      var dl=byDay[d];
+      var dOz=dl.reduce(function(s,p){return s+p.oz;},0);
+      var isToday2=d===td;
+      var dateObj=new Date(dl[0].t);
+      var dLabel=isToday2?'วันนี้':dateObj.toLocaleDateString('th-TH',{weekday:'short',day:'numeric'});
+      var entries=dl.map(function(p){
+        return '<span style="font-size:11px;color:var(--tx3);margin-right:8px;">'+fmtT(p.t)+' <strong style="color:var(--sage)">'+p.oz+' oz</strong>'
+          +'<button onclick="deletePumpLog('+p.id+')" style="background:none;border:none;cursor:pointer;color:var(--tx3);font-size:13px;padding:0 2px;margin-left:2px;">×</button></span>';
+      }).join('');
+      dayRows+='<div style="padding:6px 0;border-bottom:1px solid var(--border);last-child{border:none}">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">'
+        +'<span style="font-size:12px;font-weight:600;color:var(--tx);">'+dLabel+'</span>'
+        +'<span style="font-size:12px;font-weight:700;color:var(--sage);">'+dOz.toFixed(1)+' oz</span>'
         +'</div>'
-        +'<button onclick="deletePumpLog('+p.id+')" style="background:none;border:none;cursor:pointer;color:var(--tx3);font-size:16px;padding:4px;">×</button>'
+        +'<div>'+entries+'</div>'
         +'</div>';
-    }
+    });
+
     html+='<div class="pump-day">'
       +'<div class="pump-day-hd" data-id="'+bodyId+'" onclick="togglePumpDay(this)">'
-      +'<div class="pump-day-label">'+dayLabel+'</div>'
+      +'<div>'
+      +'<div class="pump-day-label">'+mLabel+'</div>'
+      +'<div style="font-size:10px;color:var(--tx3);margin-top:1px;">'+mSess+' ครั้ง · '+mDays+' วัน · เฉลี่ย '+(mOz/mDays).toFixed(1)+' oz/วัน</div>'
+      +'</div>'
       +'<div class="pump-day-right">'
-      +'<span class="pump-day-oz">'+dayOz.toFixed(1)+' oz</span>'
-      +'<span class="pump-day-ml">('+dayMl+' ml)</span>'
-      +'<span class="pump-day-arrow'+(isOpen?' open':'')+'">▼</span>'
+      +'<span class="pump-day-oz">'+mOz.toFixed(1)+' oz</span>'
+      +'<span class="pump-day-ml">('+mMl+' ml)</span>'
+      +'<span class="pump-day-arrow'+(isCurrentMonth?' open':'')+'">▼</span>'
       +'</div>'
       +'</div>'
-      +'<div id="'+bodyId+'" class="pump-day-body'+(isOpen?' open':'')+'">'+rows+'</div>'
+      +'<div id="'+bodyId+'" class="pump-day-body'+(isCurrentMonth?' open':'')+'">'+dayRows+'</div>'
       +'</div>';
-  }
+  });
   listEl.innerHTML=html;
 }
 
@@ -3380,10 +3455,15 @@ function renderMeasureList(){
 var bfCat = 'solid';
 function setBFC(c){
   bfCat = c;
+  var ICONS = {solid:'🥕',meal:'🍲',snack:'🍌',drink:'🥤'};
   ['solid','meal','snack','drink'].forEach(function(x){
     var el = document.getElementById('bfc-'+x);
-    if(el) el.classList.toggle('act', x===c);
-    if(el) el.classList.toggle('act-sage', x===c);
+    if(!el) return;
+    var active = x===c;
+    el.style.background = active ? 'var(--sageL)' : 'var(--card)';
+    el.style.borderColor = active ? 'var(--sage)' : 'var(--border)';
+    var label = el.querySelector('span:last-child');
+    if(label){ label.style.color = active ? 'var(--sage)' : 'var(--tx3)'; label.style.fontWeight = active ? '600' : '400'; }
   });
 }
 function addBabyFood(){
