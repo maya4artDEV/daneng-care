@@ -740,8 +740,12 @@ input:focus,button:focus{outline:none;}
           </div>
           <input class="fi" type="text" id="fNote" placeholder="หมายเหตุ (ไม่บังคับ)">
           <div class="time-row">
+            <div style="flex:1.4;">
+              <div class="time-label">วันที่</div>
+              <input class="fi" type="date" id="fDate" style="margin-bottom:0;font-size:14px;">
+            </div>
             <div style="flex:1;">
-              <div class="time-label">เวลาที่ให้นม</div>
+              <div class="time-label">เวลา</div>
               <input class="fi" type="time" id="fTime" style="margin-bottom:0;font-size:15px;font-weight:600;">
             </div>
             <button class="time-now-btn" onclick="setFTimeNow()">ตอนนี้</button>
@@ -771,9 +775,13 @@ input:focus,button:focus{outline:none;}
 
           <!-- LIVE MODE -->
           <div id="slpLivePanel">
-            <div class="time-row">
+            <div class="frow" style="margin-bottom:8px;">
+              <div style="flex:1.4;">
+                <div class="time-label" id="slpDateLabel">วันที่เริ่มนอน</div>
+                <input class="fi" type="date" id="slpDate" style="margin-bottom:0;font-size:13px;">
+              </div>
               <div style="flex:1;">
-                <div class="time-label" id="slpTimeLabel">เวลาเริ่มนอน</div>
+                <div class="time-label" id="slpTimeLabel">เวลา</div>
                 <input class="fi" type="time" id="slpTime" style="margin-bottom:0;font-size:15px;font-weight:600;">
               </div>
               <button class="time-now-btn" onclick="setSlpTimeNow()">ตอนนี้</button>
@@ -783,22 +791,27 @@ input:focus,button:focus{outline:none;}
 
           <!-- RANGE MODE -->
           <div id="slpRangePanel" style="display:none;">
-            <div class="frow">
+            <div class="time-label" style="margin-bottom:6px;">เริ่มนอน</div>
+            <div class="frow" style="margin-bottom:8px;">
+              <div style="flex:1.4;">
+                <input class="fi" type="date" id="slpStartDate" style="margin-bottom:0;font-size:13px;" oninput="updateRangeDur()">
+              </div>
               <div style="flex:1;">
-                <div class="time-label">เวลาเริ่มนอน</div>
                 <input class="fi" type="time" id="slpStart" style="margin-bottom:0;font-size:15px;font-weight:600;" oninput="updateRangeDur()">
               </div>
-              <button class="time-now-btn" onclick="document.getElementById('slpStart').value=getNowStr()">ตอนนี้</button>
+              <button class="time-now-btn" onclick="slpRangeNow('start')">ตอนนี้</button>
             </div>
-            <div style="height:8px;"></div>
-            <div class="frow">
+            <div class="time-label" style="margin-bottom:6px;">ตื่น</div>
+            <div class="frow" style="margin-bottom:8px;">
+              <div style="flex:1.4;">
+                <input class="fi" type="date" id="slpEndDate" style="margin-bottom:0;font-size:13px;" oninput="updateRangeDur()">
+              </div>
               <div style="flex:1;">
-                <div class="time-label">เวลาตื่น</div>
                 <input class="fi" type="time" id="slpEnd" style="margin-bottom:0;font-size:15px;font-weight:600;" oninput="updateRangeDur()">
               </div>
-              <button class="time-now-btn" onclick="document.getElementById('slpEnd').value=getNowStr()">ตอนนี้</button>
+              <button class="time-now-btn" onclick="slpRangeNow('end')">ตอนนี้</button>
             </div>
-            <div id="slpRangeDur" style="text-align:center;font-size:13px;color:var(--tx3);margin:8px 0 12px;min-height:20px;"></div>
+            <div id="slpRangeDur" style="text-align:center;font-size:13px;color:var(--tx3);margin:4px 0 12px;min-height:20px;"></div>
             <button class="fbtn fbtn-blue" onclick="addSleepRange()">บันทึกช่วงการนอน</button>
           </div>
           <div class="sleep-dur-box">
@@ -1613,7 +1626,11 @@ function dupConfirm(){document.getElementById('dupModal').classList.remove('show
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
 function setFTimeNow(){
-  document.getElementById('fTime').value=getNowStr();
+  const n=new Date();
+  const d=document.getElementById('fDate');
+  const t=document.getElementById('fTime');
+  if(d) d.value=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
+  if(t) t.value=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
 }
 
 function addFeeding(){
@@ -1621,25 +1638,27 @@ function addFeeding(){
   const amt=parseInt(document.getElementById('fAmt').value)||null;
   const note=document.getElementById('fNote').value;
   const timeVal=document.getElementById('fTime').value;
-  // Build timestamp from manual time input or now
+  const dateVal=document.getElementById('fDate').value;
+  // Build timestamp from date+time or fall back to now
   let entryTime=new Date();
-  if(timeVal){
+  if(dateVal && timeVal){
+    entryTime=new Date(dateVal+'T'+timeVal+':00');
+  } else if(timeVal){
     const [h,m]=timeVal.split(':').map(Number);
-    entryTime=new Date();entryTime.setHours(h,m,0,0);
+    entryTime=new Date(); entryTime.setHours(h,m,0,0);
   }
+  if(isNaN(entryTime.getTime())){showToast('วันที่หรือเวลาไม่ถูกต้อง');return;}
   const entry={id:Date.now(),t:entryTime.toISOString(),type:fType,side:fType==='breast'?fSide:null,dur,amt,note,who:cfg.who};
-  // Dup check: compare against entry time, not Date.now()
   const thresh=5*60000;
   const recent=state.feedings.filter(f=>Math.abs(entryTime.getTime()-new Date(f.t).getTime())<thresh);
   if(recent.length>0){
     const who=recent[0].who||'',diff=Math.floor(Math.abs(entryTime.getTime()-new Date(recent[0].t).getTime())/60000);
-    let m=`มีบันทึกมื้อนมเวลาใกล้กัน (ห่างกัน ${diff} นาที)`;
-    if(who&&who!==cfg.who)m+=` บันทึกโดย ${who}`;
+    let m='มีบันทึกมื้อนมเวลาใกล้กัน (ห่างกัน '+diff+' นาที)';
+    if(who&&who!==cfg.who)m+=' บันทึกโดย '+who;
     m+='\n\nต้องการบันทึกซ้ำหรือไม่?';
     document.getElementById('dupMsg').textContent=m;
     dupCallback=()=>{
       state.feedings.push(entry);
-      // Sort by time
       state.feedings.sort((a,b)=>new Date(a.t)-new Date(b.t));
       pushCloud();clearFeedForm();showToast('✓ บันทึกมื้อนมแล้ว');renderAll();
     };
@@ -1655,7 +1674,7 @@ function clearFeedForm(){
   document.getElementById('fDur').value='';
   document.getElementById('fAmt').value='';
   document.getElementById('fNote').value='';
-  document.getElementById('fTime').value=getNowStr();
+  setFTimeNow();
 }
 function uploadPhoto(e){
   var file=e.target.files[0];if(!file)return;
@@ -1703,21 +1722,63 @@ function renderPhoto(){
 function setDTimeNow(){
   document.getElementById('dTime').value=getNowStr();
 }
-function setSlpTimeNow(){
-  document.getElementById('slpTime').value=getNowStr();
-}
 
 function getNowStr(){const n=new Date();return String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');}
+function getTodayDateStr(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
+
 function initTimeInputs(){
-  const ids=['fTime','dTime','slpTime','slpEnd'];
-  ids.forEach(id=>{const el=document.getElementById(id);if(el&&!el.value)el.value=getNowStr();});
+  const td=getTodayDateStr();
+  const tm=getNowStr();
+  // Feed
+  const fDate=document.getElementById('fDate');if(fDate&&!fDate.value)fDate.value=td;
+  const fTime=document.getElementById('fTime');if(fTime&&!fTime.value)fTime.value=tm;
+  // Diaper
+  const dTime=document.getElementById('dTime');if(dTime&&!dTime.value)dTime.value=tm;
+  // Sleep live
+  const slpDate=document.getElementById('slpDate');if(slpDate&&!slpDate.value)slpDate.value=td;
+  const slpTime=document.getElementById('slpTime');if(slpTime&&!slpTime.value)slpTime.value=tm;
+  // Sleep range end
+  const slpEndDate=document.getElementById('slpEndDate');if(slpEndDate&&!slpEndDate.value)slpEndDate.value=td;
+  const slpEnd=document.getElementById('slpEnd');if(slpEnd&&!slpEnd.value)slpEnd.value=tm;
 }
+
+// Build a Date from a date-string + time-string
+function buildDateTime(dateStr, timeStr){
+  if(dateStr && timeStr) return new Date(dateStr+'T'+timeStr+':00');
+  if(timeStr){
+    const [h,m]=timeStr.split(':').map(Number);
+    const d=new Date(); d.setHours(h,m,0,0); return d;
+  }
+  return new Date();
+}
+
+// Legacy helper (used by diaper/other)
 function getTimeFromInput(inputId){
   const el=document.getElementById(inputId);
   const val=el?el.value:'';
   if(!val) return new Date();
   const [h,m]=val.split(':').map(Number);
   const d=new Date(); d.setHours(h,m,0,0); return d;
+}
+
+function setSlpTimeNow(){
+  const n=new Date();
+  const d=document.getElementById('slpDate');if(d)d.value=getTodayDateStr();
+  const t=document.getElementById('slpTime');if(t)t.value=getNowStr();
+  if(state.isSleeping) updateRangeDur();
+}
+
+function slpRangeNow(which){
+  const n=new Date();
+  const ds=getTodayDateStr(), tm=getNowStr();
+  if(which==='start'){
+    const sd=document.getElementById('slpStartDate');if(sd)sd.value=ds;
+    const st=document.getElementById('slpStart');if(st)st.value=tm;
+  } else {
+    const ed=document.getElementById('slpEndDate');if(ed)ed.value=ds;
+    const et=document.getElementById('slpEnd');if(et)et.value=tm;
+  }
+  updateRangeDur();
 }
 
 function setSlpMode(m){
@@ -1728,51 +1789,59 @@ function setSlpMode(m){
   document.getElementById('slpLivePanel').style.display=m==='live'?'':'none';
   document.getElementById('slpRangePanel').style.display=m==='range'?'':'none';
   if(m==='range'){
-    // Pre-fill start=1h ago, end=now as sensible defaults
     const now=new Date();
     const ago=new Date(now-60*60*1000);
-    const el_s=document.getElementById('slpStart');
-    const el_e=document.getElementById('slpEnd');
-    if(el_s&&!el_s.value)el_s.value=String(ago.getHours()).padStart(2,'0')+':'+String(ago.getMinutes()).padStart(2,'0');
-    if(el_e)el_e.value=getNowStr();
+    const sd=document.getElementById('slpStartDate');
+    const st=document.getElementById('slpStart');
+    const ed=document.getElementById('slpEndDate');
+    const et=document.getElementById('slpEnd');
+    const fmtDate=dt=>dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+    if(sd&&!sd.value) sd.value=fmtDate(ago);
+    if(st&&!st.value) st.value=String(ago.getHours()).padStart(2,'0')+':'+String(ago.getMinutes()).padStart(2,'0');
+    if(ed&&!ed.value) ed.value=fmtDate(now);
+    if(et) et.value=getNowStr();
     updateRangeDur();
   }
 }
 
 function updateRangeDur(){
-  const s=document.getElementById('slpStart').value;
-  const e=document.getElementById('slpEnd').value;
+  const sd=document.getElementById('slpStartDate');
+  const st=document.getElementById('slpStart');
+  const ed=document.getElementById('slpEndDate');
+  const et=document.getElementById('slpEnd');
   const lbl=document.getElementById('slpRangeDur');
   if(!lbl)return;
-  if(!s||!e){lbl.textContent='';return;}
-  const sd=new Date();const ed=new Date();
-  const[sh,sm]=s.split(':').map(Number);const[eh,em]=e.split(':').map(Number);
-  sd.setHours(sh,sm,0,0);ed.setHours(eh,em,0,0);
-  if(ed<=sd)ed.setDate(ed.getDate()+1); // crosses midnight
-  const dur=Math.round((ed-sd)/60000);
+  const startStr=(sd&&sd.value?sd.value:getTodayDateStr())+'T'+(st&&st.value?st.value:'00:00')+':00';
+  const endStr=(ed&&ed.value?ed.value:getTodayDateStr())+'T'+(et&&et.value?et.value:'00:00')+':00';
+  const sdObj=new Date(startStr); const edObj=new Date(endStr);
+  if(isNaN(sdObj)||isNaN(edObj)){lbl.textContent='';return;}
+  const dur=Math.round((edObj-sdObj)/60000);
   if(dur<=0){lbl.textContent='⚠️ เวลาตื่นต้องหลังเวลานอน';lbl.style.color='var(--red)';return;}
+  if(dur>1440){lbl.textContent='⚠️ นานเกิน 24 ชม. ตรวจสอบวันที่อีกที';lbl.style.color='var(--amber)';return;}
   lbl.style.color='var(--sage)';
   lbl.textContent='ระยะเวลานอน: '+Math.floor(dur/60)+' ชม. '+dur%60+' นาที';
 }
 
 function addSleepRange(){
-  const sVal=document.getElementById('slpStart').value;
-  const eVal=document.getElementById('slpEnd').value;
-  if(!sVal||!eVal){showToast('กรุณาระบุเวลาเริ่มและตื่น');return;}
-  const[sh,sm]=sVal.split(':').map(Number);
-  const[eh,em]=eVal.split(':').map(Number);
-  const sd=new Date();sd.setHours(sh,sm,0,0);
-  const ed=new Date();ed.setHours(eh,em,0,0);
-  if(ed<=sd)ed.setDate(ed.getDate()+1);
-  const dur=Math.round((ed-sd)/60000);
+  const sd=document.getElementById('slpStartDate');
+  const st=document.getElementById('slpStart');
+  const ed=document.getElementById('slpEndDate');
+  const et=document.getElementById('slpEnd');
+  if(!st||!st.value||!et||!et.value){showToast('กรุณาระบุเวลาเริ่มและตื่น');return;}
+  const startISO=buildDateTime(sd&&sd.value?sd.value:null, st.value);
+  const endISO=buildDateTime(ed&&ed.value?ed.value:null, et.value);
+  if(isNaN(startISO)||isNaN(endISO)){showToast('วันที่ไม่ถูกต้อง');return;}
+  const dur=Math.round((endISO-startISO)/60000);
   if(dur<=0){showToast('⚠️ เวลาตื่นต้องหลังเวลานอน');return;}
-  if(dur>720){showToast('⚠️ ช่วงเวลานานเกิน 12 ชม. ตรวจสอบอีกที');return;}
-  const ns={id:Date.now(),s:sd.toISOString(),e:ed.toISOString(),who:cfg.who};
+  if(dur>1440){showToast('⚠️ นานเกิน 24 ชม. ตรวจสอบวันที่อีกที');return;}
+  const ns={id:Date.now(),s:startISO.toISOString(),e:endISO.toISOString(),who:cfg.who};
   state.sleeps.push(ns);
   state.sleeps.sort((a,b)=>new Date(a.s)-new Date(b.s));
-  // Reset end to now, keep start as previous end for quick next entry
-  document.getElementById('slpStart').value=eVal;
-  document.getElementById('slpEnd').value=getNowStr();
+  // Shift: set next start = previous end
+  if(sd) sd.value=ed&&ed.value?ed.value:getTodayDateStr();
+  if(st) st.value=et.value;
+  if(ed) ed.value=getTodayDateStr();
+  if(et) et.value=getNowStr();
   updateRangeDur();
   pushCloud();
   showToast('✓ บันทึก '+Math.floor(dur/60)+'ชม.'+dur%60+'น.');
@@ -1780,30 +1849,35 @@ function addSleepRange(){
 }
 
 function toggleSleep(){
-  const manualTime=getTimeFromInput('slpTime');
+  const dateVal=document.getElementById('slpDate')?document.getElementById('slpDate').value:null;
+  const timeVal=document.getElementById('slpTime')?document.getElementById('slpTime').value:null;
+  const manualTime=buildDateTime(dateVal, timeVal);
+  if(isNaN(manualTime)){showToast('วันที่หรือเวลาไม่ถูกต้อง');return;}
+
   if(!state.isSleeping){
-    const s=manualTime.toISOString();
-    state.isSleeping=true; state.sleepStart=s;
-    showToast('😴 บันทึกว่านอนแล้ว ('+fmtT(s)+')');
-    document.getElementById('slpTime').value=getNowStr();
-    // Update label for wake time
-    const lbl=document.getElementById('slpTimeLabel');
-    if(lbl) lbl.textContent='เวลาตื่น';
+    state.isSleeping=true; state.sleepStart=manualTime.toISOString();
+    showToast('😴 บันทึกว่านอนแล้ว ('+fmtT(state.sleepStart)+')');
+    // Pre-fill wake time = now
+    const n=new Date();
+    const slpDate2=document.getElementById('slpDate');if(slpDate2)slpDate2.value=getTodayDateStr();
+    const slpTime2=document.getElementById('slpTime');if(slpTime2)slpTime2.value=getNowStr();
+    const lbl=document.getElementById('slpTimeLabel');if(lbl)lbl.textContent='เวลาตื่น';
+    const dlbl=document.getElementById('slpDateLabel');if(dlbl)dlbl.textContent='วันที่ตื่น';
   } else {
-    const wakeTime=manualTime;
     const startTime=new Date(state.sleepStart);
-    // Guard: wake must be after sleep
-    if(wakeTime<=startTime){
-      showToast('⚠️ เวลาตื่นต้องหลังเวลานอน');return;
-    }
-    const ns={id:Date.now(),s:state.sleepStart,e:wakeTime.toISOString(),who:cfg.who};
-    const dur=Math.round((wakeTime-startTime)/60000);
+    if(manualTime<=startTime){showToast('⚠️ เวลาตื่นต้องหลังเวลานอน');return;}
+    const dur=Math.round((manualTime-startTime)/60000);
+    if(dur>1440){showToast('⚠️ นานเกิน 24 ชม. ตรวจสอบวันที่อีกที');return;}
+    const ns={id:Date.now(),s:state.sleepStart,e:manualTime.toISOString(),who:cfg.who};
     state.sleeps.push(ns);
+    state.sleeps.sort((a,b)=>new Date(a.s)-new Date(b.s));
     state.isSleeping=false; state.sleepStart=null;
     showToast('⏰ ตื่นแล้ว! '+Math.floor(dur/60)+'ชม.'+dur%60+'น.');
-    document.getElementById('slpTime').value=getNowStr();
-    const lbl=document.getElementById('slpTimeLabel');
-    if(lbl) lbl.textContent='เวลาเริ่มนอน';
+    // Reset for next sleep entry
+    const slpDate3=document.getElementById('slpDate');if(slpDate3)slpDate3.value=getTodayDateStr();
+    const slpTime3=document.getElementById('slpTime');if(slpTime3)slpTime3.value=getNowStr();
+    const lbl=document.getElementById('slpTimeLabel');if(lbl)lbl.textContent='เวลา';
+    const dlbl=document.getElementById('slpDateLabel');if(dlbl)dlbl.textContent='วันที่เริ่มนอน';
   }
   pushCloud(); renderAll();
 }
@@ -2896,7 +2970,7 @@ function renderSleepLog(){
   const tm=sleepMins();
   const g=id=>document.getElementById(id);
   const orb=g('slpOrb');
-  if(orb){orb.className='sleep-orb '+(state.isSleeping?'asleep':'awake');const ico=orb.querySelector('svg');if(ico)ico.style.color=state.isSleeping?'var(--blue)':'var(--beigeT)';}
+  if(orb){orb.className='sleep-orb '+(state.isSleeping?'asleep':'awake');const ico=orb.querySelector('svg');if(ico)ico.style.color=state.isSleeping?'var(--blue)':'var(--tx3)';}
   if(g('slpTxt'))g('slpTxt').textContent=state.isSleeping?'กำลังนอน… ('+(state.sleepStart?since(state.sleepStart):'')+')':'ตื่นอยู่';
   const lbl=g('slpTimeLabel');
   if(lbl) lbl.textContent=state.isSleeping?'เวลาตื่น':'เวลาเริ่มนอน';
@@ -3242,44 +3316,118 @@ function generateAnalysis(sum, ageD){
   return lines.join(' ');
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// MOON OWL AI ENGINE — Anti-Hallucination Layer v1.1
+// ─ Domain Lock    : ตอบเฉพาะเรื่องทารก/พัฒนาการ/โภชนาการ/วัคซีน
+// ─ Confidence Gate: ไม่แน่ใจ → บอกให้ปรึกษาแพทย์
+// ─ Source Tag     : ระบุที่มาของคำแนะนำทุกครั้ง [WHO/กรมอนามัย]
+// ─ Low Temperature: temperature=0.2, topP=0.85, topK=20
+// ─ Safety Block   : DANGEROUS_CONTENT + HARASSMENT → BLOCK_LOW_AND_ABOVE
+// ─ Fallback       : rule-based analysis เมื่อ API ล้มเหลว
+// ═══════════════════════════════════════════════════════════════════════════
+
+const MOON_OWL_SYSTEM = `คุณคือ Moon Owl ผู้ช่วย AI ด้านการดูแลทารกสำหรับแอป Da'Neng Care
+กฎที่ต้องปฏิบัติตามอย่างเคร่งครัด:
+1. ตอบเฉพาะเรื่องที่เกี่ยวข้องกับทารกเท่านั้น: การให้นม, การนอน, ผ้าอ้อม, น้ำหนัก, พัฒนาการ, วัคซีน, สุขภาพทารกทั่วไป
+2. ห้ามตอบคำถามนอกขอบเขตข้างต้นโดยเด็ดขาด
+3. หากข้อมูลไม่เพียงพอหรือไม่แน่ใจ ให้พูดว่า "ไม่มีข้อมูลเพียงพอ — แนะนำปรึกษาแพทย์"
+4. ห้ามสรุปหรือคาดเดาเกินกว่าข้อมูลที่ได้รับ
+5. ทุกคำแนะนำที่สำคัญต้องระบุที่มา เช่น [WHO], [กรมอนามัย], หรือ [แนวทางทั่วไป]
+6. ตอบภาษาไทยเท่านั้น ไม่ใช้ ครับ/ค่ะ
+7. หากค่าใดผิดปกติอย่างชัดเจน ต้องแนะนำให้พบแพทย์ทันที ไม่ใช่แค่สังเกต`;
+
+const MOON_OWL_SAFETY = [
+  {category:'HARM_CATEGORY_DANGEROUS_CONTENT', threshold:'BLOCK_LOW_AND_ABOVE'},
+  {category:'HARM_CATEGORY_HARASSMENT',        threshold:'BLOCK_LOW_AND_ABOVE'}
+];
+
+const MOON_OWL_GEN_CONFIG = {
+  maxOutputTokens: 600,
+  temperature: 0.2,   // ต่ำ = ลด hallucination
+  topP: 0.85,
+  topK: 20
+};
+
+// ─ Shared Gemini caller ─────────────────────────────────────────────────────
+async function moonOwlCall(userPrompt, apiKey){
+  const res = await fetch(
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey,
+    {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        system_instruction: {parts:[{text: MOON_OWL_SYSTEM}]},
+        contents: [{parts:[{text: userPrompt}]}],
+        generationConfig: MOON_OWL_GEN_CONFIG,
+        safetySettings: MOON_OWL_SAFETY
+      })
+    }
+  );
+  const data = await res.json();
+  if(data.error) throw new Error(data.error.message);
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  const finishReason = data.candidates?.[0]?.finishReason || '';
+  return {text, finishReason};
+}
+
+// ─ Render helper ────────────────────────────────────────────────────────────
+function moonOwlRenderHtml(text, finishReason, isAI){
+  const lines = text.split(/\n/).filter(function(p){return p.trim();});
+  const body = lines.map(function(p){
+    return '<div style="margin-bottom:10px;line-height:1.8;font-size:13.5px;color:var(--tx);">'+p.trim()+'</div>';
+  }).join('');
+  const sourceLine = isAI
+    ? '<div style="font-size:9px;color:var(--tx3);margin-top:6px;letter-spacing:0.3px;">🔍 วิเคราะห์โดย Gemini AI · ตรวจสอบโดย Moon Owl'+(finishReason?' · '+finishReason:'')+'</div>'
+    : '<div style="font-size:9px;color:var(--tx3);margin-top:6px;">📊 วิเคราะห์มาตรฐาน (ไม่มี Gemini Key)</div>';
+  const disclaimer = '<div style="margin-top:10px;padding:8px 10px;background:rgba(224,138,0,0.08);border-radius:8px;border-left:2px solid var(--amber);font-size:10px;color:var(--tx3);line-height:1.7;">⚠️ ข้อมูลนี้ใช้เพื่อการติดตามเบื้องต้นเท่านั้น ไม่ใช่คำแนะนำทางการแพทย์ — หากมีข้อสงสัยให้ปรึกษาแพทย์หรือพยาบาล</div>';
+  return body + sourceLine + disclaimer;
+}
+
+// ─ Main entry point ─────────────────────────────────────────────────────────
 async function requestAIComment(sum, ageD, boxKey){
   const bodyEl = document.getElementById(boxKey+'-body');
   if(!bodyEl) return;
   if(aiCache[boxKey]){ bodyEl.innerHTML = aiCache[boxKey]; return; }
 
-  // If no Gemini key — use free rule-based analysis
+  // No API key → rule-based fallback
   if(!cfg.geminiKey){
-    const text = generateAnalysis(sum, ageD);
-    const html = '<p style="line-height:2;font-size:13.5px;">' + text + '</p>';
+    const html = moonOwlRenderHtml(generateAnalysis(sum, ageD), '', false);
     aiCache[boxKey] = html;
-    if(bodyEl) bodyEl.innerHTML = html;
+    bodyEl.innerHTML = html;
     return;
   }
 
-  // Use Gemini API (free tier: 1,500 requests/day)
   const _now = new Date();
-  const _isToday = (dateStr === new Date().toDateString());
-  const _timeNote = _isToday ? '(บันทึกถึงเวลา '+pad(_now.getHours())+':'+pad(_now.getMinutes())+' น. ยังไม่สิ้นวัน)' : '(ข้อมูลเต็มวัน)';
-  const prompt = 'ข้อมูลทารก '+_timeNote+':\nอายุ '+ageD+' วัน\nนม '+sum.feeds.length+' มื้อ (นมแม่ '+sum.breastCount+' มื้อ นมสูตร '+sum.formulaCount+' มื้อ)\nนอน '+(sum.sleepMin/60).toFixed(1)+' ชม.\nผ้าอ้อม '+sum.diapers.length+' ครั้ง (เปียก '+sum.wet+' ถ่าย '+sum.poop+')'+(sum.weights.length>0?'\nน้ำหนัก '+sum.weights[0].w+' กก.':'')+'\n\nวิเคราะห์สั้นๆ ภาษาไทย ไม่ใช้ ครับ/ค่ะ หากเป็นข้อมูลบางส่วนของวันให้ระบุด้วย ตอบ 4 หัวข้อ แต่ละหัวข้อ 1 ประโยคจบ:\n1. ภาพรวม:\n2. จุดเด่น:\n3. ควรระวัง:\n4. คำแนะนำ:';
+  const _isToday = (typeof dateStr !== 'undefined') && (dateStr === new Date().toDateString());
+  const _timeNote = _isToday
+    ? '(บันทึกถึงเวลา '+pad(_now.getHours())+':'+pad(_now.getMinutes())+' น. ยังไม่สิ้นวัน)'
+    : '(ข้อมูลเต็มวัน)';
+
+  const prompt =
+    'ข้อมูลทารก '+_timeNote+':\n'+
+    'อายุ '+ageD+' วัน\n'+
+    'นม '+sum.feeds.length+' มื้อ (นมแม่ '+sum.breastCount+' มื้อ นมสูตร '+sum.formulaCount+' มื้อ)\n'+
+    'นอน '+(sum.sleepMin/60).toFixed(1)+' ชม.\n'+
+    'ผ้าอ้อม '+sum.diapers.length+' ครั้ง (เปียก '+sum.wet+' ถ่าย '+sum.poop+')'+(sum.weights.length>0?'\nน้ำหนัก '+sum.weights[0].w+' กก.':'')+'\n\n'+
+    'วิเคราะห์เฉพาะข้อมูลที่ให้มาข้างต้น ห้ามสมมติข้อมูลที่ไม่มี ตอบ 4 หัวข้อ แต่ละหัวข้อ 1 ประโยคจบ:\n'+
+    '1. ภาพรวม: [ระบุจากข้อมูลจริงเท่านั้น]\n'+
+    '2. จุดเด่น: [ระบุจากข้อมูลจริงเท่านั้น]\n'+
+    '3. ควรระวัง: [หากไม่มีความเสี่ยง ให้บอกว่า "ไม่พบความผิดปกติจากข้อมูลที่บันทึก"]\n'+
+    '4. คำแนะนำ: [ระบุที่มา เช่น [WHO] หรือ [กรมอนามัย] หรือ [แนวทางทั่วไป]]';
 
   try {
-    const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + cfg.geminiKey, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({contents:[{parts:[{text: prompt}]}], generationConfig:{maxOutputTokens:1500,temperature:0.6}})
-    });
-    const data = await res.json();
-    if(data.error){throw new Error(data.error.message);}
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || generateAnalysis(sum, ageD);
-    const lines = text.split(/\n/).filter(p=>p.trim()); const html = lines.map(p=>'<div style="margin-bottom:10px;line-height:1.8;font-size:13.5px;color:var(--tx);">'+p.trim()+'</div>').join('')||'<div style="font-size:13.5px;">'+text+'</div>';
+    const {text, finishReason} = await moonOwlCall(prompt, cfg.geminiKey);
+    // Validate: response สั้นเกินไป = off-topic หรือ blocked → fallback
+    const isValid = text && text.length >= 20;
+    const finalText = isValid ? text : generateAnalysis(sum, ageD);
+    const html = moonOwlRenderHtml(finalText, finishReason, isValid);
     aiCache[boxKey] = html;
-    if(bodyEl) bodyEl.innerHTML = html;
+    bodyEl.innerHTML = html;
   } catch(e) {
-    // Fallback to rule-based on error
-    const text = generateAnalysis(sum, ageD);
-    const html = '<p style="line-height:2;font-size:13.5px;">' + text + '</p><p style="font-size:10px;color:var(--tx3);">⚠️ Gemini: '+e.message+'</p>';
+    const html = moonOwlRenderHtml(generateAnalysis(sum, ageD), '', false)
+      + '<div style="font-size:10px;color:var(--tx3);margin-top:4px;">📡 ออฟไลน์ — '+e.message+'</div>';
     aiCache[boxKey] = html;
-    if(bodyEl) bodyEl.innerHTML = html;
+    bodyEl.innerHTML = html;
   }
 }
 
