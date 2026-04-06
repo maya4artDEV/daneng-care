@@ -775,16 +775,25 @@ input:focus,button:focus{outline:none;}
 
           <!-- LIVE MODE -->
           <div id="slpLivePanel">
-            <div class="frow" style="margin-bottom:8px;">
-              <div style="flex:1.4;">
-                <div class="time-label" id="slpDateLabel">วันที่เริ่มนอน</div>
-                <input class="fi" type="date" id="slpDate" style="margin-bottom:0;font-size:13px;">
+            <!-- Before sleeping: choose START time -->
+            <div id="slpStartRow">
+              <div class="frow" style="margin-bottom:8px;">
+                <div style="flex:1.4;">
+                  <div class="time-label">วันที่เริ่มนอน</div>
+                  <input class="fi" type="date" id="slpDate" style="margin-bottom:0;font-size:13px;">
+                </div>
+                <div style="flex:1;">
+                  <div class="time-label">เวลา</div>
+                  <input class="fi" type="time" id="slpTime" style="margin-bottom:0;font-size:15px;font-weight:600;">
+                </div>
+                <button class="time-now-btn" onclick="setSlpTimeNow()">ตอนนี้</button>
               </div>
-              <div style="flex:1;">
-                <div class="time-label" id="slpTimeLabel">เวลา</div>
-                <input class="fi" type="time" id="slpTime" style="margin-bottom:0;font-size:15px;font-weight:600;">
-              </div>
-              <button class="time-now-btn" onclick="setSlpTimeNow()">ตอนนี้</button>
+            </div>
+            <!-- While sleeping: show live elapsed timer -->
+            <div id="slpLiveTimer" style="display:none;text-align:center;padding:12px 0 16px;">
+              <div style="font-size:11px;color:var(--tx3);margin-bottom:4px;">กำลังนอน — เริ่มเมื่อ <span id="slpLiveStart"></span></div>
+              <div id="slpLiveDisplay" style="font-size:42px;font-weight:900;color:var(--blue);letter-spacing:-1px;font-variant-numeric:tabular-nums;">00:00:00</div>
+              <div style="font-size:10px;color:var(--tx3);margin-top:4px;">กดปุ่มด้านล่างเมื่อลูกตื่น</div>
             </div>
             <button class="fbtn fbtn-blue" id="slpBtn" onclick="toggleSleep()" style="margin-top:4px;">บันทึกว่านอนแล้ว</button>
           </div>
@@ -1603,8 +1612,27 @@ function startApp(){
   document.getElementById('swho').textContent='👤 '+cfg.who+(cfg.offline?' · ออฟไลน์':'');
   if(!cfg.offline){syncFromCloud();setInterval(syncFromCloud,20000);}
   else setSS('off','ออฟไลน์ · ข้อมูลในเครื่อง');
-  setInterval(()=>{renderHeader();if(state.isSleeping)renderSleepLog();},30000);
+  // Clock: update every second
+  setInterval(function(){
+    const now=new Date();
+    const el=document.getElementById('hTime');
+    if(el) el.textContent=pad(now.getHours())+':'+pad(now.getMinutes());
+    // Live sleep duration in slpTxt
+    if(state.isSleeping&&state.sleepStart){
+      const dur=Math.floor((Date.now()-new Date(state.sleepStart).getTime())/1000);
+      const hh=Math.floor(dur/3600), mm=Math.floor((dur%3600)/60), ss=dur%60;
+      const txt=document.getElementById('slpTxt');
+      if(txt) txt.textContent='กำลังนอน… '+pad(hh)+':'+pad(mm)+':'+pad(ss);
+    }
+  },1000);
+  // Slower refresh for stats (every 30s)
+  setInterval(function(){renderHeader();if(state.isSleeping)renderSleepLog();},30000);
   renderAll();
+  // ★ Restore live sleep timer if app was reopened mid-sleep
+  if(state.isSleeping && state.sleepStart){
+    _updateSleepLiveUI(true);
+    _startSleepLiveTimer(state.sleepStart);
+  }
 }
 
 function checkDup(type,data,cb){
@@ -1848,40 +1876,80 @@ function addSleepRange(){
   renderAll();
 }
 
-function toggleSleep(){
-  const dateVal=document.getElementById('slpDate')?document.getElementById('slpDate').value:null;
-  const timeVal=document.getElementById('slpTime')?document.getElementById('slpTime').value:null;
-  const manualTime=buildDateTime(dateVal, timeVal);
-  if(isNaN(manualTime)){showToast('วันที่หรือเวลาไม่ถูกต้อง');return;}
+// ─ Sleep live timer ─────────────────────────────────────────────────────────
+var _slpTimerIv = null;
 
-  if(!state.isSleeping){
-    state.isSleeping=true; state.sleepStart=manualTime.toISOString();
-    showToast('😴 บันทึกว่านอนแล้ว ('+fmtT(state.sleepStart)+')');
-    // Pre-fill wake time = now
-    const n=new Date();
-    const slpDate2=document.getElementById('slpDate');if(slpDate2)slpDate2.value=getTodayDateStr();
-    const slpTime2=document.getElementById('slpTime');if(slpTime2)slpTime2.value=getNowStr();
-    const lbl=document.getElementById('slpTimeLabel');if(lbl)lbl.textContent='เวลาตื่น';
-    const dlbl=document.getElementById('slpDateLabel');if(dlbl)dlbl.textContent='วันที่ตื่น';
-  } else {
-    const startTime=new Date(state.sleepStart);
-    if(manualTime<=startTime){showToast('⚠️ เวลาตื่นต้องหลังเวลานอน');return;}
-    const dur=Math.round((manualTime-startTime)/60000);
-    if(dur>1440){showToast('⚠️ นานเกิน 24 ชม. ตรวจสอบวันที่อีกที');return;}
-    const ns={id:Date.now(),s:state.sleepStart,e:manualTime.toISOString(),who:cfg.who};
-    state.sleeps.push(ns);
-    state.sleeps.sort((a,b)=>new Date(a.s)-new Date(b.s));
-    state.isSleeping=false; state.sleepStart=null;
-    showToast('⏰ ตื่นแล้ว! '+Math.floor(dur/60)+'ชม.'+dur%60+'น.');
-    // Reset for next sleep entry
-    const slpDate3=document.getElementById('slpDate');if(slpDate3)slpDate3.value=getTodayDateStr();
-    const slpTime3=document.getElementById('slpTime');if(slpTime3)slpTime3.value=getNowStr();
-    const lbl=document.getElementById('slpTimeLabel');if(lbl)lbl.textContent='เวลา';
-    const dlbl=document.getElementById('slpDateLabel');if(dlbl)dlbl.textContent='วันที่เริ่มนอน';
+function _startSleepLiveTimer(startISO){
+  const startMs = new Date(startISO).getTime();
+  const disp = document.getElementById('slpLiveDisplay');
+  const startLbl = document.getElementById('slpLiveStart');
+  if(startLbl) startLbl.textContent = fmtT(startISO);
+  function tick(){
+    const elapsed = Date.now() - startMs;
+    const totalSec = Math.floor(elapsed / 1000);
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    if(disp) disp.textContent =
+      String(h).padStart(2,'0') + ':' +
+      String(m).padStart(2,'0') + ':' +
+      String(s).padStart(2,'0');
   }
-  pushCloud(); renderAll();
+  tick();
+  _slpTimerIv = setInterval(tick, 1000);
 }
-function quickSleep(){toggleSleep();}
+
+function _stopSleepLiveTimer(){
+  if(_slpTimerIv){ clearInterval(_slpTimerIv); _slpTimerIv = null; }
+}
+
+function _updateSleepLiveUI(isSleeping){
+  const startRow = document.getElementById('slpStartRow');
+  const liveTimer = document.getElementById('slpLiveTimer');
+  const btn = document.getElementById('slpBtn');
+  if(startRow) startRow.style.display = isSleeping ? 'none' : '';
+  if(liveTimer) liveTimer.style.display = isSleeping ? '' : 'none';
+  if(btn){
+    btn.textContent = isSleeping ? 'บันทึกว่าตื่นแล้ว' : 'บันทึกว่านอนแล้ว';
+    btn.className = 'fbtn ' + (isSleeping ? 'fbtn-sage' : 'fbtn-blue');
+  }
+}
+
+function toggleSleep(){
+  if(!state.isSleeping){
+    // ── START SLEEP ──
+    const dateVal = document.getElementById('slpDate') ? document.getElementById('slpDate').value : null;
+    const timeVal = document.getElementById('slpTime') ? document.getElementById('slpTime').value : null;
+    const startTime = buildDateTime(dateVal, timeVal);
+    if(isNaN(startTime)){ showToast('วันที่หรือเวลาไม่ถูกต้อง'); return; }
+    state.isSleeping = true;
+    state.sleepStart = startTime.toISOString();
+    showToast('😴 บันทึกว่านอนแล้ว (' + fmtT(state.sleepStart) + ')');
+    _startSleepLiveTimer(state.sleepStart);
+    _updateSleepLiveUI(true);
+    pushCloud(); renderSleepLog();
+  } else {
+    // ── WAKE UP — always use real current time ──
+    const wakeTime = new Date();
+    const startTime = new Date(state.sleepStart);
+    if(wakeTime <= startTime){ showToast('⚠️ เวลาตื่นต้องหลังเวลานอน'); return; }
+    const dur = Math.round((wakeTime - startTime) / 60000);
+    if(dur > 1440){ showToast('⚠️ นานเกิน 24 ชม. ตรวจสอบวันที่อีกที'); return; }
+    const ns = {id: Date.now(), s: state.sleepStart, e: wakeTime.toISOString(), who: cfg.who};
+    state.sleeps.push(ns);
+    state.sleeps.sort(function(a,b){return new Date(a.s)-new Date(b.s);});
+    state.isSleeping = false;
+    state.sleepStart = null;
+    _stopSleepLiveTimer();
+    _updateSleepLiveUI(false);
+    // Reset start time inputs to now
+    var nd = document.getElementById('slpDate'); if(nd) nd.value = getTodayDateStr();
+    var nt = document.getElementById('slpTime'); if(nt) nt.value = getNowStr();
+    showToast('⏰ ตื่นแล้ว! ' + Math.floor(dur/60) + 'ชม.' + dur%60 + 'น.');
+    pushCloud(); renderAll();
+  }
+}
+function quickSleep(){ toggleSleep(); }
 
 function addDiaper(dtype){
   const t=dtype||dType;
@@ -2959,7 +3027,19 @@ function renderFeedLog(){
   const l=document.getElementById('feedTodayLbl');if(l)l.textContent='วันนี้ — '+tf.length+' มื้อ';
   const el=document.getElementById('feedList');if(!el)return;
   if(!tf.length){el.innerHTML='<div class="empty">ยังไม่มีการบันทึก</div>';return;}
-  el.innerHTML=[...tf].reverse().map(f=>`<div class="litem"><div class="litem-l"><div class="litem-dot"></div><div><div class="litem-main">${fmtT(f.t)} ${whoTag(f.who)}</div><div class="litem-sub">${f.type==='breast'?'นมแม่ '+(f.side||'')+' '+(f.dur?f.dur+' นาที':''):'นมสูตร '+(f.amt||'?')+' มล.'}</div></div></div><button onclick="deleteEntry('feedings','${f.id}')" class="del-btn">✕</button></div>`).join('');
+  el.innerHTML=[...tf].reverse().map(function(f){
+    var typeStr=f.type==='breast'
+      ?'นมแม่ '+(f.side||'')+' '+(f.dur?f.dur+' นาที':'')
+      :'นมสูตร '+(f.amt||'?')+' มล.';
+    var noteLine=f.note&&f.note.trim()
+      ?'<div style="font-size:11px;color:var(--amber);margin-top:2px;">📝 '+f.note+'</div>'
+      :'';
+    return '<div class="litem"><div class="litem-l"><div class="litem-dot"></div><div>'
+      +'<div class="litem-main">'+fmtT(f.t)+' '+whoTag(f.who)+'</div>'
+      +'<div class="litem-sub">'+typeStr+'</div>'
+      +noteLine
+      +'</div></div><button onclick="deleteEntry(\'feedings\',\''+f.id+'\')" class="del-btn">✕</button></div>';
+  }).join('');
 }
 function deleteEntry(type,id){
   id=String(id);
