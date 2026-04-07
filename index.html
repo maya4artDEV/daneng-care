@@ -1315,9 +1315,9 @@ const getAge=()=>{const ms=Date.now()-BIRTH.getTime(),d=Math.floor(ms/86400000),
 const getDays=()=>Math.floor((Date.now()-BIRTH.getTime())/86400000);
 const today=()=>new Date().toDateString();
 const todayF=()=>state.feedings.filter(f=>new Date(f.t).toDateString()===today());
-const todayS=()=>state.sleeps.filter(s=>new Date(s.s).toDateString()===today());
+const todayS=()=>getSleepsForDate(today());      // cross-midnight aware
 const todayD=()=>state.diapers.filter(d=>new Date(d.t).toDateString()===today());
-const sleepMins=()=>{let m=todayS().reduce((s,sl)=>sl.e?s+(new Date(sl.e)-new Date(sl.s))/60000:s,0);if(state.isSleeping&&state.sleepStart)m+=(Date.now()-new Date(state.sleepStart).getTime())/60000;return m;};
+const sleepMins=()=>getSleepMinutesForDate(today()); // clipped to today
 const whoTag=w=>{if(!w||cfg.offline)return'';return w===cfg.who?`<span class="who-tag who-me">${w}</span>`:`<span class="who-tag who-partner">${w}</span>`;};
 
 var BIRTH=new Date('2026-03-10T14:48:00'); // overridden by cfg.babyDOB on startApp
@@ -3059,8 +3059,34 @@ function renderSleepLog(){
   if(g('slpProg'))g('slpProg').style.width=Math.min(100,(tm/1020)*100)+'%';
   const sl=g('sleepList');if(!sl)return;
   const ts=todayS();
-  let items=ts.map(s=>{const dur=s.e?Math.round((new Date(s.e)-new Date(s.s))/60000):null;return`<div class="litem"><div class="litem-l"><div class="litem-dot" style="background:var(--blue);opacity:0.5;"></div><div><div class="litem-main">${fmtT(s.s)} → ${s.e?fmtT(s.e):'กำลังนอน…'} ${whoTag(s.who)}</div><div class="litem-sub">${dur?Math.floor(dur/60)+'ชม.'+dur%60+'น.':'กำลังนอน'}</div></div></div><button onclick="deleteEntry('sleeps','${s.id}')" class="del-btn">✕</button></div>`;});
-  if(state.isSleeping&&state.sleepStart){const dur=Math.round((Date.now()-new Date(state.sleepStart).getTime())/60000);items.unshift(`<div class="litem" style="background:rgba(234,240,252,0.6);border-radius:10px;padding:8px;"><div class="litem-main">กำลังนอน… ${fmtT(state.sleepStart)}</div><span style="color:var(--sage);font-weight:700;">${Math.floor(dur/60)}ชม.${dur%60}น.</span></div>`);}
+  const todayDateStr=today();
+  let items=ts.map(function(s){
+    var startDt = new Date(s.s);
+    var endDt   = s.e ? new Date(s.e) : null;
+    // Full duration of the session
+    var fullDur = endDt ? Math.round((endDt - startDt)/60000) : null;
+    // Cross-midnight: started before today?
+    var crossMidnight = startDt.toDateString() !== todayDateStr;
+    var startLabel = crossMidnight
+      ? '<span style="font-size:10px;color:var(--amber);margin-left:4px;">🌙 ข้ามคืน</span>'
+      : '';
+    var timeLabel = crossMidnight
+      ? fmtD(s.s)+' '+fmtT(s.s)+' → '+(endDt?fmtT(s.e):'กำลังนอน…')
+      : fmtT(s.s)+' → '+(endDt?fmtT(s.e):'กำลังนอน…');
+    var durLabel = fullDur
+      ? Math.floor(fullDur/60)+'ชม.'+fullDur%60+'น.'+(crossMidnight?' (รวม)':'')
+      : 'กำลังนอน';
+    return '<div class="litem"><div class="litem-l"><div class="litem-dot" style="background:var(--blue);opacity:0.5;"></div>'
+      +'<div><div class="litem-main">'+timeLabel+' '+whoTag(s.who)+startLabel+'</div>'
+      +'<div class="litem-sub">'+durLabel+'</div></div></div>'
+      +'<button onclick="deleteEntry(\'sleeps\',\''+s.id+'\')" class="del-btn">✕</button></div>';
+  });
+  if(state.isSleeping&&state.sleepStart){
+    var dur=Math.round((Date.now()-new Date(state.sleepStart).getTime())/60000);
+    items.unshift('<div class="litem" style="background:rgba(234,240,252,0.6);border-radius:10px;padding:8px;">'
+      +'<div class="litem-main">กำลังนอน… '+fmtT(state.sleepStart)+'</div>'
+      +'<span style="color:var(--sage);font-weight:700;">'+Math.floor(dur/60)+'ชม.'+dur%60+'น.</span></div>');
+  }
   sl.innerHTML=items.length?items.join(''):'<div class="empty">ยังไม่มีการบันทึก</div>';
 }
 function renderDiaperLog(){
@@ -3182,12 +3208,51 @@ function getDateKey(offset){
   const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+offset);return d.toDateString();
 }
 
+// ─── Sleep cross-midnight helper ────────────────────────────────────────────
+// Returns minutes of sleep that fall within [dayStart, dayEnd) for a given dateStr.
+// Handles sessions starting before midnight and ending after.
+function getSleepMinutesForDate(dateStr){
+  // Build day boundary
+  var d = new Date(dateStr);
+  var dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
+  var dayEnd   = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+  var mins = 0;
+  state.sleeps.forEach(function(sl){
+    if(!sl.e) return;
+    var s = new Date(sl.s).getTime();
+    var e = new Date(sl.e).getTime();
+    // Clip to this day
+    var clipped = Math.min(e, dayEnd.getTime()) - Math.max(s, dayStart.getTime());
+    if(clipped > 0) mins += clipped / 60000;
+  });
+  // Add ongoing sleep if it overlaps this day
+  if(state.isSleeping && state.sleepStart){
+    var s2 = new Date(state.sleepStart).getTime();
+    var e2 = Date.now();
+    var clipped2 = Math.min(e2, dayEnd.getTime()) - Math.max(s2, dayStart.getTime());
+    if(clipped2 > 0) mins += clipped2 / 60000;
+  }
+  return mins;
+}
+
+// Returns sleeps that OVERLAP a given date (not just start on that date)
+function getSleepsForDate(dateStr){
+  var d = new Date(dateStr);
+  var dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0).getTime();
+  var dayEnd   = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999).getTime();
+  return state.sleeps.filter(function(sl){
+    var s = new Date(sl.s).getTime();
+    var e = sl.e ? new Date(sl.e).getTime() : Date.now();
+    return s < dayEnd && e > dayStart;
+  });
+}
+
 function getDaySummary(dateStr){
   const feeds=state.feedings.filter(f=>new Date(f.t).toDateString()===dateStr);
-  const sleeps=state.sleeps.filter(s=>new Date(s.s).toDateString()===dateStr);
+  const sleeps=getSleepsForDate(dateStr);           // ★ cross-midnight aware
   const diapers=state.diapers.filter(d=>new Date(d.t).toDateString()===dateStr);
   const weights=state.weights.filter(w=>new Date(w.d).toDateString()===dateStr);
-  const sleepMin=sleeps.reduce((acc,sl)=>{if(!sl.e)return acc;return acc+(new Date(sl.e)-new Date(sl.s))/60000;},0);
+  const sleepMin=getSleepMinutesForDate(dateStr);   // ★ clipped minutes
   const breastCount=feeds.filter(f=>f.type==='breast').length;
   const formulaCount=feeds.filter(f=>f.type==='formula').length;
   const totalDur=feeds.filter(f=>f.type==='breast').reduce((a,f)=>a+(f.dur||0),0);
