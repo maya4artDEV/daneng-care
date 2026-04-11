@@ -1240,21 +1240,29 @@ input:focus,button:focus{outline:none;}
 
       <!-- DAILY OBSERVATION LOG -->
       <div class="card" style="margin-bottom:12px;">
-        <div class="clbl">บันทึกสิ่งที่สังเกตวันนี้</div>
+        <div class="clbl">บันทึก Milestone & สิ่งที่สังเกต</div>
         <div style="margin-bottom:10px;">
           <textarea id="healthObsInput" placeholder="เช่น ลูกยกหัวได้ครั้งแรก, ตาตามวัตถุได้, ชักเล็กน้อย 30 วิ..." 
             style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;resize:none;height:80px;line-height:1.6;"></textarea>
         </div>
-        <div style="display:flex;gap:8px;margin-bottom:10px;">
-          <select id="healthObsCat" style="flex:1;padding:9px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;">
-            <option value="milestone">🎯 Milestone พัฒนาการ</option>
-            <option value="seizure">⚠️ ชัก / Seizure</option>
-            <option value="feeding">🍼 การกิน / สำลัก</option>
-            <option value="motor">💪 กล้ามเนื้อ / การเคลื่อนไหว</option>
-            <option value="vision">👁 ตา / การมอง</option>
-            <option value="general">📝 ทั่วไป</option>
-          </select>
-          <input type="time" id="healthObsTime" style="flex:1;padding:9px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;">
+        <select id="healthObsCat" style="width:100%;padding:9px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;margin-bottom:10px;">
+          <option value="milestone">🎯 Milestone พัฒนาการ</option>
+          <option value="seizure">⚠️ ชัก / Seizure</option>
+          <option value="feeding">🍼 การกิน / สำลัก</option>
+          <option value="motor">💪 กล้ามเนื้อ / การเคลื่อนไหว</option>
+          <option value="vision">👁 ตา / การมอง</option>
+          <option value="general">📝 ทั่วไป</option>
+        </select>
+        <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:10px;">
+          <div style="flex:1.4;">
+            <div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">วันที่เกิดเหตุ</div>
+            <input type="date" id="healthObsDate" style="width:100%;padding:9px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">เวลา</div>
+            <input type="time" id="healthObsTime" style="width:100%;padding:9px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:white;outline:none;box-sizing:border-box;">
+          </div>
+          <button onclick="obsSetNow()" style="flex-shrink:0;padding:9px 14px;border-radius:10px;border:1.5px solid var(--blue);background:var(--blueL);color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Noto Sans Thai',sans-serif;">ตอนนี้</button>
         </div>
         <button onclick="addHealthObs()" style="width:100%;background:var(--sage);color:white;border:none;border-radius:11px;padding:12px;font-size:14px;font-weight:700;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;">+ บันทึก</button>
       </div>
@@ -2668,29 +2676,40 @@ function updateBabyNameUI(){
 
 function initHealthObs(){
   if(!state.healthObs) state.healthObs = [];
-  var el = document.getElementById('healthObsTime');
-  if(el && !el.value){ var n=new Date(); el.value=pad(n.getHours())+':'+pad(n.getMinutes()); }
+  obsSetNow();
+}
+
+function obsSetNow(){
+  var n = new Date();
+  var dEl = document.getElementById('healthObsDate');
+  var tEl = document.getElementById('healthObsTime');
+  if(dEl) dEl.value = getTodayDateStr();
+  if(tEl) tEl.value = pad(n.getHours())+':'+pad(n.getMinutes());
 }
 
 function addHealthObs(){
-  var txt = document.getElementById('healthObsInput');
-  var cat = document.getElementById('healthObsCat');
-  var tEl = document.getElementById('healthObsTime');
+  var txt  = document.getElementById('healthObsInput');
+  var cat  = document.getElementById('healthObsCat');
+  var dEl  = document.getElementById('healthObsDate');
+  var tEl  = document.getElementById('healthObsTime');
   if(!txt || !txt.value.trim()){ showToast('กรุณาใส่สิ่งที่สังเกต'); return; }
   if(!state.healthObs) state.healthObs = [];
-  var parts = (tEl.value||'00:00').split(':');
-  var dt = new Date(); dt.setHours(parseInt(parts[0]),parseInt(parts[1]),0,0);
+  var dateVal = dEl && dEl.value ? dEl.value : getTodayDateStr();
+  var timeVal = tEl && tEl.value ? tEl.value : '00:00';
+  var dt = new Date(dateVal + 'T' + timeVal + ':00');
+  if(isNaN(dt)){ showToast('วันที่ไม่ถูกต้อง'); return; }
   state.healthObs.unshift({
     id: Date.now(),
     t: dt.toISOString(),
-    d: today(),
-    cat: cat.value,
+    d: dt.toDateString(),
+    cat: cat ? cat.value : 'general',
     text: txt.value.trim()
   });
   txt.value = '';
   pushCloud();
   renderHealthObs();
   renderHealthChecklist();
+  showToast('✓ บันทึก'+(OBS_CAT_LABEL[cat.value]||'')+'แล้ว');
 }
 
 function deleteHealthObs(id){
@@ -2715,17 +2734,29 @@ function renderHealthObs(){
   if(!state.healthObs.length){
     el.innerHTML='<div class="empty">ยังไม่มีการบันทึก</div>'; return;
   }
-  el.innerHTML = state.healthObs.slice(0,30).map(function(o){
+  // Sort newest first
+  var sorted = state.healthObs.slice().sort(function(a,b){return new Date(b.t)-new Date(a.t);});
+  el.innerHTML = sorted.slice(0,50).map(function(o){
     var col = CAT_COLOR[o.cat]||'var(--tx3)';
     var lbl = OBS_CAT_LABEL[o.cat]||o.cat;
+    var dt  = new Date(o.t);
+    var dateLabel = dt.toLocaleDateString('th-TH',{weekday:'short',day:'numeric',month:'short',year:'2-digit'});
+    var timeLabel = fmtT(o.t);
+    // Age at event
+    var ageMs = dt.getTime() - BIRTH.getTime();
+    var ageD  = Math.floor(ageMs / 86400000);
+    var ageLabel = ageD >= 0 ? 'วันที่ '+(ageD+1)+' ของชีวิต' : '';
     var seizureWarn = o.cat==='seizure'
       ? '<div style="font-size:10px;color:var(--red);font-weight:700;margin-top:3px;">⚠️ แจ้งหมอในนัดถัดไปหรือทันทีถ้ารุนแรง</div>'
       : '';
     return '<div style="padding:10px 0;border-bottom:1px solid var(--border);">'
       +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
       +'<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(0,0,0,0.05);color:'+col+';">'+lbl+'</span>'
-      +'<span style="font-size:11px;color:var(--tx3);">'+fmtT(o.t)+'</span>'
-      +'<button onclick="deleteHealthObs('+o.id+')" style="margin-left:auto;background:none;border:none;cursor:pointer;color:var(--tx3);font-size:15px;">×</button>'
+      +'<div style="flex:1;">'
+      +'<div style="font-size:12px;font-weight:700;color:var(--tx);">'+dateLabel+' '+timeLabel+'</div>'
+      +(ageLabel?'<div style="font-size:10px;color:var(--tx3);">'+ageLabel+'</div>':'')
+      +'</div>'
+      +'<button onclick="deleteHealthObs('+o.id+')" style="background:none;border:none;cursor:pointer;color:var(--tx3);font-size:15px;flex-shrink:0;">×</button>'
       +'</div>'
       +'<div style="font-size:13px;color:var(--tx);line-height:1.6;">'+o.text+'</div>'
       + seizureWarn
