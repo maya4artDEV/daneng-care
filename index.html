@@ -790,12 +790,25 @@ input:focus,button:focus{outline:none;}
               </div>
             </div>
             <!-- While sleeping: show live elapsed timer -->
-            <div id="slpLiveTimer" style="display:none;text-align:center;padding:12px 0 16px;">
+            <div id="slpLiveTimer" style="display:none;text-align:center;padding:12px 0 8px;">
               <div style="font-size:11px;color:var(--tx3);margin-bottom:4px;">กำลังนอน — เริ่มเมื่อ <span id="slpLiveStart"></span></div>
               <div id="slpLiveDisplay" style="font-size:42px;font-weight:900;color:var(--blue);letter-spacing:-1px;font-variant-numeric:tabular-nums;">00:00:00</div>
-              <div style="font-size:10px;color:var(--tx3);margin-top:4px;">กดปุ่มด้านล่างเมื่อลูกตื่น</div>
+              <!-- Edit start time (in case they forgot to press on time) -->
+              <div id="slpEditStartRow" style="margin-top:10px;display:none;">
+                <div style="font-size:11px;color:var(--amber);margin-bottom:6px;font-weight:600;">แก้ไขเวลาเริ่มนอน</div>
+                <div style="display:flex;gap:6px;align-items:center;justify-content:center;">
+                  <input type="date" id="slpEditDate" style="padding:7px 8px;border:1.5px solid var(--amber);border-radius:8px;font-size:13px;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:var(--card);outline:none;">
+                  <input type="time" id="slpEditTime" style="padding:7px 8px;border:1.5px solid var(--amber);border-radius:8px;font-size:14px;font-weight:600;font-family:'Noto Sans Thai',sans-serif;color:var(--tx);background:var(--card);outline:none;">
+                  <button onclick="applyEditSleepStart()" style="padding:7px 12px;background:var(--amber);color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans Thai',sans-serif;white-space:nowrap;">ยืนยัน</button>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
+                <button onclick="toggleEditSleepStart()" style="padding:6px 14px;border-radius:20px;border:1.5px solid var(--amber);background:transparent;color:var(--amber);font-size:11px;font-weight:600;cursor:pointer;font-family:'Noto Sans Thai',sans-serif;">✏️ แก้เวลาเริ่ม</button>
+                <button onclick="cancelSleep()" style="padding:6px 14px;border-radius:20px;border:1.5px solid var(--red);background:transparent;color:var(--red);font-size:11px;font-weight:600;cursor:pointer;font-family:'Noto Sans Thai',sans-serif;">✕ ยกเลิกการนอน</button>
+              </div>
+              <div style="font-size:10px;color:var(--tx3);margin-top:8px;">กดปุ่มด้านล่างเมื่อลูกตื่น</div>
             </div>
-            <button class="fbtn fbtn-blue" id="slpBtn" onclick="toggleSleep()" style="margin-top:4px;">บันทึกว่านอนแล้ว</button>
+            <button class="fbtn fbtn-blue" id="slpBtn" onclick="toggleSleep()" style="margin-top:8px;">บันทึกว่านอนแล้ว</button>
           </div>
 
           <!-- RANGE MODE -->
@@ -1958,6 +1971,50 @@ function toggleSleep(){
   }
 }
 function quickSleep(){ toggleSleep(); }
+
+function cancelSleep(){
+  if(!state.isSleeping) return;
+  if(!confirm('ยกเลิกการนอนนี้โดยไม่บันทึก?')) return;
+  state.isSleeping = false;
+  state.sleepStart = null;
+  _stopSleepLiveTimer();
+  _updateSleepLiveUI(false);
+  var sd = document.getElementById('slpDate'); if(sd) sd.value = getTodayDateStr();
+  var st = document.getElementById('slpTime'); if(st) st.value = getNowStr();
+  pushCloud();
+  renderSleepLog();
+  showToast('ยกเลิกการนอนแล้ว');
+}
+
+function toggleEditSleepStart(){
+  var row = document.getElementById('slpEditStartRow');
+  if(!row) return;
+  var isOpen = row.style.display !== 'none';
+  row.style.display = isOpen ? 'none' : '';
+  if(!isOpen && state.sleepStart){
+    var dt = new Date(state.sleepStart);
+    var dEl = document.getElementById('slpEditDate');
+    var tEl = document.getElementById('slpEditTime');
+    if(dEl) dEl.value = dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+    if(tEl) tEl.value = pad(dt.getHours())+':'+pad(dt.getMinutes());
+  }
+}
+
+function applyEditSleepStart(){
+  var dEl = document.getElementById('slpEditDate');
+  var tEl = document.getElementById('slpEditTime');
+  if(!dEl||!dEl.value||!tEl||!tEl.value){ showToast('กรุณาระบุวันที่และเวลา'); return; }
+  var newStart = new Date(dEl.value+'T'+tEl.value+':00');
+  if(isNaN(newStart)){ showToast('วันที่ไม่ถูกต้อง'); return; }
+  if(newStart >= new Date()){ showToast('เวลาเริ่มนอนต้องก่อนตอนนี้'); return; }
+  state.sleepStart = newStart.toISOString();
+  _stopSleepLiveTimer();
+  _startSleepLiveTimer(state.sleepStart);
+  var row = document.getElementById('slpEditStartRow');
+  if(row) row.style.display = 'none';
+  pushCloud();
+  showToast('✓ แก้เวลาเริ่มนอนเป็น '+fmtT(state.sleepStart)+' แล้ว');
+}
 
 function addDiaper(dtype){
   const t=dtype||dType;
