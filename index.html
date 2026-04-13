@@ -775,27 +775,17 @@ input:focus,button:focus{outline:none;}
 
           <!-- LIVE MODE -->
           <div id="slpLivePanel">
-            <!-- Before sleeping: choose START time -->
-            <div id="slpStartRow">
-              <div class="frow" style="margin-bottom:8px;">
-                <div style="flex:1.4;">
-                  <div class="time-label">วันที่เริ่มนอน</div>
-                  <input class="fi" type="date" id="slpDate" style="margin-bottom:0;font-size:13px;">
-                </div>
-                <div style="flex:1;">
-                  <div class="time-label">เวลา</div>
-                  <input class="fi" type="time" id="slpTime" style="margin-bottom:0;font-size:15px;font-weight:600;">
-                </div>
-                <button class="time-now-btn" onclick="setSlpTimeNow()">ตอนนี้</button>
-              </div>
+            <!-- While awake: just a button -->
+            <div id="slpStartRow" style="text-align:center;padding:8px 0 12px;">
+              <div style="font-size:12px;color:var(--tx3);margin-bottom:10px;">กดปุ่มเมื่อลูกเริ่มนอน — ระบบจะจับเวลาทันที</div>
             </div>
-            <!-- While sleeping: show live elapsed timer -->
+            <!-- While sleeping: show live elapsed timer only -->
             <div id="slpLiveTimer" style="display:none;text-align:center;padding:12px 0 16px;">
-              <div style="font-size:11px;color:var(--tx3);margin-bottom:4px;">กำลังนอน — เริ่มเมื่อ <span id="slpLiveStart"></span></div>
-              <div id="slpLiveDisplay" style="font-size:42px;font-weight:900;color:var(--blue);letter-spacing:-1px;font-variant-numeric:tabular-nums;">00:00:00</div>
-              <div style="font-size:10px;color:var(--tx3);margin-top:6px;">กดปุ่มด้านล่างเมื่อลูกตื่น</div>
+              <div style="font-size:12px;color:var(--tx3);margin-bottom:6px;">เริ่มนอนเมื่อ <strong id="slpLiveStart" style="color:var(--tx2);"></strong></div>
+              <div id="slpLiveDisplay" style="font-size:48px;font-weight:900;color:var(--blue);letter-spacing:-2px;font-variant-numeric:tabular-nums;line-height:1;">00:00:00</div>
+              <div style="font-size:10px;color:var(--tx3);margin-top:8px;">กดปุ่มด้านล่างเมื่อลูกตื่น</div>
             </div>
-            <button class="fbtn fbtn-blue" id="slpBtn" onclick="toggleSleep()" style="margin-top:8px;">บันทึกว่านอนแล้ว</button>
+            <button class="fbtn fbtn-blue" id="slpBtn" onclick="toggleSleep()" style="margin-top:4px;">บันทึกว่านอนแล้ว</button>
           </div>
 
           <!-- RANGE MODE -->
@@ -1620,23 +1610,16 @@ function startApp(){
   document.getElementById('swho').textContent='👤 '+cfg.who+(cfg.offline?' · ออฟไลน์':'');
   if(!cfg.offline){syncFromCloud();setInterval(syncFromCloud,20000);}
   else setSS('off','ออฟไลน์ · ข้อมูลในเครื่อง');
-  // Clock: update every second
+  // ── Clock only — 1 second ──
   setInterval(function(){
-    const now=new Date();
-    const el=document.getElementById('hTime');
+    var now=new Date();
+    var el=document.getElementById('hTime');
     if(el) el.textContent=pad(now.getHours())+':'+pad(now.getMinutes());
-    // Live sleep duration in slpTxt
-    if(state.isSleeping&&state.sleepStart){
-      const dur=Math.floor((Date.now()-new Date(state.sleepStart).getTime())/1000);
-      const hh=Math.floor(dur/3600), mm=Math.floor((dur%3600)/60), ss=dur%60;
-      const txt=document.getElementById('slpTxt');
-      if(txt) txt.textContent='กำลังนอน… '+pad(hh)+':'+pad(mm)+':'+pad(ss);
-    }
   },1000);
-  // Slower refresh for stats (every 30s)
+  // ── Stats refresh — 30 seconds ──
   setInterval(function(){renderHeader();if(state.isSleeping)renderSleepLog();},30000);
   renderAll();
-  // ★ Restore live sleep timer if app was reopened mid-sleep
+  // Restore live sleep timer if app was reopened mid-sleep
   if(state.isSleeping && state.sleepStart){
     _updateSleepLiveUI(true);
     _startSleepLiveTimer(state.sleepStart);
@@ -1763,19 +1746,14 @@ function getNowStr(){const n=new Date();return String(n.getHours()).padStart(2,'
 function getTodayDateStr(){const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');}
 
 function initTimeInputs(){
-  const td=getTodayDateStr();
-  const tm=getNowStr();
-  // Feed
-  const fDate=document.getElementById('fDate');if(fDate&&!fDate.value)fDate.value=td;
-  const fTime=document.getElementById('fTime');if(fTime&&!fTime.value)fTime.value=tm;
-  // Diaper
-  const dTime=document.getElementById('dTime');if(dTime&&!dTime.value)dTime.value=tm;
-  // Sleep live
-  const slpDate=document.getElementById('slpDate');if(slpDate&&!slpDate.value)slpDate.value=td;
-  const slpTime=document.getElementById('slpTime');if(slpTime&&!slpTime.value)slpTime.value=tm;
-  // Sleep range end
-  const slpEndDate=document.getElementById('slpEndDate');if(slpEndDate&&!slpEndDate.value)slpEndDate.value=td;
-  const slpEnd=document.getElementById('slpEnd');if(slpEnd&&!slpEnd.value)slpEnd.value=tm;
+  var td=getTodayDateStr();
+  var tm=getNowStr();
+  var fDate=document.getElementById('fDate');if(fDate&&!fDate.value)fDate.value=td;
+  var fTime=document.getElementById('fTime');if(fTime&&!fTime.value)fTime.value=tm;
+  var dTime=document.getElementById('dTime');if(dTime&&!dTime.value)dTime.value=tm;
+  // Range mode sleep inputs
+  var slpEndDate=document.getElementById('slpEndDate');if(slpEndDate&&!slpEndDate.value)slpEndDate.value=td;
+  var slpEnd=document.getElementById('slpEnd');if(slpEnd&&!slpEnd.value)slpEnd.value=tm;
 }
 
 // Build a Date from a date-string + time-string
@@ -1797,12 +1775,6 @@ function getTimeFromInput(inputId){
   const d=new Date(); d.setHours(h,m,0,0); return d;
 }
 
-function setSlpTimeNow(){
-  const n=new Date();
-  const d=document.getElementById('slpDate');if(d)d.value=getTodayDateStr();
-  const t=document.getElementById('slpTime');if(t)t.value=getNowStr();
-  if(state.isSleeping) updateRangeDur();
-}
 
 function slpRangeNow(which){
   const n=new Date();
@@ -1888,22 +1860,24 @@ function addSleepRange(){
 var _slpTimerIv = null;
 
 function _startSleepLiveTimer(startISO){
-  const startMs = new Date(startISO).getTime();
-  const disp = document.getElementById('slpLiveDisplay');
-  const startLbl = document.getElementById('slpLiveStart');
-  if(startLbl) startLbl.textContent = fmtT(startISO);
+  _stopSleepLiveTimer(); // always clear before starting
+  var startMs = new Date(startISO).getTime();
+  var lbl = document.getElementById('slpLiveStart');
+  if(lbl) lbl.textContent = fmtT(startISO);
   function tick(){
-    const elapsed = Date.now() - startMs;
-    const totalSec = Math.floor(elapsed / 1000);
-    const h = Math.floor(totalSec / 3600);
-    const m = Math.floor((totalSec % 3600) / 60);
-    const s = totalSec % 60;
-    if(disp) disp.textContent =
-      String(h).padStart(2,'0') + ':' +
-      String(m).padStart(2,'0') + ':' +
-      String(s).padStart(2,'0');
+    var elapsed  = Date.now() - startMs;
+    var totalSec = Math.floor(elapsed / 1000);
+    var h = Math.floor(totalSec / 3600);
+    var m = Math.floor((totalSec % 3600) / 60);
+    var s = totalSec % 60;
+    var str = pad(h)+':'+pad(m)+':'+pad(s);
+    var disp = document.getElementById('slpLiveDisplay');
+    if(disp) disp.textContent = str;
+    // Keep header status text in sync (no separate interval needed)
+    var txt = document.getElementById('slpTxt');
+    if(txt) txt.textContent = 'กำลังนอน… '+str;
   }
-  tick();
+  tick(); // run immediately so display starts at 0, not blank
   _slpTimerIv = setInterval(tick, 1000);
 }
 
@@ -1918,35 +1892,26 @@ function _updateSleepLiveUI(isSleeping){
   if(startRow)  startRow.style.display  = isSleeping ? 'none' : '';
   if(liveTimer) liveTimer.style.display = isSleeping ? ''     : 'none';
   if(btn){
-    btn.textContent  = isSleeping ? 'บันทึกว่าตื่นแล้ว' : 'บันทึกว่านอนแล้ว';
-    btn.className    = 'fbtn ' + (isSleeping ? 'fbtn-sage' : 'fbtn-blue');
-  }
-  if(!isSleeping){
-    // Reset start inputs to now for next session
-    var sd = document.getElementById('slpDate'); if(sd) sd.value = getTodayDateStr();
-    var st = document.getElementById('slpTime'); if(st) st.value = getNowStr();
+    btn.textContent = isSleeping ? 'บันทึกว่าตื่นแล้ว' : 'บันทึกว่านอนแล้ว';
+    btn.className   = 'fbtn ' + (isSleeping ? 'fbtn-sage' : 'fbtn-blue');
   }
 }
 
 function toggleSleep(){
   if(!state.isSleeping){
-    // ── START: read date+time inputs ──
-    var dateVal = document.getElementById('slpDate') ? document.getElementById('slpDate').value : null;
-    var timeVal = document.getElementById('slpTime') ? document.getElementById('slpTime').value : null;
-    var startTime = buildDateTime(dateVal, timeVal);
-    if(isNaN(startTime)){ showToast('วันที่หรือเวลาไม่ถูกต้อง'); return; }
+    // ── START: exact moment button is pressed ──
+    var startTime = new Date();
     state.isSleeping = true;
     state.sleepStart = startTime.toISOString();
-    showToast('😴 บันทึกว่านอนแล้ว ('+fmtT(state.sleepStart)+')');
     _stopSleepLiveTimer();
     _startSleepLiveTimer(state.sleepStart);
     _updateSleepLiveUI(true);
     pushCloud();
+    showToast('😴 จับเวลาเริ่มแล้ว ('+fmtT(state.sleepStart)+')');
   } else {
-    // ── WAKE: always use real current time ──
+    // ── WAKE: exact moment button is pressed ──
     var wakeTime = new Date();
-    var startMs  = new Date(state.sleepStart);
-    var dur = Math.round((wakeTime - startMs) / 60000);
+    var dur = Math.round((wakeTime - new Date(state.sleepStart)) / 60000);
     if(dur <= 0){ showToast('⚠️ เวลาตื่นต้องหลังเวลานอน'); return; }
     state.sleeps.push({id: Date.now(), s: state.sleepStart, e: wakeTime.toISOString(), who: cfg.who});
     state.sleeps.sort(function(a,b){return new Date(a.s)-new Date(b.s);});
@@ -1954,8 +1919,9 @@ function toggleSleep(){
     state.sleepStart = null;
     _stopSleepLiveTimer();
     _updateSleepLiveUI(false);
+    pushCloud();
+    renderAll();
     showToast('⏰ ตื่นแล้ว! '+Math.floor(dur/60)+'ชม.'+dur%60+'น.');
-    pushCloud(); renderAll();
   }
 }
 function quickSleep(){ toggleSleep(); }
@@ -3083,7 +3049,8 @@ function renderSleepLog(){
   const g=id=>document.getElementById(id);
   const orb=g('slpOrb');
   if(orb){orb.className='sleep-orb '+(state.isSleeping?'asleep':'awake');const ico=orb.querySelector('svg');if(ico)ico.style.color=state.isSleeping?'var(--blue)':'var(--tx3)';}
-  if(g('slpTxt'))g('slpTxt').textContent=state.isSleeping?'กำลังนอน… ('+(state.sleepStart?since(state.sleepStart):'')+')':'ตื่นอยู่';
+  // slpTxt is updated by _startSleepLiveTimer when sleeping; only set it here when awake
+  if(!state.isSleeping && g('slpTxt')) g('slpTxt').textContent='ตื่นอยู่';
   const lbl=g('slpTimeLabel');
   if(lbl) lbl.textContent=state.isSleeping?'เวลาตื่น':'เวลาเริ่มนอน';
   const btn=g('slpBtn');if(btn){btn.textContent=state.isSleeping?'บันทึกว่าตื่นแล้ว':'บันทึกว่านอนแล้ว';btn.className='fbtn '+(state.isSleeping?'fbtn-sage':'fbtn-blue');}
